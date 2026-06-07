@@ -1,0 +1,243 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Kiintrus, plateforme de commerce en ligne avec plusieurs boutiques, commande WhatsApp, verification avant livraison et service rapide."
+    />
+    <title>Kiintrus - Le sourire du shopping en ligne</title>
+    <link rel="icon" href="assets/kiintrus-icon.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="service-strip">
+        <p>Livraison rapide & fiable a Lome</p>
+        <a href="https://wa.me/c/22890055053" target="_blank" rel="noreferrer">Catalogue WhatsApp</a>
+      </div>
+
+      <div class="mainbar">
+        <a class="brand" href="#" aria-label="Kiintrus accueil">
+          <img class="brand-logo" src="assets/kiintrus-logo.png" alt="Kiintrus" />
+        </a>
+
+        <form class="search" role="search">
+          <label class="sr-only" for="searchInput">Rechercher un article</label>
+          <input id="searchInput" type="search" placeholder="Rechercher smartphone, chaussure, sac..." />
+          <button type="submit" aria-label="Lancer la recherche">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="m21 21-4.35-4.35M10.8 18a7.2 7.2 0 1 1 0-14.4 7.2 7.2 0 0 1 0 14.4Z" />
+            </svg>
+          </button>
+        </form>
+
+        <a class="catalog-link" href="https://wa.me/c/22890055053" target="_blank" rel="noreferrer">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M3.5 6.5h17M5 6.5l1.2 12h11.6L19 6.5M9 6.5V5a3 3 0 0 1 6 0v1.5" />
+          </svg>
+          <span>Commander</span>
+        </a>
+
+        <button class="cart-button" type="button" aria-label="Voir le panier">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M6.5 7h14l-1.7 8.5H8L6.5 4H3M9 20h.01M18 20h.01" />
+          </svg>
+          <span id="cartCount">0</span>
+        </button>
+      </div>
+
+      <nav class="nav-row" aria-label="Categories principales">
+        <a href="#catalogue">Toutes les boutiques</a>
+        <a href="#catalogue">Electronique</a>
+        <a href="#catalogue">Mode</a>
+        <a href="#catalogue">Maison</a>
+        <a href="#catalogue">Bons plans</a>
+        <a href="#livraison">Livraison</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="hero">
+        <div class="hero-copy">
+          <p class="eyebrow">Marketplace togolaise</p>
+          <h1>Le sourire du shopping en ligne.</h1>
+          <p>
+            Retrouvez plusieurs boutiques au meme endroit, commandez vos articles et faites-vous livrer avec un
+            service qui verifie la qualite avant expedition.
+          </p>
+          <div class="hero-actions">
+            <a class="primary-action" href="https://wa.me/c/22890055053" target="_blank" rel="noreferrer">
+              Voir le catalogue WhatsApp
+            </a>
+            <a class="secondary-action" href="#catalogue">Explorer les articles</a>
+          </div>
+        </div>
+
+        <div class="hero-media" aria-label="Banniere shopping Kiintrus">
+          <img src="assets/hero-marketplace.png" alt="Produits de shopping sortant d'un telephone" />
+          <div class="hero-badge">
+            <strong>Verification incluse</strong>
+            <span>Avant livraison</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="trust-row" aria-label="Avantages Kiintrus">
+        <article>
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="m20 6-11 11-5-5" />
+          </svg>
+          <div>
+            <h2>Paiement securise</h2>
+            <p>Un parcours simple et rassurant.</p>
+          </div>
+        </article>
+        <article>
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M3 7h11v10H3zM14 10h3.5L21 14v3h-7zM7 20h.01M18 20h.01" />
+          </svg>
+          <div>
+            <h2>Livraison fiable</h2>
+            <p>Suivi clair jusqu'a reception.</p>
+          </div>
+        </article>
+        <article>
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M12 3 4 6v6c0 5 3.4 8 8 9 4.6-1 8-4 8-9V6z" />
+          </svg>
+          <div>
+            <h2>Qualite verifiee</h2>
+            <p>Les articles sont controles avant depart.</p>
+          </div>
+        </article>
+      </section>
+
+      <section class="section categories" aria-labelledby="categoriesTitle">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">Boutiques populaires</p>
+            <h2 id="categoriesTitle">Commandez tout au meme endroit</h2>
+          </div>
+          <a href="https://wa.me/c/22890055053" target="_blank" rel="noreferrer">Ouvrir le catalogue complet</a>
+        </div>
+        <div class="category-grid">
+          <button class="category active" data-category="all">
+            <span>Tout</span>
+            <strong>Selection Kiintrus</strong>
+          </button>
+          <button class="category" data-category="electronique">
+            <span>Electronique</span>
+            <strong>Telephones, audio, gadgets</strong>
+          </button>
+          <button class="category" data-category="mode">
+            <span>Mode</span>
+            <strong>Chaussures, sacs, bijoux</strong>
+          </button>
+          <button class="category" data-category="maison">
+            <span>Maison</span>
+            <strong>Mobilier, deco, cuisine</strong>
+          </button>
+          <button class="category" data-category="famille">
+            <span>Famille</span>
+            <strong>Bebe, beaute, quotidien</strong>
+          </button>
+        </div>
+      </section>
+
+      <section class="section marketplace" id="catalogue" aria-labelledby="catalogueTitle">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">Catalogue</p>
+            <h2 id="catalogueTitle">Articles en vedette</h2>
+          </div>
+          <p class="result-count"><span id="resultCount">8</span> articles</p>
+        </div>
+
+        <div class="product-grid" id="productGrid" aria-live="polite"></div>
+      </section>
+
+      <section class="split-section" id="livraison">
+        <div>
+          <p class="eyebrow">Comment ca marche</p>
+          <h2>Du catalogue WhatsApp a votre porte.</h2>
+          <p>
+            Kiintrus rassemble des boutiques partenaires, facilite la commande et prend soin de l'etape sensible :
+            verifier que l'article correspond avant de vous le livrer.
+          </p>
+        </div>
+        <ol class="steps">
+          <li>
+            <span>1</span>
+            <div>
+              <h3>Choisissez</h3>
+              <p>Parcourez les articles du site ou du catalogue WhatsApp.</p>
+            </div>
+          </li>
+          <li>
+            <span>2</span>
+            <div>
+              <h3>Commandez</h3>
+              <p>Envoyez votre demande avec le nom de l'article et votre zone.</p>
+            </div>
+          </li>
+          <li>
+            <span>3</span>
+            <div>
+              <h3>Recevez</h3>
+              <p>L'article est verifie, emballe, puis livre rapidement.</p>
+            </div>
+          </li>
+        </ol>
+      </section>
+    </main>
+
+    <aside class="cart-panel" id="cartPanel" aria-hidden="true">
+      <div class="cart-header">
+        <div>
+          <p class="eyebrow">Panier</p>
+          <h2>Votre selection</h2>
+        </div>
+        <button class="icon-button" type="button" id="closeCart" aria-label="Fermer le panier">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M18 6 6 18M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+      <div class="cart-items" id="cartItems"></div>
+      <a class="primary-action full" id="checkoutLink" href="https://wa.me/c/22890055053" target="_blank" rel="noreferrer">
+        Commander sur WhatsApp
+      </a>
+    </aside>
+    <div class="overlay" id="overlay"></div>
+
+    <footer class="footer">
+      <div>
+        <a class="brand footer-brand" href="#" aria-label="Kiintrus accueil">
+          <img class="brand-logo" src="assets/kiintrus-logo.png" alt="Kiintrus" />
+        </a>
+        <p>Plateforme de commerce en ligne, boutiques partenaires, verification qualite et livraison.</p>
+      </div>
+      <div>
+        <h2>Contact</h2>
+        <a href="https://wa.me/c/22890055053" target="_blank" rel="noreferrer">WhatsApp catalogue</a>
+        <a href="https://kiintrus.com">www.kiintrus.com</a>
+      </div>
+      <div>
+        <h2>Services</h2>
+        <span>Commande en ligne</span>
+        <span>Verification avant livraison</span>
+        <span>Livraison rapide</span>
+      </div>
+    </footer>
+
+    <script src="script.js"></script>
+  </body>
+</html>
