@@ -354,10 +354,25 @@ function startHeroCarousel() {
   if (heroSlides.length < 2) return;
 
   let activeSlide = 0;
+  const syncMedia = () => {
+    heroSlides.forEach((slide, index) => {
+      if (slide.tagName !== "VIDEO") return;
+
+      if (index === activeSlide) {
+        slide.currentTime = 0;
+        slide.play().catch(() => {});
+      } else {
+        slide.pause();
+      }
+    });
+  };
+
+  syncMedia();
   window.setInterval(() => {
     heroSlides[activeSlide].classList.remove("active");
     activeSlide = (activeSlide + 1) % heroSlides.length;
     heroSlides[activeSlide].classList.add("active");
+    syncMedia();
   }, 4500);
 }
 
