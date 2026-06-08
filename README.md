@@ -1,6 +1,6 @@
 # Kiintrus.com
 
-Site vitrine marketplace pour Kiintrus, inspire d'une experience e-commerce type Amazon/Nicelia avec catalogue, recherche, categories, panier local et commande WhatsApp.
+Site vitrine e-commerce pour Kiintrus, inspire d'une experience type Amazon/Nicelia avec catalogue, recherche, categories, panier local et commande WhatsApp.
 
 ## Lancer localement
 
