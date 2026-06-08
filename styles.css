@@ -202,40 +202,24 @@ svg {
   display: none;
 }
 
-.nav-links,
-.nav-tags {
+.nav-links {
   display: flex;
   align-items: center;
   gap: 6px;
   min-width: max-content;
 }
 
-.nav-row a,
-.nav-tags span {
+.nav-row a {
   flex: 0 0 auto;
   padding: 9px 14px;
   border-radius: 8px;
   font-size: 0.9rem;
   font-weight: 800;
-}
-
-.nav-row a {
   color: #fff;
 }
 
 .nav-row a:hover {
   background: rgba(255, 255, 255, 0.12);
-}
-
-.nav-tags {
-  margin-left: auto;
-}
-
-.nav-tags span {
-  border: 1px solid rgba(255, 255, 255, 0.22);
-  background: rgba(255, 151, 0, 0.16);
-  color: #ffd99c;
-  white-space: nowrap;
 }
 
 .hero {
@@ -418,15 +402,15 @@ svg {
   display: none;
 }
 
-.trust-row {
+.service-highlights {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 14px;
-  padding: 20px clamp(16px, 4vw, 56px);
-  background: #fff;
+  padding: clamp(24px, 4vw, 42px) clamp(16px, 4vw, 56px);
+  background: linear-gradient(180deg, #fff 0%, #eef6ff 100%);
 }
 
-.trust-row article {
+.service-highlights article {
   display: flex;
   align-items: center;
   gap: 14px;
@@ -434,9 +418,10 @@ svg {
   padding: 16px;
   border: 1px solid var(--line);
   border-radius: 8px;
+  background: #fff;
 }
 
-.trust-row svg {
+.service-highlights svg {
   width: 34px;
   height: 34px;
   padding: 7px;
@@ -445,17 +430,17 @@ svg {
   color: #fff;
 }
 
-.trust-row h2,
-.trust-row p {
+.service-highlights h2,
+.service-highlights p {
   margin: 0;
 }
 
-.trust-row h2 {
+.service-highlights h2 {
   font-size: 1rem;
   color: var(--blue-deep);
 }
 
-.trust-row p {
+.service-highlights p {
   margin-top: 4px;
   color: var(--muted);
   font-size: 0.9rem;
@@ -954,7 +939,7 @@ svg {
     min-height: 46px;
   }
 
-  .trust-row,
+  .service-highlights,
   .product-grid,
   .footer {
     grid-template-columns: 1fr;
