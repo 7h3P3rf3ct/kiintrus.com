@@ -239,6 +239,14 @@ svg {
   letter-spacing: 0;
 }
 
+.hero h1 span span {
+  color: var(--orange);
+}
+
+.keep-together {
+  white-space: nowrap;
+}
+
 .hero-copy > p:not(.eyebrow) {
   max-width: 640px;
   margin: 22px 0 0;
@@ -309,6 +317,89 @@ svg {
   color: var(--muted);
   font-size: 0.84rem;
   font-weight: 700;
+}
+
+.hero-mobile-actions {
+  display: none;
+}
+
+.recent-strip {
+  margin-top: 14px;
+  padding: 14px;
+  border: 1px solid rgba(0, 79, 159, 0.14);
+  border-radius: 8px;
+  background:
+    linear-gradient(135deg, rgba(255, 151, 0, 0.12), rgba(0, 79, 159, 0.08)),
+    #fff;
+  box-shadow: 0 14px 30px rgba(0, 35, 84, 0.08);
+}
+
+.recent-strip-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.recent-strip-head span {
+  color: var(--orange-deep);
+  font-size: 0.76rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.recent-strip-head strong {
+  color: var(--blue-deep);
+  font-size: 0.88rem;
+}
+
+.recent-items {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.recent-items a {
+  display: grid;
+  grid-template-columns: 46px minmax(0, 1fr);
+  gap: 10px;
+  align-items: center;
+  min-width: 0;
+  padding: 10px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.82);
+}
+
+.recent-thumb {
+  width: 46px;
+  height: 46px;
+  display: grid;
+  place-items: center;
+  border-radius: 8px;
+  background: var(--blue);
+  color: #fff;
+  font-size: 0.72rem;
+  font-weight: 900;
+}
+
+.recent-items strong,
+.recent-items small {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.recent-items strong {
+  color: var(--blue-deep);
+  font-size: 0.82rem;
+}
+
+.recent-items small {
+  margin-top: 4px;
+  color: var(--orange-deep);
+  font-weight: 900;
 }
 
 .trust-row {
@@ -812,12 +903,16 @@ svg {
     order: 1;
   }
 
+  .hero-media img {
+    box-shadow: 0 12px 30px rgba(13, 35, 69, 0.12);
+  }
+
   .hero-copy > p:not(.eyebrow) {
     margin-top: 14px;
   }
 
   .hero-actions {
-    margin-top: 20px;
+    display: none;
   }
 
   .hero h1 {
@@ -829,8 +924,38 @@ svg {
   }
 
   .hero-badge {
-    position: static;
+    display: none;
+  }
+
+  .hero-mobile-actions {
+    display: grid;
+    gap: 10px;
     margin-top: 12px;
+  }
+
+  .hero-mobile-actions a {
+    width: 100%;
+    min-height: 46px;
+  }
+
+  .recent-strip {
+    margin-top: 12px;
+    padding: 12px;
+  }
+
+  .recent-items {
+    display: flex;
+    overflow-x: auto;
+    padding-bottom: 2px;
+    scrollbar-width: none;
+  }
+
+  .recent-items::-webkit-scrollbar {
+    display: none;
+  }
+
+  .recent-items a {
+    flex: 0 0 230px;
   }
 
   .trust-row,
