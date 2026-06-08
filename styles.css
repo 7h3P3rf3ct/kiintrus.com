@@ -326,49 +326,11 @@ svg {
   height: 100%;
   object-fit: cover;
   opacity: 0;
-  transform: scale(1.02);
-  animation: heroCrossfade 9s infinite;
-  transition:
-    opacity 700ms ease,
-    transform 1600ms ease;
-}
-
-.slide-one {
-  animation-delay: 0s;
-}
-
-.slide-two {
-  animation-delay: 4.5s;
-}
-
-.slide-one {
-  object-fit: contain;
-  padding: clamp(8px, 1.4vw, 16px);
-  background: #fff;
+  transition: opacity 700ms ease;
 }
 
 .hero-slide.active {
   opacity: 1;
-  transform: scale(1);
-}
-
-@keyframes heroCrossfade {
-  0%,
-  45% {
-    opacity: 1;
-    transform: scale(1);
-  }
-
-  50%,
-  95% {
-    opacity: 0;
-    transform: scale(1.035);
-  }
-
-  100% {
-    opacity: 0;
-    transform: scale(1);
-  }
 }
 
 .hero-media > img {

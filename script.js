@@ -354,26 +354,41 @@ function startHeroCarousel() {
   if (heroSlides.length < 2) return;
 
   let activeSlide = 0;
-  const syncMedia = () => {
-    heroSlides.forEach((slide, index) => {
-      if (slide.tagName !== "VIDEO") return;
+  let slideTimer;
 
-      if (index === activeSlide) {
-        slide.currentTime = 0;
-        slide.play().catch(() => {});
-      } else {
+  const stopVideos = () => {
+    heroSlides.forEach((slide) => {
+      if (slide.tagName === "VIDEO") {
         slide.pause();
+        slide.currentTime = 0;
       }
     });
   };
 
-  syncMedia();
-  window.setInterval(() => {
+  const showSlide = (index) => {
+    window.clearTimeout(slideTimer);
     heroSlides[activeSlide].classList.remove("active");
-    activeSlide = (activeSlide + 1) % heroSlides.length;
-    heroSlides[activeSlide].classList.add("active");
-    syncMedia();
-  }, 4500);
+    activeSlide = index;
+    const slide = heroSlides[activeSlide];
+    stopVideos();
+    slide.classList.add("active");
+
+    if (slide.tagName === "VIDEO") {
+      slide.play().catch(() => {
+        slideTimer = window.setTimeout(nextSlide, 4500);
+      });
+      slide.addEventListener("ended", nextSlide, { once: true });
+      return;
+    }
+
+    slideTimer = window.setTimeout(nextSlide, 4500);
+  };
+
+  function nextSlide() {
+    showSlide((activeSlide + 1) % heroSlides.length);
+  }
+
+  slideTimer = window.setTimeout(nextSlide, 4500);
 }
 
 function orderUrl(product) {
