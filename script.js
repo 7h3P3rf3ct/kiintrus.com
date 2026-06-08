@@ -353,7 +353,10 @@ const heroSlides = document.querySelectorAll(".hero-slide");
 function startHeroCarousel() {
   if (heroSlides.length < 2) return;
 
-  let activeSlide = 0;
+  let activeSlide = Math.max(
+    0,
+    Array.from(heroSlides).findIndex((slide) => slide.classList.contains("active")),
+  );
   let slideTimer;
 
   const stopVideos = () => {
@@ -365,6 +368,25 @@ function startHeroCarousel() {
     });
   };
 
+  const armSlide = (slide, resetVideo = true) => {
+    if (slide.tagName === "VIDEO") {
+      slide.muted = true;
+      slide.defaultMuted = true;
+      slide.playsInline = true;
+      slide.setAttribute("muted", "");
+      slide.setAttribute("playsinline", "");
+      slide.setAttribute("webkit-playsinline", "");
+      if (resetVideo) slide.currentTime = 0;
+      slide.addEventListener("ended", nextSlide, { once: true });
+      slide.play().catch(() => {});
+      const fallbackDelay = Number.isFinite(slide.duration) ? (slide.duration + 0.5) * 1000 : 11000;
+      slideTimer = window.setTimeout(nextSlide, fallbackDelay);
+      return;
+    }
+
+    slideTimer = window.setTimeout(nextSlide, 4500);
+  };
+
   const showSlide = (index) => {
     window.clearTimeout(slideTimer);
     heroSlides[activeSlide].classList.remove("active");
@@ -372,23 +394,14 @@ function startHeroCarousel() {
     const slide = heroSlides[activeSlide];
     stopVideos();
     slide.classList.add("active");
-
-    if (slide.tagName === "VIDEO") {
-      slide.play().catch(() => {
-        slideTimer = window.setTimeout(nextSlide, 4500);
-      });
-      slide.addEventListener("ended", nextSlide, { once: true });
-      return;
-    }
-
-    slideTimer = window.setTimeout(nextSlide, 4500);
+    armSlide(slide);
   };
 
   function nextSlide() {
     showSlide((activeSlide + 1) % heroSlides.length);
   }
 
-  slideTimer = window.setTimeout(nextSlide, 4500);
+  armSlide(heroSlides[activeSlide], false);
 }
 
 function orderUrl(product) {
