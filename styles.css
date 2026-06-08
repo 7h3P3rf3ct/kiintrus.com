@@ -90,7 +90,7 @@ svg {
 
 .mainbar {
   display: grid;
-  grid-template-columns: auto minmax(220px, 1fr) auto auto;
+  grid-template-columns: auto minmax(220px, 1fr) auto auto auto;
   align-items: center;
   gap: 14px;
   padding: 10px clamp(16px, 4vw, 56px);
@@ -147,11 +147,43 @@ svg {
 }
 
 .search svg,
+.language-picker svg,
 .catalog-link svg,
 .cart-button svg,
 .icon-button svg {
   width: 22px;
   height: 22px;
+}
+
+.language-picker {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 44px;
+  padding: 0 10px;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 8px;
+  color: #fff;
+  font-size: 0.86rem;
+  font-weight: 900;
+}
+
+.language-picker span {
+  color: #ffd28a;
+}
+
+.language-picker select {
+  max-width: 84px;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: #fff;
+  font: inherit;
+  cursor: pointer;
+}
+
+.language-picker option {
+  color: var(--ink);
 }
 
 .catalog-link,
@@ -235,7 +267,7 @@ svg {
 
 .hero {
   display: grid;
-  grid-template-columns: minmax(0, 620px) minmax(340px, 620px);
+  grid-template-columns: minmax(0, 620px) minmax(360px, 700px);
   justify-content: center;
   gap: clamp(22px, 3vw, 44px);
   align-items: center;
@@ -316,7 +348,7 @@ svg {
 .hero-media {
   position: relative;
   min-width: 0;
-  width: min(100%, 600px);
+  width: min(100%, 680px);
   justify-self: center;
 }
 
@@ -818,7 +850,7 @@ svg {
 
 @media (max-width: 1060px) {
   .mainbar {
-    grid-template-columns: auto 1fr auto;
+    grid-template-columns: auto 1fr auto auto auto;
   }
 
   .catalog-link span {
@@ -841,7 +873,7 @@ svg {
   }
 
   .hero-media {
-    width: min(100%, 560px);
+    width: min(100%, 640px);
     max-width: none;
     justify-self: center;
   }
@@ -862,7 +894,7 @@ svg {
   }
 
   .mainbar {
-    grid-template-columns: 1fr auto auto;
+    grid-template-columns: 1fr auto auto auto;
     gap: 10px;
   }
 
@@ -874,6 +906,15 @@ svg {
   .search {
     grid-column: 1 / -1;
     order: 2;
+  }
+
+  .language-picker {
+    min-height: 46px;
+    padding: 0 8px;
+  }
+
+  .language-picker select {
+    max-width: 32px;
   }
 
   .hero {
@@ -956,5 +997,13 @@ svg {
   .cart-button {
     width: 46px;
     min-height: 46px;
+  }
+
+  .language-picker {
+    min-width: 46px;
+  }
+
+  .language-picker span {
+    display: none;
   }
 }
