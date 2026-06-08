@@ -358,6 +358,7 @@ function startHeroCarousel() {
     Array.from(heroSlides).findIndex((slide) => slide.classList.contains("active")),
   );
   let slideTimer;
+  let resumeVideo;
 
   const stopVideos = () => {
     heroSlides.forEach((slide) => {
@@ -378,9 +379,22 @@ function startHeroCarousel() {
       slide.setAttribute("webkit-playsinline", "");
       if (resetVideo) slide.currentTime = 0;
       slide.addEventListener("ended", nextSlide, { once: true });
+      resumeVideo = () => {
+        if (heroSlides[activeSlide] === slide && slide.paused) {
+          slide.play().catch(() => {});
+        }
+      };
+      window.requestAnimationFrame(resumeVideo);
+      slide.addEventListener("canplay", resumeVideo, { once: true });
+      slide.addEventListener(
+        "playing",
+        () => {
+          const fallbackDelay = Number.isFinite(slide.duration) ? (slide.duration - slide.currentTime + 0.5) * 1000 : 11000;
+          slideTimer = window.setTimeout(nextSlide, fallbackDelay);
+        },
+        { once: true },
+      );
       slide.play().catch(() => {});
-      const fallbackDelay = Number.isFinite(slide.duration) ? (slide.duration + 0.5) * 1000 : 11000;
-      slideTimer = window.setTimeout(nextSlide, fallbackDelay);
       return;
     }
 
@@ -402,6 +416,9 @@ function startHeroCarousel() {
   }
 
   armSlide(heroSlides[activeSlide], false);
+  ["pointerdown", "touchstart", "scroll"].forEach((eventName) => {
+    window.addEventListener(eventName, () => resumeVideo?.(), { passive: true });
+  });
 }
 
 function orderUrl(product) {
