@@ -1,6 +1,151 @@
 const WHATSAPP_CATALOG_URL = "https://wa.me/c/22890055053";
 const WHATSAPP_ORDER_URL = "https://wa.me/22890055053";
 
+const translations = {
+  fr: {
+    strip: "Livraison rapide et fiable",
+    whatsappCatalog: "Catalogue WhatsApp",
+    searchLabel: "Rechercher un article",
+    searchPlaceholder: "Rechercher smartphone, chaussure, sac...",
+    searchAction: "Lancer la recherche",
+    languageLabel: "Choisir la langue",
+    order: "Commander",
+    cartLabel: "Voir le panier",
+    navAll: "Toutes les boutiques",
+    navElectronics: "Electronique",
+    navFashion: "Mode",
+    navHome: "Maison",
+    navDeals: "Bons plans",
+    navDelivery: "Livraison",
+    heroEyebrow: "Commandez, souriez, recevez.",
+    heroTitle: 'Le <span class="highlight-word">sourire</span> <span class="keep-together">en un click.</span>',
+    heroText:
+      "Retrouvez plusieurs boutiques au meme endroit, commandez vos articles et faites-vous livrer avec un service qui verifie la qualite avant expedition.",
+    viewCatalog: "Voir le catalogue WhatsApp",
+    exploreItems: "Explorer les articles",
+    verifiedIncluded: "Verification incluse",
+    beforeDelivery: "Avant livraison",
+    popularStores: "Boutiques populaires",
+    categoriesTitle: "Commandez tout au meme endroit",
+    openFullCatalog: "Ouvrir le catalogue complet",
+    catAll: "Tout",
+    catAllDesc: "Selection Kiintrus",
+    catBeauty: "Beaute",
+    catBeautyDesc: "Soins visage, cremes, gels",
+    catFashion: "Mode & wax",
+    catFashionDesc: "Tissus, ensembles, enfants",
+    catHome: "Maison",
+    catHomeDesc: "Coussins et deco",
+    catBooks: "Librairie",
+    catBooksDesc: "Romans et precommandes",
+    catAccessories: "Accessoires",
+    catAccessoriesDesc: "Selfie, gadgets utiles",
+    catalog: "Catalogue",
+    featuredItems: "Articles en vedette",
+    itemsLabel: "articles",
+    securePayment: "Paiement securise",
+    securePaymentText: "Un parcours simple et rassurant.",
+    reliableDelivery: "Livraison fiable",
+    reliableDeliveryText: "Suivi clair jusqu'a reception.",
+    verifiedQuality: "Qualite verifiee",
+    verifiedQualityText: "Les articles sont controles avant depart.",
+    howItWorks: "Comment ca marche",
+    deliveryTitle: "Du catalogue WhatsApp a votre porte.",
+    deliveryText:
+      "Kiintrus rassemble des boutiques partenaires, facilite la commande et prend soin de l'etape sensible : verifier que l'article correspond avant de vous le livrer.",
+    stepChoose: "Choisissez",
+    stepChooseText: "Parcourez les articles du site ou du catalogue WhatsApp.",
+    stepOrder: "Commandez",
+    stepOrderText: "Envoyez votre demande avec le nom de l'article et votre zone.",
+    stepReceive: "Recevez",
+    stepReceiveText: "L'article est verifie, emballe, puis livre rapidement.",
+    cart: "Panier",
+    yourSelection: "Votre selection",
+    closeCart: "Fermer le panier",
+    orderOnWhatsapp: "Commander sur WhatsApp",
+    footerText: "Plateforme de commerce en ligne, boutiques partenaires, verification qualite et livraison.",
+    services: "Services",
+    onlineOrder: "Commande en ligne",
+    preDeliveryCheck: "Verification avant livraison",
+    fastDelivery: "Livraison rapide",
+    emptyCart: "Votre panier est vide pour le moment.",
+    addToCart: "Ajouter",
+    title: "Kiintrus - Le sourire en un click",
+  },
+  en: {
+    strip: "Fast and reliable delivery",
+    whatsappCatalog: "WhatsApp Catalog",
+    searchLabel: "Search for an item",
+    searchPlaceholder: "Search smartphone, shoes, bag...",
+    searchAction: "Search",
+    languageLabel: "Choose language",
+    order: "Order",
+    cartLabel: "View cart",
+    navAll: "All stores",
+    navElectronics: "Electronics",
+    navFashion: "Fashion",
+    navHome: "Home",
+    navDeals: "Deals",
+    navDelivery: "Delivery",
+    heroEyebrow: "Order, smile, receive.",
+    heroTitle: 'The <span class="highlight-word">smile</span> <span class="keep-together">in one click.</span>',
+    heroText:
+      "Find several stores in one place, order your items, and get them delivered with a service that checks quality before dispatch.",
+    viewCatalog: "View WhatsApp Catalog",
+    exploreItems: "Explore items",
+    verifiedIncluded: "Verification included",
+    beforeDelivery: "Before delivery",
+    popularStores: "Popular stores",
+    categoriesTitle: "Order everything in one place",
+    openFullCatalog: "Open full catalog",
+    catAll: "All",
+    catAllDesc: "Kiintrus selection",
+    catBeauty: "Beauty",
+    catBeautyDesc: "Face care, creams, gels",
+    catFashion: "Fashion & wax",
+    catFashionDesc: "Fabrics, outfits, kids",
+    catHome: "Home",
+    catHomeDesc: "Cushions and decor",
+    catBooks: "Bookstore",
+    catBooksDesc: "Novels and pre-orders",
+    catAccessories: "Accessories",
+    catAccessoriesDesc: "Selfie, useful gadgets",
+    catalog: "Catalog",
+    featuredItems: "Featured items",
+    itemsLabel: "items",
+    securePayment: "Secure payment",
+    securePaymentText: "A simple and reassuring process.",
+    reliableDelivery: "Reliable delivery",
+    reliableDeliveryText: "Clear tracking until reception.",
+    verifiedQuality: "Verified quality",
+    verifiedQualityText: "Items are checked before dispatch.",
+    howItWorks: "How it works",
+    deliveryTitle: "From WhatsApp catalog to your door.",
+    deliveryText:
+      "Kiintrus brings partner stores together, makes ordering easier, and takes care of the sensitive step: checking that the item matches before delivery.",
+    stepChoose: "Choose",
+    stepChooseText: "Browse items on the site or in the WhatsApp catalog.",
+    stepOrder: "Order",
+    stepOrderText: "Send your request with the item name and your area.",
+    stepReceive: "Receive",
+    stepReceiveText: "The item is checked, packed, then delivered quickly.",
+    cart: "Cart",
+    yourSelection: "Your selection",
+    closeCart: "Close cart",
+    orderOnWhatsapp: "Order on WhatsApp",
+    footerText: "Online commerce platform, partner stores, quality check and delivery.",
+    services: "Services",
+    onlineOrder: "Online order",
+    preDeliveryCheck: "Pre-delivery check",
+    fastDelivery: "Fast delivery",
+    emptyCart: "Your cart is empty for now.",
+    addToCart: "Add",
+    title: "Kiintrus - The smile in one click",
+  },
+};
+
+let currentLanguage = "fr";
+
 const products = [
   {
     id: 1,
@@ -349,6 +494,38 @@ const cartCount = document.querySelector("#cartCount");
 const cartItems = document.querySelector("#cartItems");
 const checkoutLink = document.querySelector("#checkoutLink");
 const heroSlides = document.querySelectorAll(".hero-slide");
+const languageSelect = document.querySelector("#languageSelect");
+const languageFlag = document.querySelector(".language-flag");
+
+function t(key) {
+  return translations[currentLanguage][key] || translations.fr[key] || key;
+}
+
+function applyLanguage(language) {
+  currentLanguage = translations[language] ? language : "fr";
+  document.documentElement.lang = currentLanguage;
+  document.title = t("title");
+  document.querySelector('meta[property="og:title"]')?.setAttribute("content", t("title"));
+  document.querySelector('meta[name="twitter:title"]')?.setAttribute("content", t("title"));
+
+  document.querySelectorAll("[data-i18n]").forEach((node) => {
+    node.textContent = t(node.dataset.i18n);
+  });
+  document.querySelectorAll("[data-i18n-html]").forEach((node) => {
+    node.innerHTML = t(node.dataset.i18nHtml);
+  });
+  document.querySelectorAll("[data-i18n-placeholder]").forEach((node) => {
+    node.setAttribute("placeholder", t(node.dataset.i18nPlaceholder));
+  });
+  document.querySelectorAll("[data-i18n-aria]").forEach((node) => {
+    node.setAttribute("aria-label", t(node.dataset.i18nAria));
+  });
+
+  if (languageSelect) languageSelect.value = currentLanguage;
+  if (languageFlag) languageFlag.textContent = currentLanguage === "en" ? "🇺🇸" : "🇫🇷";
+  renderProducts();
+  renderCart();
+}
 
 function startHeroCarousel() {
   if (heroSlides.length < 2) return;
@@ -423,8 +600,12 @@ function startHeroCarousel() {
 
 function orderUrl(product) {
   const text = product
-    ? `Bonjour Kiintrus, je souhaite commander: ${product.name} (${product.price}).`
-    : `Bonjour Kiintrus, je souhaite commander les articles de ma selection.`;
+    ? currentLanguage === "en"
+      ? `Hello Kiintrus, I would like to order: ${product.name} (${product.price}).`
+      : `Bonjour Kiintrus, je souhaite commander: ${product.name} (${product.price}).`
+    : currentLanguage === "en"
+      ? `Hello Kiintrus, I would like to order the items in my selection.`
+      : `Bonjour Kiintrus, je souhaite commander les articles de ma selection.`;
   return `${WHATSAPP_ORDER_URL}?text=${encodeURIComponent(text)}`;
 }
 
@@ -459,8 +640,8 @@ function renderProducts() {
               ${product.oldPrice ? `<span class="old-price">${product.oldPrice}</span>` : ""}
             </div>
             <div class="product-actions">
-              <a href="${orderUrl(product)}" target="_blank" rel="noreferrer">Commander</a>
-              <button type="button" aria-label="Ajouter ${product.name} au panier" data-add="${product.id}">
+              <a href="${orderUrl(product)}" target="_blank" rel="noreferrer">${t("order")}</a>
+              <button type="button" aria-label="${t("addToCart")} ${product.name}" data-add="${product.id}">
                 <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
               </button>
             </div>
@@ -475,9 +656,9 @@ function renderCart() {
   cartCount.textContent = String(cart.length);
 
   if (cart.length === 0) {
-    cartItems.innerHTML = '<p class="empty-cart">Votre panier est vide pour le moment.</p>';
+    cartItems.innerHTML = `<p class="empty-cart">${t("emptyCart")}</p>`;
     checkoutLink.href = WHATSAPP_CATALOG_URL;
-    checkoutLink.textContent = "Voir le catalogue WhatsApp";
+    checkoutLink.innerHTML = `<span data-i18n="viewCatalog">${t("viewCatalog")}</span>`;
     return;
   }
 
@@ -494,9 +675,11 @@ function renderCart() {
 
   const list = cart.map((product) => `- ${product.name} (${product.price})`).join("\n");
   checkoutLink.href = `${WHATSAPP_ORDER_URL}?text=${encodeURIComponent(
-    `Bonjour Kiintrus, je souhaite commander ces articles:\n${list}`,
+    currentLanguage === "en"
+      ? `Hello Kiintrus, I would like to order these items:\n${list}`
+      : `Bonjour Kiintrus, je souhaite commander ces articles:\n${list}`,
   )}`;
-  checkoutLink.textContent = "Commander sur WhatsApp";
+  checkoutLink.innerHTML = `<span data-i18n="orderOnWhatsapp">${t("orderOnWhatsapp")}</span>`;
 }
 
 function openCart() {
@@ -547,7 +730,9 @@ grid.addEventListener("click", (event) => {
 cartButton.addEventListener("click", openCart);
 closeCart.addEventListener("click", closeCartPanel);
 overlay.addEventListener("click", closeCartPanel);
+languageSelect?.addEventListener("change", (event) => {
+  applyLanguage(event.target.value);
+});
 
-renderProducts();
-renderCart();
+applyLanguage("fr");
 startHeroCarousel();

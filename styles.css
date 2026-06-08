@@ -155,25 +155,33 @@ svg {
   height: 22px;
 }
 
+.cart-button img {
+  width: 31px;
+  height: 31px;
+  display: block;
+}
+
 .language-picker {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 5px;
   min-height: 44px;
-  padding: 0 10px;
+  padding: 0 8px;
   border: 1px solid rgba(255, 255, 255, 0.22);
   border-radius: 8px;
   color: #fff;
-  font-size: 0.86rem;
+  font-size: 0.9rem;
   font-weight: 900;
 }
 
-.language-picker span {
-  color: #ffd28a;
+.language-flag {
+  width: 23px;
+  font-size: 1.05rem;
+  line-height: 1;
 }
 
 .language-picker select {
-  max-width: 84px;
+  width: 38px;
   border: 0;
   outline: 0;
   background: transparent;
@@ -914,7 +922,7 @@ svg {
   }
 
   .language-picker select {
-    max-width: 32px;
+    width: 36px;
   }
 
   .hero {
@@ -1003,7 +1011,7 @@ svg {
     min-width: 46px;
   }
 
-  .language-picker span {
+  .language-flag {
     display: none;
   }
 }

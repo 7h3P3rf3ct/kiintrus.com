@@ -45,8 +45,10 @@
   <body>
     <header class="site-header">
       <div class="service-strip">
-        <p>Livraison rapide et fiable</p>
-        <a href="https://wa.me/c/22890055053" target="_blank" rel="noreferrer">Catalogue WhatsApp</a>
+        <p data-i18n="strip">Livraison rapide et fiable</p>
+        <a href="https://wa.me/c/22890055053" target="_blank" rel="noreferrer" data-i18n="whatsappCatalog">
+          Catalogue WhatsApp
+        </a>
       </div>
 
       <div class="mainbar">
@@ -55,20 +57,25 @@
         </a>
 
         <form class="search" role="search">
-          <label class="sr-only" for="searchInput">Rechercher un article</label>
-          <input id="searchInput" type="search" placeholder="Rechercher smartphone, chaussure, sac..." />
-          <button type="submit" aria-label="Lancer la recherche">
+          <label class="sr-only" for="searchInput" data-i18n="searchLabel">Rechercher un article</label>
+          <input
+            id="searchInput"
+            type="search"
+            placeholder="Rechercher smartphone, chaussure, sac..."
+            data-i18n-placeholder="searchPlaceholder"
+          />
+          <button type="submit" aria-label="Lancer la recherche" data-i18n-aria="searchAction">
             <svg viewBox="0 0 24 24" aria-hidden="true">
               <path d="m21 21-4.35-4.35M10.8 18a7.2 7.2 0 1 1 0-14.4 7.2 7.2 0 0 1 0 14.4Z" />
             </svg>
           </button>
         </form>
 
-        <label class="language-picker" aria-label="Choisir la langue">
-          <span>FR</span>
-          <select>
-            <option value="fr" selected>Français</option>
-            <option value="en">English</option>
+        <label class="language-picker" aria-label="Choisir la langue" data-i18n-aria="languageLabel">
+          <span class="language-flag" aria-hidden="true">🇫🇷</span>
+          <select id="languageSelect">
+            <option value="fr" selected>FR</option>
+            <option value="en">EN</option>
           </select>
         </label>
 
@@ -76,27 +83,23 @@
           <svg viewBox="0 0 24 24" aria-hidden="true">
             <path d="M3.5 6.5h17M5 6.5l1.2 12h11.6L19 6.5M9 6.5V5a3 3 0 0 1 6 0v1.5" />
           </svg>
-          <span>Commander</span>
+          <span data-i18n="order">Commander</span>
         </a>
 
-        <button class="cart-button" type="button" aria-label="Voir le panier">
-          <svg viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M6.5 7h14l-1.7 8.5H8L6.5 4H3" />
-            <path d="M10 11h.01M16 11h.01M10.2 14c1.2 1.2 3.4 1.2 4.6 0" />
-            <path d="M9 20h.01M18 20h.01" />
-          </svg>
+        <button class="cart-button" type="button" aria-label="Voir le panier" data-i18n-aria="cartLabel">
+          <img src="assets/smiling-cart.svg" alt="" aria-hidden="true" />
           <span id="cartCount">0</span>
         </button>
       </div>
 
       <nav class="nav-row" aria-label="Categories principales">
         <div class="nav-links">
-          <a href="#catalogue">Toutes les boutiques</a>
-          <a href="#catalogue">Electronique</a>
-          <a href="#catalogue">Mode</a>
-          <a href="#catalogue">Maison</a>
-          <a href="#catalogue">Bons plans</a>
-          <a href="#livraison">Livraison</a>
+          <a href="#catalogue" data-i18n="navAll">Toutes les boutiques</a>
+          <a href="#catalogue" data-i18n="navElectronics">Electronique</a>
+          <a href="#catalogue" data-i18n="navFashion">Mode</a>
+          <a href="#catalogue" data-i18n="navHome">Maison</a>
+          <a href="#catalogue" data-i18n="navDeals">Bons plans</a>
+          <a href="#livraison" data-i18n="navDelivery">Livraison</a>
         </div>
       </nav>
     </header>
@@ -104,17 +107,17 @@
     <main>
       <section class="hero">
         <div class="hero-copy">
-          <p class="eyebrow">Commandez, souriez, recevez.</p>
-          <h1>Le <span class="highlight-word">sourire</span> <span class="keep-together">en un click.</span></h1>
-          <p>
+          <p class="eyebrow" data-i18n="heroEyebrow">Commandez, souriez, recevez.</p>
+          <h1 data-i18n-html="heroTitle">Le <span class="highlight-word">sourire</span> <span class="keep-together">en un click.</span></h1>
+          <p data-i18n="heroText">
             Retrouvez plusieurs boutiques au meme endroit, commandez vos articles et faites-vous livrer avec un
             service qui verifie la qualite avant expedition.
           </p>
           <div class="hero-actions">
             <a class="primary-action" href="https://wa.me/c/22890055053" target="_blank" rel="noreferrer">
-              Voir le catalogue WhatsApp
+              <span data-i18n="viewCatalog">Voir le catalogue WhatsApp</span>
             </a>
-            <a class="secondary-action" href="#catalogue">Explorer les articles</a>
+            <a class="secondary-action" href="#catalogue" data-i18n="exploreItems">Explorer les articles</a>
           </div>
         </div>
 
@@ -137,14 +140,14 @@
             />
           </div>
           <div class="hero-badge">
-            <strong>Verification incluse</strong>
-            <span>Avant livraison</span>
+            <strong data-i18n="verifiedIncluded">Verification incluse</strong>
+            <span data-i18n="beforeDelivery">Avant livraison</span>
           </div>
           <div class="hero-mobile-actions">
             <a class="primary-action" href="https://wa.me/c/22890055053" target="_blank" rel="noreferrer">
-              Voir le catalogue WhatsApp
+              <span data-i18n="viewCatalog">Voir le catalogue WhatsApp</span>
             </a>
-            <a class="secondary-action" href="#catalogue">Explorer les articles</a>
+            <a class="secondary-action" href="#catalogue" data-i18n="exploreItems">Explorer les articles</a>
           </div>
         </div>
       </section>
@@ -152,35 +155,37 @@
       <section class="section categories" aria-labelledby="categoriesTitle">
         <div class="section-head">
           <div>
-            <p class="eyebrow">Boutiques populaires</p>
-            <h2 id="categoriesTitle">Commandez tout au meme endroit</h2>
+            <p class="eyebrow" data-i18n="popularStores">Boutiques populaires</p>
+            <h2 id="categoriesTitle" data-i18n="categoriesTitle">Commandez tout au meme endroit</h2>
           </div>
-          <a href="https://wa.me/c/22890055053" target="_blank" rel="noreferrer">Ouvrir le catalogue complet</a>
+          <a href="https://wa.me/c/22890055053" target="_blank" rel="noreferrer" data-i18n="openFullCatalog">
+            Ouvrir le catalogue complet
+          </a>
         </div>
         <div class="category-grid">
           <button class="category active" data-category="all">
-            <span>Tout</span>
-            <strong>Selection Kiintrus</strong>
+            <span data-i18n="catAll">Tout</span>
+            <strong data-i18n="catAllDesc">Selection Kiintrus</strong>
           </button>
           <button class="category" data-category="beaute">
-            <span>Beaute</span>
-            <strong>Soins visage, cremes, gels</strong>
+            <span data-i18n="catBeauty">Beaute</span>
+            <strong data-i18n="catBeautyDesc">Soins visage, cremes, gels</strong>
           </button>
           <button class="category" data-category="mode">
-            <span>Mode & wax</span>
-            <strong>Tissus, ensembles, enfants</strong>
+            <span data-i18n="catFashion">Mode & wax</span>
+            <strong data-i18n="catFashionDesc">Tissus, ensembles, enfants</strong>
           </button>
           <button class="category" data-category="maison">
-            <span>Maison</span>
-            <strong>Coussins et deco</strong>
+            <span data-i18n="catHome">Maison</span>
+            <strong data-i18n="catHomeDesc">Coussins et deco</strong>
           </button>
           <button class="category" data-category="librairie">
-            <span>Librairie</span>
-            <strong>Romans et precommandes</strong>
+            <span data-i18n="catBooks">Librairie</span>
+            <strong data-i18n="catBooksDesc">Romans et precommandes</strong>
           </button>
           <button class="category" data-category="accessoires">
-            <span>Accessoires</span>
-            <strong>Selfie, gadgets utiles</strong>
+            <span data-i18n="catAccessories">Accessoires</span>
+            <strong data-i18n="catAccessoriesDesc">Selfie, gadgets utiles</strong>
           </button>
         </div>
       </section>
@@ -188,10 +193,10 @@
       <section class="section marketplace" id="catalogue" aria-labelledby="catalogueTitle">
         <div class="section-head">
           <div>
-            <p class="eyebrow">Catalogue</p>
-            <h2 id="catalogueTitle">Articles en vedette</h2>
+            <p class="eyebrow" data-i18n="catalog">Catalogue</p>
+            <h2 id="catalogueTitle" data-i18n="featuredItems">Articles en vedette</h2>
           </div>
-          <p class="result-count"><span id="resultCount">8</span> articles</p>
+          <p class="result-count"><span id="resultCount">8</span> <span data-i18n="itemsLabel">articles</span></p>
         </div>
 
         <div class="product-grid" id="productGrid" aria-live="polite"></div>
@@ -203,8 +208,8 @@
             <path d="m20 6-11 11-5-5" />
           </svg>
           <div>
-            <h2>Paiement securise</h2>
-            <p>Un parcours simple et rassurant.</p>
+            <h2 data-i18n="securePayment">Paiement securise</h2>
+            <p data-i18n="securePaymentText">Un parcours simple et rassurant.</p>
           </div>
         </article>
         <article>
@@ -212,8 +217,8 @@
             <path d="M3 7h11v10H3zM14 10h3.5L21 14v3h-7zM7 20h.01M18 20h.01" />
           </svg>
           <div>
-            <h2>Livraison fiable</h2>
-            <p>Suivi clair jusqu'a reception.</p>
+            <h2 data-i18n="reliableDelivery">Livraison fiable</h2>
+            <p data-i18n="reliableDeliveryText">Suivi clair jusqu'a reception.</p>
           </div>
         </article>
         <article>
@@ -221,17 +226,17 @@
             <path d="M12 3 4 6v6c0 5 3.4 8 8 9 4.6-1 8-4 8-9V6z" />
           </svg>
           <div>
-            <h2>Qualite verifiee</h2>
-            <p>Les articles sont controles avant depart.</p>
+            <h2 data-i18n="verifiedQuality">Qualite verifiee</h2>
+            <p data-i18n="verifiedQualityText">Les articles sont controles avant depart.</p>
           </div>
         </article>
       </section>
 
       <section class="split-section" id="livraison">
         <div>
-          <p class="eyebrow">Comment ca marche</p>
-          <h2>Du catalogue WhatsApp a votre porte.</h2>
-          <p>
+          <p class="eyebrow" data-i18n="howItWorks">Comment ca marche</p>
+          <h2 data-i18n="deliveryTitle">Du catalogue WhatsApp a votre porte.</h2>
+          <p data-i18n="deliveryText">
             Kiintrus rassemble des boutiques partenaires, facilite la commande et prend soin de l'etape sensible :
             verifier que l'article correspond avant de vous le livrer.
           </p>
@@ -240,22 +245,22 @@
           <li>
             <span>1</span>
             <div>
-              <h3>Choisissez</h3>
-              <p>Parcourez les articles du site ou du catalogue WhatsApp.</p>
+              <h3 data-i18n="stepChoose">Choisissez</h3>
+              <p data-i18n="stepChooseText">Parcourez les articles du site ou du catalogue WhatsApp.</p>
             </div>
           </li>
           <li>
             <span>2</span>
             <div>
-              <h3>Commandez</h3>
-              <p>Envoyez votre demande avec le nom de l'article et votre zone.</p>
+              <h3 data-i18n="stepOrder">Commandez</h3>
+              <p data-i18n="stepOrderText">Envoyez votre demande avec le nom de l'article et votre zone.</p>
             </div>
           </li>
           <li>
             <span>3</span>
             <div>
-              <h3>Recevez</h3>
-              <p>L'article est verifie, emballe, puis livre rapidement.</p>
+              <h3 data-i18n="stepReceive">Recevez</h3>
+              <p data-i18n="stepReceiveText">L'article est verifie, emballe, puis livre rapidement.</p>
             </div>
           </li>
         </ol>
@@ -265,10 +270,10 @@
     <aside class="cart-panel" id="cartPanel" aria-hidden="true">
       <div class="cart-header">
         <div>
-          <p class="eyebrow">Panier</p>
-          <h2>Votre selection</h2>
+          <p class="eyebrow" data-i18n="cart">Panier</p>
+          <h2 data-i18n="yourSelection">Votre selection</h2>
         </div>
-        <button class="icon-button" type="button" id="closeCart" aria-label="Fermer le panier">
+        <button class="icon-button" type="button" id="closeCart" aria-label="Fermer le panier" data-i18n-aria="closeCart">
           <svg viewBox="0 0 24 24" aria-hidden="true">
             <path d="M18 6 6 18M6 6l12 12" />
           </svg>
@@ -276,7 +281,7 @@
       </div>
       <div class="cart-items" id="cartItems"></div>
       <a class="primary-action full" id="checkoutLink" href="https://wa.me/c/22890055053" target="_blank" rel="noreferrer">
-        Commander sur WhatsApp
+        <span data-i18n="orderOnWhatsapp">Commander sur WhatsApp</span>
       </a>
     </aside>
     <div class="overlay" id="overlay"></div>
@@ -286,7 +291,7 @@
         <a class="brand footer-brand" href="#" aria-label="Kiintrus accueil">
           <img class="brand-logo" src="assets/kiintrus-logo.png" alt="Kiintrus" />
         </a>
-        <p>Plateforme de commerce en ligne, boutiques partenaires, verification qualite et livraison.</p>
+        <p data-i18n="footerText">Plateforme de commerce en ligne, boutiques partenaires, verification qualite et livraison.</p>
       </div>
       <div>
         <h2>Contact</h2>
@@ -294,10 +299,10 @@
         <a href="https://kiintrus.com">www.kiintrus.com</a>
       </div>
       <div>
-        <h2>Services</h2>
-        <span>Commande en ligne</span>
-        <span>Verification avant livraison</span>
-        <span>Livraison rapide</span>
+        <h2 data-i18n="services">Services</h2>
+        <span data-i18n="onlineOrder">Commande en ligne</span>
+        <span data-i18n="preDeliveryCheck">Verification avant livraison</span>
+        <span data-i18n="fastDelivery">Livraison rapide</span>
       </div>
     </footer>
 
