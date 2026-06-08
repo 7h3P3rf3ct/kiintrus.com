@@ -108,9 +108,9 @@ svg {
 
 .brand-logo {
   display: block;
-  width: clamp(150px, 18vw, 230px);
+  width: clamp(190px, 22vw, 320px);
   height: auto;
-  max-height: 52px;
+  max-height: 74px;
   object-fit: contain;
   object-position: left center;
 }
@@ -175,8 +175,10 @@ svg {
 }
 
 .language-flag {
-  width: 23px;
-  font-size: 1.05rem;
+  display: inline-grid;
+  place-items: center;
+  width: 24px;
+  font-size: 1.12rem;
   line-height: 1;
 }
 
@@ -907,8 +909,8 @@ svg {
   }
 
   .brand-logo {
-    width: 172px;
-    max-height: 54px;
+    width: 196px;
+    max-height: 62px;
   }
 
   .search {
@@ -997,8 +999,8 @@ svg {
 
 @media (max-width: 460px) {
   .brand-logo {
-    width: 146px;
-    max-height: 46px;
+    width: 172px;
+    max-height: 54px;
   }
 
   .catalog-link,
@@ -1008,10 +1010,14 @@ svg {
   }
 
   .language-picker {
+    position: relative;
     min-width: 46px;
   }
 
-  .language-flag {
-    display: none;
+  .language-picker select {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    opacity: 0;
   }
 }
