@@ -94,6 +94,7 @@ svg {
   align-items: center;
   gap: 18px;
   padding: 16px clamp(16px, 4vw, 56px);
+  background: linear-gradient(90deg, #fff4e5 0%, #eef6ff 100%);
 }
 
 .brand {
@@ -185,9 +186,12 @@ svg {
 
 .nav-row {
   display: flex;
-  gap: 6px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
   overflow-x: auto;
-  padding: 0 clamp(16px, 4vw, 56px) 13px;
+  padding: 10px clamp(16px, 4vw, 56px);
+  background: var(--blue-deep);
   scrollbar-width: none;
 }
 
@@ -195,17 +199,40 @@ svg {
   display: none;
 }
 
-.nav-row a {
+.nav-links,
+.nav-tags {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: max-content;
+}
+
+.nav-row a,
+.nav-tags span {
   flex: 0 0 auto;
   padding: 9px 14px;
   border-radius: 8px;
-  color: var(--blue-deep);
   font-size: 0.9rem;
   font-weight: 800;
 }
 
+.nav-row a {
+  color: #fff;
+}
+
 .nav-row a:hover {
-  background: var(--blue-soft);
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.nav-tags {
+  margin-left: auto;
+}
+
+.nav-tags span {
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  background: rgba(255, 151, 0, 0.16);
+  color: #ffd99c;
+  white-space: nowrap;
 }
 
 .hero {
@@ -290,9 +317,82 @@ svg {
   min-width: 0;
 }
 
-.hero-media img {
+.hero-slider {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1.12 / 1;
+  overflow: hidden;
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: var(--shadow);
+}
+
+.hero-media img,
+.hero-media video {
   width: 100%;
   display: block;
+}
+
+.hero-slide {
+  position: absolute;
+  inset: 0;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transform: scale(1.02);
+  animation: heroCrossfade 18s infinite;
+  transition:
+    opacity 700ms ease,
+    transform 1600ms ease;
+}
+
+.slide-one {
+  animation-delay: 0s;
+}
+
+.slide-two {
+  animation-delay: 4.5s;
+}
+
+.slide-three {
+  animation-delay: 9s;
+}
+
+.slide-four {
+  animation-delay: 13.5s;
+}
+
+.slide-one {
+  object-fit: contain;
+  padding: clamp(8px, 1.4vw, 16px);
+  background: #fff;
+}
+
+.hero-slide.active {
+  opacity: 1;
+  transform: scale(1);
+}
+
+@keyframes heroCrossfade {
+  0%,
+  22% {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  27%,
+  95% {
+    opacity: 0;
+    transform: scale(1.035);
+  }
+
+  100% {
+    opacity: 0;
+    transform: scale(1);
+  }
+}
+
+.hero-media > img {
   border-radius: 8px;
   box-shadow: var(--shadow);
 }
@@ -824,7 +924,7 @@ svg {
     order: 1;
   }
 
-  .hero-media img {
+  .hero-slider {
     box-shadow: 0 12px 30px rgba(13, 35, 69, 0.12);
   }
 
