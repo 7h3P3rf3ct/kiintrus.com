@@ -1,0 +1,5 @@
+window.KIINTRUS_SUPABASE = {
+  url: "https://YOUR_PROJECT_REF.supabase.co",
+  anonKey: "YOUR_SUPABASE_PUBLISHABLE_OR_ANON_KEY",
+  productImagesBucket: "product-images",
+};
