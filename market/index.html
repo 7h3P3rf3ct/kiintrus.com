@@ -20,21 +20,51 @@
     <main class="market-shell">
       <section class="auth-view" id="authView">
         <div class="auth-brand">
-          <img src="assets/kiintrus-logo-white.png" alt="Kiintrus" />
-          <p>Console privee pour les boutiques partenaires.</p>
+          <div class="auth-brand-top">
+            <img src="assets/kiintrus-logo-white.png" alt="Kiintrus" />
+            <span>Market console</span>
+          </div>
+          <div class="auth-copy">
+            <p class="eyebrow">Kiintrus Market</p>
+            <h1>Un espace pro pour piloter les boutiques.</h1>
+            <p>
+              Ajoutez les articles, suivez les stocks, preparez les validations et gardez le catalogue marchand
+              organise depuis un tableau de bord prive.
+            </p>
+          </div>
+          <div class="auth-preview" aria-hidden="true">
+            <div class="preview-head">
+              <span>Stock aujourd'hui</span>
+              <strong>+24</strong>
+            </div>
+            <div class="preview-row">
+              <span></span>
+              <div>
+                <strong>Articles en validation</strong>
+                <small>7 produits</small>
+              </div>
+            </div>
+            <div class="preview-row">
+              <span></span>
+              <div>
+                <strong>Boutiques actives</strong>
+                <small>12 comptes</small>
+              </div>
+            </div>
+          </div>
         </div>
 
         <div class="auth-card">
+          <div class="auth-card-head">
+            <p class="eyebrow">Acces securise</p>
+            <h2>Connectez-vous</h2>
+          </div>
           <div class="auth-tabs" role="tablist" aria-label="Acces marchand">
             <button class="active" type="button" data-auth-tab="login">Connexion</button>
             <button type="button" data-auth-tab="register">Creation de compte</button>
           </div>
 
           <form class="auth-form active" id="loginForm">
-            <div>
-              <p class="eyebrow">Market.kiintrus.com</p>
-              <h1>Acceder au dashboard</h1>
-            </div>
             <label>
               Email
               <input type="email" id="loginEmail" autocomplete="email" required />
@@ -48,10 +78,7 @@
           </form>
 
           <form class="auth-form" id="registerForm">
-            <div>
-              <p class="eyebrow">Nouveau marchand</p>
-              <h1>Creer un compte boutique</h1>
-            </div>
+            <p class="helper-text strong">Demande d'acces boutique</p>
             <label>
               Nom de la boutique
               <input type="text" id="registerStore" placeholder="Ex: Ninosweet Boutique" required />
