@@ -33,9 +33,7 @@ a {
 }
 
 button,
-input,
-select,
-textarea {
+input {
   font: inherit;
 }
 
@@ -645,190 +643,6 @@ svg {
   color: #fff;
 }
 
-.merchant-space {
-  background: linear-gradient(180deg, #f7fbff 0%, #ffffff 100%);
-}
-
-.merchant-head span {
-  display: inline-flex;
-  align-items: center;
-  min-height: 34px;
-  padding: 0 12px;
-  border-radius: 999px;
-  background: var(--blue-soft);
-  color: var(--blue-deep);
-  font-size: 0.82rem;
-  font-weight: 900;
-}
-
-.merchant-layout {
-  display: grid;
-  grid-template-columns: minmax(230px, 0.75fr) minmax(360px, 1.35fr) minmax(260px, 0.9fr);
-  gap: 16px;
-  align-items: start;
-}
-
-.merchant-panel {
-  display: grid;
-  gap: 14px;
-  padding: 18px;
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  background: #fff;
-  box-shadow: 0 12px 28px rgba(17, 39, 72, 0.07);
-}
-
-.merchant-panel h3 {
-  margin: 0;
-  color: var(--blue-deep);
-  font-size: 1.15rem;
-}
-
-.merchant-panel p {
-  margin: 0;
-  color: var(--muted);
-  line-height: 1.6;
-}
-
-.merchant-panel label,
-.store-form label {
-  display: grid;
-  gap: 7px;
-  color: var(--blue-deep);
-  font-size: 0.84rem;
-  font-weight: 900;
-}
-
-.merchant-panel input,
-.merchant-panel select,
-.merchant-panel textarea {
-  width: 100%;
-  min-width: 0;
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  padding: 11px 12px;
-  background: #fff;
-  color: var(--ink);
-  outline: 0;
-}
-
-.merchant-panel textarea {
-  resize: vertical;
-}
-
-.merchant-panel input:focus,
-.merchant-panel select:focus,
-.merchant-panel textarea:focus {
-  border-color: var(--orange);
-  box-shadow: 0 0 0 3px rgba(255, 151, 0, 0.18);
-}
-
-.merchant-stats {
-  display: grid;
-  gap: 4px;
-  padding: 14px;
-  border-radius: 8px;
-  background: linear-gradient(135deg, var(--blue-deep), var(--blue));
-  color: #fff;
-}
-
-.merchant-stats strong {
-  font-size: 2rem;
-  line-height: 1;
-}
-
-.merchant-stats span {
-  color: #dbeafe;
-  font-size: 0.9rem;
-  font-weight: 800;
-}
-
-.form-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 12px;
-}
-
-.form-grid .wide {
-  grid-column: 1 / -1;
-}
-
-.upload-box input {
-  border-style: dashed;
-  background: #f8fbff;
-}
-
-.form-note {
-  min-height: 22px;
-  color: var(--blue);
-  font-weight: 800;
-}
-
-.store-form {
-  display: grid;
-  gap: 12px;
-}
-
-.store-list,
-.merchant-products {
-  display: grid;
-  gap: 10px;
-}
-
-.store-list {
-  max-height: 210px;
-  overflow: auto;
-}
-
-.store-row,
-.merchant-product-row {
-  display: grid;
-  gap: 4px;
-  padding: 12px;
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  background: #f9fbfe;
-}
-
-.store-row strong,
-.merchant-product-row strong {
-  color: var(--blue-deep);
-}
-
-.store-row span,
-.merchant-product-row span {
-  color: var(--muted);
-  font-size: 0.86rem;
-}
-
-.merchant-products {
-  margin-top: 18px;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-}
-
-.merchant-product-row {
-  grid-template-columns: 58px minmax(0, 1fr);
-  align-items: center;
-}
-
-.merchant-product-row img {
-  width: 58px;
-  height: 58px;
-  border-radius: 8px;
-  object-fit: cover;
-}
-
-.stock-badge {
-  display: inline-flex;
-  width: max-content;
-  padding: 5px 8px;
-  border-radius: 999px;
-  background: var(--blue-soft);
-  color: var(--blue-deep);
-  font-size: 0.72rem;
-  font-weight: 900;
-}
-
 .split-section .eyebrow,
 .split-section h2 {
   color: #fff;
@@ -1014,15 +828,6 @@ svg {
     grid-template-columns: 1fr;
   }
 
-  .merchant-layout {
-    grid-template-columns: 1fr 1fr;
-  }
-
-  .merchant-form {
-    grid-column: 1 / -1;
-    order: 3;
-  }
-
   .hero {
     width: 100%;
   }
@@ -1092,15 +897,8 @@ svg {
 
   .service-highlights,
   .product-grid,
-  .merchant-layout,
-  .merchant-products,
   .footer {
     grid-template-columns: 1fr;
-  }
-
-  .merchant-form {
-    grid-column: auto;
-    order: initial;
   }
 
   .category-grid {
@@ -1116,10 +914,6 @@ svg {
   .section-head {
     align-items: start;
     flex-direction: column;
-  }
-
-  .form-grid {
-    grid-template-columns: 1fr;
   }
 }
 

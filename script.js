@@ -17,7 +17,6 @@ const translations = {
     navHome: "Maison",
     navDeals: "Bons plans",
     navDelivery: "Livraison",
-    navMerchants: "Espace marchand",
     heroEyebrow: "Commandez, souriez, recevez.",
     heroTitle: 'Le <span class="highlight-word">sourire</span> <span class="keep-together">en un click.</span>',
     heroText:
@@ -71,37 +70,6 @@ const translations = {
     fastDelivery: "Livraison rapide",
     emptyCart: "Votre panier est vide pour le moment.",
     addToCart: "Ajouter",
-    stockLabel: "Stock",
-    merchantEyebrow: "Espace marchand",
-    merchantTitle: "Gerez vos articles et vos stocks",
-    merchantMode: "Mode demo local",
-    merchantLoginTitle: "Connexion boutique",
-    merchantLoginText:
-      "Choisissez un profil pour previsualiser l'espace marchand. La connexion definitive sera reliee au backend.",
-    accountType: "Type de compte",
-    merchantAccount: "Boutique",
-    adminAccount: "Admin principale",
-    chooseStore: "Boutique",
-    publishedItems: "articles publies",
-    newItem: "Nouvel article",
-    productDetails: "Details du produit",
-    productName: "Nom de l'article",
-    merchantCategory: "Categorie",
-    productPrice: "Prix",
-    productStock: "Stock",
-    productDescription: "Description",
-    productPhoto: "Photo de l'article",
-    publishItem: "Publier l'article",
-    adminTitle: "Administration",
-    adminText:
-      "Le compte principal peut creer des boutiques, leurs comptes marchands et publier des articles pour chacune.",
-    storeName: "Nom de la boutique",
-    merchantEmail: "Email marchand",
-    temporaryPassword: "Mot de passe temporaire",
-    createStore: "Creer la boutique",
-    itemPublished: "Article publie dans le catalogue.",
-    storeCreated: "Boutique creee et disponible pour publication.",
-    noMerchantItems: "Aucun article marchand ajoute pour le moment.",
     title: "Kiintrus - Le sourire en un click",
   },
   en: {
@@ -119,7 +87,6 @@ const translations = {
     navHome: "Home",
     navDeals: "Deals",
     navDelivery: "Delivery",
-    navMerchants: "Seller hub",
     heroEyebrow: "Order, smile, receive.",
     heroTitle: 'The <span class="highlight-word">smile</span> <span class="keep-together">in one click.</span>',
     heroText:
@@ -173,35 +140,6 @@ const translations = {
     fastDelivery: "Fast delivery",
     emptyCart: "Your cart is empty for now.",
     addToCart: "Add",
-    stockLabel: "Stock",
-    merchantEyebrow: "Seller hub",
-    merchantTitle: "Manage your items and inventory",
-    merchantMode: "Local demo mode",
-    merchantLoginTitle: "Store login",
-    merchantLoginText: "Choose a profile to preview the seller hub. The final login will be connected to the backend.",
-    accountType: "Account type",
-    merchantAccount: "Store",
-    adminAccount: "Main admin",
-    chooseStore: "Store",
-    publishedItems: "published items",
-    newItem: "New item",
-    productDetails: "Product details",
-    productName: "Item name",
-    merchantCategory: "Category",
-    productPrice: "Price",
-    productStock: "Stock",
-    productDescription: "Description",
-    productPhoto: "Item photo",
-    publishItem: "Publish item",
-    adminTitle: "Administration",
-    adminText: "The main account can create stores, seller accounts, and publish items for every store.",
-    storeName: "Store name",
-    merchantEmail: "Seller email",
-    temporaryPassword: "Temporary password",
-    createStore: "Create store",
-    itemPublished: "Item published in the catalog.",
-    storeCreated: "Store created and available for publishing.",
-    noMerchantItems: "No seller items added yet.",
     title: "Kiintrus - The smile in one click",
   },
 };
@@ -524,14 +462,6 @@ const products = [
   },
 ];
 
-const MERCHANT_STORAGE_KEY = "kiintrusMerchantWorkspace";
-const defaultStores = [...new Set(products.map((product) => product.store))].map((name) => ({
-  name,
-  email: "",
-}));
-let merchantStores = [...defaultStores];
-let merchantUploadedProducts = [];
-
 const icons = {
   phone: '<path d="M8 2.8h8a2 2 0 0 1 2 2v14.4a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V4.8a2 2 0 0 1 2-2Z"/><path d="M10 18h4"/>',
   headphones: '<path d="M4 14v-2a8 8 0 0 1 16 0v2"/><path d="M4 14h3v6H5a1 1 0 0 1-1-1v-5ZM20 14h-3v6h2a1 1 0 0 0 1-1v-5Z"/>',
@@ -567,161 +497,9 @@ const heroSlides = document.querySelectorAll(".hero-slide");
 const heroBackground = document.querySelector(".hero-background");
 const languageSelect = document.querySelector("#languageSelect");
 const languageFlag = document.querySelector(".language-flag");
-const accountType = document.querySelector("#accountType");
-const storeSelect = document.querySelector("#storeSelect");
-const merchantProductForm = document.querySelector("#merchantProductForm");
-const merchantProductName = document.querySelector("#merchantProductName");
-const merchantCategory = document.querySelector("#merchantCategory");
-const merchantPrice = document.querySelector("#merchantPrice");
-const merchantStock = document.querySelector("#merchantStock");
-const merchantDescription = document.querySelector("#merchantDescription");
-const merchantImage = document.querySelector("#merchantImage");
-const merchantNotice = document.querySelector("#merchantNotice");
-const merchantProductCount = document.querySelector("#merchantProductCount");
-const merchantProducts = document.querySelector("#merchantProducts");
-const storeForm = document.querySelector("#storeForm");
-const newStoreName = document.querySelector("#newStoreName");
-const newStoreEmail = document.querySelector("#newStoreEmail");
-const newStorePassword = document.querySelector("#newStorePassword");
-const storeList = document.querySelector("#storeList");
 
 function t(key) {
   return translations[currentLanguage][key] || translations.fr[key] || key;
-}
-
-function escapeHtml(value = "") {
-  return String(value)
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#039;");
-}
-
-function categoryColors(category) {
-  const palettes = {
-    beaute: ["#ffe2f0", "#eef7ff"],
-    mode: ["#fff0cf", "#e8f2ff"],
-    maison: ["#e5fff3", "#fff2d8"],
-    librairie: ["#ffe6cf", "#d7f0e1"],
-    accessoires: ["#eef2f8", "#fff2d8"],
-  };
-  return palettes[category] || ["#e8f2ff", "#fff2d8"];
-}
-
-function categoryLabel(category) {
-  const labels = {
-    beaute: t("catBeauty"),
-    mode: t("catFashion"),
-    maison: t("catHome"),
-    librairie: t("catBooks"),
-    accessoires: t("catAccessories"),
-  };
-  return labels[category] || "Kiintrus";
-}
-
-function loadMerchantWorkspace() {
-  try {
-    const saved = JSON.parse(localStorage.getItem(MERCHANT_STORAGE_KEY) || "{}");
-    if (Array.isArray(saved.stores) && saved.stores.length) {
-      const storeMap = new Map([...defaultStores, ...saved.stores].map((store) => [store.name, store]));
-      merchantStores = [...storeMap.values()];
-    }
-    if (Array.isArray(saved.products)) {
-      merchantUploadedProducts = saved.products;
-      products.push(...merchantUploadedProducts);
-    }
-  } catch {
-    merchantStores = [...defaultStores];
-    merchantUploadedProducts = [];
-  }
-}
-
-function saveMerchantWorkspace() {
-  localStorage.setItem(
-    MERCHANT_STORAGE_KEY,
-    JSON.stringify({
-      stores: merchantStores,
-      products: merchantUploadedProducts,
-    }),
-  );
-}
-
-function selectedStoreName() {
-  return storeSelect?.value || merchantStores[0]?.name || "Kiintrus";
-}
-
-function renderStoreOptions() {
-  if (!storeSelect) return;
-  const currentValue = storeSelect.value;
-  storeSelect.innerHTML = merchantStores
-    .map((store) => `<option value="${escapeHtml(store.name)}">${escapeHtml(store.name)}</option>`)
-    .join("");
-  if (merchantStores.some((store) => store.name === currentValue)) {
-    storeSelect.value = currentValue;
-  }
-}
-
-function renderStoreList() {
-  if (!storeList) return;
-  storeList.innerHTML = merchantStores
-    .map(
-      (store) => `
-        <div class="store-row">
-          <strong>${escapeHtml(store.name)}</strong>
-          <span>${escapeHtml(store.email || "Compte marchand a configurer")}</span>
-          ${store.password ? `<span>${escapeHtml(t("temporaryPassword"))}: ${escapeHtml(store.password)}</span>` : ""}
-        </div>
-      `,
-    )
-    .join("");
-}
-
-function renderMerchantProducts() {
-  if (!merchantProducts || !merchantProductCount) return;
-  const storeName = selectedStoreName();
-  const visibleProducts =
-    accountType?.value === "admin"
-      ? merchantUploadedProducts
-      : merchantUploadedProducts.filter((product) => product.store === storeName);
-
-  merchantProductCount.textContent = String(visibleProducts.length);
-  merchantProducts.innerHTML = visibleProducts.length
-    ? visibleProducts
-        .slice()
-        .reverse()
-        .map(
-          (product) => `
-            <article class="merchant-product-row">
-              <img src="${product.image}" alt="${escapeHtml(product.imageAlt || product.name)}" />
-              <div>
-                <strong>${escapeHtml(product.name)}</strong>
-                <span>${escapeHtml(product.store)} · ${escapeHtml(product.price)} · ${t("stockLabel")} ${Number(product.stock || 0)}</span>
-              </div>
-            </article>
-          `,
-        )
-        .join("")
-    : `<p class="empty-cart">${t("noMerchantItems")}</p>`;
-}
-
-function fileToDataUrl(file) {
-  return new Promise((resolve) => {
-    if (!file) {
-      resolve("");
-      return;
-    }
-    const reader = new FileReader();
-    reader.addEventListener("load", () => resolve(String(reader.result || "")));
-    reader.addEventListener("error", () => resolve(""));
-    reader.readAsDataURL(file);
-  });
-}
-
-function renderMerchantWorkspace() {
-  renderStoreOptions();
-  renderStoreList();
-  renderMerchantProducts();
 }
 
 function applyLanguage(language) {
@@ -748,7 +526,6 @@ function applyLanguage(language) {
   if (languageFlag) languageFlag.textContent = currentLanguage === "en" ? "🇺🇸" : "🇫🇷";
   renderProducts();
   renderCart();
-  renderMerchantWorkspace();
 }
 
 function startHeroCarousel() {
@@ -864,25 +641,24 @@ function renderProducts() {
       (product) => `
         <article class="product-card">
           <div class="product-visual" style="--tone-a:${product.colors[0]};--tone-b:${product.colors[1]}">
-            <span class="tag">${escapeHtml(product.tag)}</span>
+            <span class="tag">${product.tag}</span>
             ${
               product.image
-                ? `<img src="${product.image}" alt="${escapeHtml(product.imageAlt || product.name)}" />`
+                ? `<img src="${product.image}" alt="${product.imageAlt || product.name}" />`
                 : `<svg viewBox="0 0 24 24" aria-hidden="true">${icons[product.icon]}</svg>`
             }
           </div>
           <div class="product-body">
-            <span class="store">${escapeHtml(product.store)}</span>
-            <h3>${escapeHtml(product.name)}</h3>
-            <p>${escapeHtml(product.description)}</p>
-            ${product.stock !== undefined ? `<span class="stock-badge">${t("stockLabel")} ${Number(product.stock || 0)}</span>` : ""}
+            <span class="store">${product.store}</span>
+            <h3>${product.name}</h3>
+            <p>${product.description}</p>
             <div class="price-row">
-              <span class="price">${escapeHtml(product.price)}</span>
-              ${product.oldPrice ? `<span class="old-price">${escapeHtml(product.oldPrice)}</span>` : ""}
+              <span class="price">${product.price}</span>
+              ${product.oldPrice ? `<span class="old-price">${product.oldPrice}</span>` : ""}
             </div>
             <div class="product-actions">
               <a href="${orderUrl(product)}" target="_blank" rel="noreferrer">${t("order")}</a>
-              <button type="button" aria-label="${t("addToCart")} ${escapeHtml(product.name)}" data-add="${product.id}">
+              <button type="button" aria-label="${t("addToCart")} ${product.name}" data-add="${product.id}">
                 <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
               </button>
             </div>
@@ -907,8 +683,8 @@ function renderCart() {
     .map(
       (product) => `
         <div class="cart-item">
-          <strong>${escapeHtml(product.name)}</strong>
-          <span>${escapeHtml(product.price)} · ${escapeHtml(product.store)}</span>
+          <strong>${product.name}</strong>
+          <span>${product.price} · ${product.store}</span>
         </div>
       `,
     )
@@ -975,70 +751,5 @@ languageSelect?.addEventListener("change", (event) => {
   applyLanguage(event.target.value);
 });
 
-accountType?.addEventListener("change", renderMerchantProducts);
-storeSelect?.addEventListener("change", renderMerchantProducts);
-
-storeForm?.addEventListener("submit", (event) => {
-  event.preventDefault();
-  const name = newStoreName.value.trim();
-  if (!name) return;
-
-  const exists = merchantStores.some((store) => store.name.toLowerCase() === name.toLowerCase());
-  if (!exists) {
-    merchantStores = [
-      ...merchantStores,
-      {
-        name,
-        email: newStoreEmail.value.trim(),
-        password: newStorePassword.value.trim(),
-      },
-    ];
-    saveMerchantWorkspace();
-    renderMerchantWorkspace();
-    storeSelect.value = name;
-    merchantNotice.textContent = t("storeCreated");
-  }
-
-  storeForm.reset();
-});
-
-merchantProductForm?.addEventListener("submit", async (event) => {
-  event.preventDefault();
-  const name = merchantProductName.value.trim();
-  const price = merchantPrice.value.trim();
-  const description = merchantDescription.value.trim();
-  const category = merchantCategory.value;
-  const stock = Number(merchantStock.value || 0);
-  if (!name || !price || !description) return;
-
-  const image = (await fileToDataUrl(merchantImage.files?.[0])) || "assets/hero-marketplace.png";
-  const product = {
-    id: Date.now(),
-    name,
-    category,
-    store: selectedStoreName(),
-    price,
-    description,
-    stock,
-    tag: categoryLabel(category),
-    image,
-    imageAlt: name,
-    colors: categoryColors(category),
-    icon: category === "maison" ? "home" : category === "librairie" ? "book" : category === "accessoires" ? "camera" : "beauty",
-  };
-
-  merchantUploadedProducts = [...merchantUploadedProducts, product];
-  products.push(product);
-  saveMerchantWorkspace();
-  merchantProductForm.reset();
-  merchantStock.value = "1";
-  merchantNotice.textContent = t("itemPublished");
-  renderProducts();
-  renderCart();
-  renderMerchantProducts();
-});
-
-loadMerchantWorkspace();
-renderMerchantWorkspace();
 applyLanguage("fr");
 startHeroCarousel();
