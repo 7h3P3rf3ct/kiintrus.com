@@ -106,49 +106,39 @@
 
     <main>
       <section class="hero">
-        <div class="hero-copy">
-          <p class="eyebrow" data-i18n="heroEyebrow">Commandez, souriez, recevez.</p>
-          <h1 data-i18n-html="heroTitle">Le <span class="highlight-word">sourire</span> <span class="keep-together">en un click.</span></h1>
-          <p data-i18n="heroText">
-            Retrouvez plusieurs boutiques au meme endroit, commandez vos articles et faites-vous livrer avec un
-            service qui verifie la qualite avant expedition.
-          </p>
-          <div class="hero-actions">
-            <a class="primary-action" href="https://wa.me/c/22890055053" target="_blank" rel="noreferrer">
-              <span data-i18n="viewCatalog">Voir le catalogue WhatsApp</span>
-            </a>
-            <a class="secondary-action" href="#catalogue" data-i18n="exploreItems">Explorer les articles</a>
-          </div>
-        </div>
-
-        <div class="hero-media" aria-label="Banniere shopping Kiintrus">
-          <div class="hero-slider" aria-hidden="true">
-            <video
-              class="hero-slide active slide-one"
-              src="assets/kiintrus.mp4"
-              muted
-              autoplay
-              playsinline
-              webkit-playsinline
-              preload="auto"
-              poster="assets/hero-marketplace.png"
-            ></video>
-            <img
-              class="hero-slide slide-two"
-              src="assets/hero-marketplace.png"
-              alt="Produits de shopping sortant d'un telephone"
-            />
-          </div>
-          <div class="hero-badge">
-            <strong data-i18n="verifiedIncluded">Verification incluse</strong>
-            <span data-i18n="beforeDelivery">Avant livraison</span>
-          </div>
-          <div class="hero-mobile-actions">
-            <a class="primary-action" href="https://wa.me/c/22890055053" target="_blank" rel="noreferrer">
-              <span data-i18n="viewCatalog">Voir le catalogue WhatsApp</span>
-            </a>
-            <a class="secondary-action" href="#catalogue" data-i18n="exploreItems">Explorer les articles</a>
-          </div>
+        <video
+          class="hero-background"
+          src="assets/kiintrus.mp4"
+          muted
+          autoplay
+          loop
+          playsinline
+          webkit-playsinline
+          preload="auto"
+          poster="assets/hero-marketplace.png"
+          aria-hidden="true"
+        ></video>
+        <div class="hero-shelf" aria-label="Articles Kiintrus en avant">
+          <a class="hero-card hero-card-large" href="#catalogue">
+            <span data-i18n="catBeauty">Beaute</span>
+            <img src="assets/products/dr-rasheel-solaire.jpg" alt="Creme solaire DR Rasheel" />
+            <strong>DR Rasheel</strong>
+          </a>
+          <a class="hero-card" href="#catalogue">
+            <span data-i18n="catFashion">Mode & wax</span>
+            <img src="assets/products/ninosweet-fille-rose.jpg" alt="Ensemble fille Ninosweet" />
+            <strong>Ninosweet</strong>
+          </a>
+          <a class="hero-card" href="#catalogue">
+            <span data-i18n="catHome">Maison</span>
+            <img src="assets/products/coussins-fauteuil.jpg" alt="Coussins de decoration" />
+            <strong>Coussins</strong>
+          </a>
+          <a class="hero-card" href="#catalogue">
+            <span data-i18n="catAccessories">Accessoires</span>
+            <img src="assets/products/selfie-stick.jpg" alt="Baton pour selfie" />
+            <strong>Selfie</strong>
+          </a>
         </div>
       </section>
 

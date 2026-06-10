@@ -494,6 +494,7 @@ const cartCount = document.querySelector("#cartCount");
 const cartItems = document.querySelector("#cartItems");
 const checkoutLink = document.querySelector("#checkoutLink");
 const heroSlides = document.querySelectorAll(".hero-slide");
+const heroBackground = document.querySelector(".hero-background");
 const languageSelect = document.querySelector("#languageSelect");
 const languageFlag = document.querySelector(".language-flag");
 
@@ -528,6 +529,22 @@ function applyLanguage(language) {
 }
 
 function startHeroCarousel() {
+  const playHeroBackground = () => {
+    if (!heroBackground) return;
+    heroBackground.muted = true;
+    heroBackground.defaultMuted = true;
+    heroBackground.playsInline = true;
+    heroBackground.setAttribute("muted", "");
+    heroBackground.setAttribute("playsinline", "");
+    heroBackground.setAttribute("webkit-playsinline", "");
+    heroBackground.play().catch(() => {});
+  };
+
+  playHeroBackground();
+  ["pointerdown", "touchstart", "scroll"].forEach((eventName) => {
+    window.addEventListener(eventName, playHeroBackground, { passive: true });
+  });
+
   if (heroSlides.length < 2) return;
 
   let activeSlide = Math.max(
