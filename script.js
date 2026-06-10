@@ -169,7 +169,7 @@ const translations = {
     filterCategories: "Categories",
     filterStores: "Stores",
     filterDeals: "Filters",
-    filterAll: "All items",
+    filterAll: "All products",
     filterLowPrice: "Low prices",
     storeAll: "All stores",
     backToTop: "Back to top",
@@ -600,6 +600,41 @@ function categoryLabel(category) {
     .replace(/\b\w/g, (letter) => letter.toUpperCase());
 }
 
+function isPlaceholderStore(store) {
+  return normalizedProductIdentity(store) === "all items";
+}
+
+function displayStore(store) {
+  return isPlaceholderStore(store) ? t("catalog") : store;
+}
+
+function categoryFilterValue(type, value) {
+  return type === "tag" ? `tag:${value}` : value;
+}
+
+function productMatchesCategoryFilter(product, value) {
+  if (value === "all") return true;
+  if (String(value).startsWith("tag:")) return product.tag === String(value).replace("tag:", "");
+  return product.category === value;
+}
+
+function categoryFilterOptions() {
+  const options = new Map();
+  const addOption = (type, value, label) => {
+    if (!value || !label) return;
+    const key = normalizedProductIdentity(label);
+    if (!options.has(key)) options.set(key, { value: categoryFilterValue(type, value), label });
+  };
+
+  fallbackCategories.forEach((category) => addOption("category", category, categoryLabel(category)));
+  products.forEach((product) => {
+    addOption("category", product.category, categoryLabel(product.category));
+    addOption("tag", product.tag, product.tag);
+  });
+
+  return Array.from(options.values()).sort((a, b) => a.label.localeCompare(b.label, currentLanguage, { sensitivity: "base" }));
+}
+
 function tagForCategory(category) {
   return {
     beaute: "Soin",
@@ -671,25 +706,22 @@ async function loadPublishedProducts() {
   }
 
   products = [...data.map(mapProductFromDb), ...fallbackProducts.map((product) => ({ ...product }))];
-  if (!products.some((product) => product.category === currentCategory)) currentCategory = "all";
-  if (!products.some((product) => product.store === currentStore)) currentStore = "all";
+  if (!products.some((product) => productMatchesCategoryFilter(product, currentCategory))) currentCategory = "all";
+  if (!products.some((product) => product.store === currentStore) || isPlaceholderStore(currentStore)) currentStore = "all";
 }
 
 function renderDynamicFilters() {
   if (categoryFilterList) {
-    const categories = Array.from(new Set([...fallbackCategories, ...products.map((product) => product.category)])).sort((a, b) =>
-      categoryLabel(a).localeCompare(categoryLabel(b), currentLanguage, { sensitivity: "base" }),
-    );
-    categoryFilterList.innerHTML = categories
+    categoryFilterList.innerHTML = categoryFilterOptions()
       .map(
         (category) =>
-          `<button class="filter-option ${currentCategory === category ? "active" : ""}" type="button" data-category="${escapeHtml(category)}">${escapeHtml(categoryLabel(category))}</button>`,
+          `<button class="filter-option ${currentCategory === category.value ? "active" : ""}" type="button" data-category="${escapeHtml(category.value)}">${escapeHtml(category.label)}</button>`,
       )
       .join("");
   }
 
   if (storeFilterList) {
-    const stores = Array.from(new Set(products.map((product) => product.store).filter(Boolean))).sort((a, b) =>
+    const stores = Array.from(new Set(products.map((product) => product.store).filter((store) => store && !isPlaceholderStore(store)))).sort((a, b) =>
       a.localeCompare(b, currentLanguage, { sensitivity: "base" }),
     );
     storeFilterList.innerHTML = [
@@ -837,7 +869,7 @@ function normalizedProductIdentity(value) {
 }
 
 function productGroupKey(product) {
-  return [product.store, product.price, normalizedProductIdentity(product.name)].join("|");
+  return [product.category, product.price, normalizedProductIdentity(product.name)].join("|");
 }
 
 function productVariants(product) {
@@ -978,7 +1010,7 @@ function renderProducts() {
   const filtered = groupProductList(
     products
       .filter((product) => {
-        const matchesCategory = currentCategory === "all" || product.category === currentCategory;
+        const matchesCategory = productMatchesCategoryFilter(product, currentCategory);
         const matchesStore = currentStore === "all" || product.store === currentStore;
         const matchesSpecialFilter =
           currentSpecialFilter === "all" ||
@@ -1023,7 +1055,7 @@ function renderProducts() {
             }
           </div>
           <div class="product-body">
-            <span class="store">${escapeHtml(product.store)}</span>
+            <span class="store">${escapeHtml(displayStore(product.store))}</span>
             <h3>${escapeHtml(product.name)}</h3>
             <div class="price-row">
               <span class="price">${escapeHtml(product.price)}</span>
@@ -1114,7 +1146,7 @@ function renderProductDetail(product) {
         </div>
       </div>
       <div class="detail-info">
-        <span class="store">${escapeHtml(product.store)}</span>
+        <span class="store">${escapeHtml(displayStore(product.store))}</span>
         <h3>${escapeHtml(product.name)}</h3>
         <div class="price-row">
           <span class="price">${escapeHtml(product.price)}</span>
