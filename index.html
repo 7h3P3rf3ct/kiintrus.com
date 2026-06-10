@@ -100,6 +100,7 @@
           <a href="#catalogue" data-i18n="navHome">Maison</a>
           <a href="#catalogue" data-i18n="navDeals">Bons plans</a>
           <a href="#livraison" data-i18n="navDelivery">Livraison</a>
+          <a href="#marchands" data-i18n="navMerchants">Espace marchand</a>
         </div>
       </nav>
     </header>
@@ -216,6 +217,106 @@
             </div>
           </li>
         </ol>
+      </section>
+
+      <section class="section merchant-space" id="marchands" aria-labelledby="merchantTitle">
+        <div class="section-head merchant-head">
+          <div>
+            <p class="eyebrow" data-i18n="merchantEyebrow">Espace marchand</p>
+            <h2 id="merchantTitle" data-i18n="merchantTitle">Gerez vos articles et vos stocks</h2>
+          </div>
+          <span data-i18n="merchantMode">Mode demo local</span>
+        </div>
+
+        <div class="merchant-layout">
+          <aside class="merchant-panel merchant-login">
+            <h3 data-i18n="merchantLoginTitle">Connexion boutique</h3>
+            <p data-i18n="merchantLoginText">
+              Choisissez un profil pour previsualiser l'espace marchand. La connexion definitive sera reliee au backend.
+            </p>
+            <label>
+              <span data-i18n="accountType">Type de compte</span>
+              <select id="accountType">
+                <option value="merchant" data-i18n="merchantAccount">Boutique</option>
+                <option value="admin" data-i18n="adminAccount">Admin principale</option>
+              </select>
+            </label>
+            <label>
+              <span data-i18n="chooseStore">Boutique</span>
+              <select id="storeSelect"></select>
+            </label>
+            <div class="merchant-stats" aria-live="polite">
+              <strong id="merchantProductCount">0</strong>
+              <span data-i18n="publishedItems">articles publies</span>
+            </div>
+          </aside>
+
+          <form class="merchant-panel merchant-form" id="merchantProductForm">
+            <div>
+              <p class="eyebrow" data-i18n="newItem">Nouvel article</p>
+              <h3 data-i18n="productDetails">Details du produit</h3>
+            </div>
+            <div class="form-grid">
+              <label>
+                <span data-i18n="productName">Nom de l'article</span>
+                <input id="merchantProductName" type="text" required placeholder="Creme solaire, coussin..." />
+              </label>
+              <label>
+                <span data-i18n="merchantCategory">Categorie</span>
+                <select id="merchantCategory">
+                  <option value="beaute" data-i18n="catBeauty">Beaute</option>
+                  <option value="mode" data-i18n="catFashion">Mode & wax</option>
+                  <option value="maison" data-i18n="catHome">Maison</option>
+                  <option value="librairie" data-i18n="catBooks">Librairie</option>
+                  <option value="accessoires" data-i18n="catAccessories">Accessoires</option>
+                </select>
+              </label>
+              <label>
+                <span data-i18n="productPrice">Prix</span>
+                <input id="merchantPrice" type="text" required placeholder="12 000 F CFA" />
+              </label>
+              <label>
+                <span data-i18n="productStock">Stock</span>
+                <input id="merchantStock" type="number" min="0" value="1" required />
+              </label>
+              <label class="wide">
+                <span data-i18n="productDescription">Description</span>
+                <textarea id="merchantDescription" rows="3" required placeholder="Details, tailles, couleurs, disponibilite..."></textarea>
+              </label>
+              <label class="wide upload-box">
+                <span data-i18n="productPhoto">Photo de l'article</span>
+                <input id="merchantImage" type="file" accept="image/*" />
+              </label>
+            </div>
+            <button class="primary-action" type="submit" data-i18n="publishItem">Publier l'article</button>
+            <p class="form-note" id="merchantNotice" aria-live="polite"></p>
+          </form>
+
+          <aside class="merchant-panel admin-panel">
+            <h3 data-i18n="adminTitle">Administration</h3>
+            <p data-i18n="adminText">
+              Le compte principal peut creer des boutiques, leurs comptes marchands et publier des articles pour chacune.
+            </p>
+            <form id="storeForm" class="store-form">
+              <label>
+                <span data-i18n="storeName">Nom de la boutique</span>
+                <input id="newStoreName" type="text" placeholder="Nouvelle boutique" />
+              </label>
+              <label>
+                <span data-i18n="merchantEmail">Email marchand</span>
+                <input id="newStoreEmail" type="email" placeholder="boutique@kiintrus.com" />
+              </label>
+              <label>
+                <span data-i18n="temporaryPassword">Mot de passe temporaire</span>
+                <input id="newStorePassword" type="text" placeholder="KIINTRUS-2026" />
+              </label>
+              <button class="secondary-action" type="submit" data-i18n="createStore">Creer la boutique</button>
+            </form>
+            <div class="store-list" id="storeList"></div>
+          </aside>
+        </div>
+
+        <div class="merchant-products" id="merchantProducts"></div>
       </section>
     </main>
 
