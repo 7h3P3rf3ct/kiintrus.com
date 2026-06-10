@@ -44,13 +44,6 @@
   </head>
   <body>
     <header class="site-header">
-      <div class="service-strip">
-        <p data-i18n="strip">Livraison rapide et fiable</p>
-        <a href="https://wa.me/c/22890055053" target="_blank" rel="noreferrer" data-i18n="whatsappCatalog">
-          Catalogue WhatsApp
-        </a>
-      </div>
-
       <div class="mainbar">
         <a class="brand" href="#" aria-label="Kiintrus accueil">
           <img class="brand-logo" src="assets/kiintrus-logo-white.png" alt="Kiintrus" />
@@ -72,7 +65,6 @@
         </form>
 
         <label class="language-picker" aria-label="Choisir la langue" data-i18n-aria="languageLabel">
-          <span class="language-flag" aria-hidden="true">🇫🇷</span>
           <select id="languageSelect">
             <option value="fr" selected>FR</option>
             <option value="en">EN</option>
@@ -94,12 +86,13 @@
 
       <nav class="nav-row" aria-label="Categories principales">
         <div class="nav-links">
-          <a href="#catalogue" data-i18n="navAll">Toutes les boutiques</a>
-          <a href="#catalogue" data-i18n="navElectronics">Electronique</a>
-          <a href="#catalogue" data-i18n="navFashion">Mode</a>
-          <a href="#catalogue" data-i18n="navHome">Maison</a>
-          <a href="#catalogue" data-i18n="navDeals">Bons plans</a>
-          <a href="#livraison" data-i18n="navDelivery">Livraison</a>
+          <button class="all-menu-button" type="button" id="openFilterPanel" aria-controls="filterPanel" aria-expanded="false">
+            <span aria-hidden="true">☰</span>
+            <span data-i18n="navAll">Tout</span>
+          </button>
+          <button type="button" data-quick-filter="promos" data-i18n="navPromos">Promos</button>
+          <button type="button" data-quick-filter="deals" data-i18n="navDeals">Bons plans</button>
+          <a href="https://wa.me/22890055053" target="_blank" rel="noreferrer" data-i18n="navSupport">Service Client</a>
         </div>
       </nav>
     </header>
@@ -145,10 +138,8 @@
       <section class="section marketplace" id="catalogue" aria-labelledby="catalogueTitle">
         <div class="section-head">
           <div>
-            <p class="eyebrow" data-i18n="catalog">Catalogue</p>
             <h2 id="catalogueTitle" data-i18n="featuredItems">Articles en vedette</h2>
           </div>
-          <p class="result-count"><span id="resultCount">8</span> <span data-i18n="itemsLabel">articles</span></p>
         </div>
 
         <div class="product-grid" id="productGrid" aria-live="polite"></div>
@@ -161,7 +152,6 @@
           </svg>
           <div>
             <h2 data-i18n="securePayment">Paiement securise</h2>
-            <p data-i18n="securePaymentText">Un parcours simple et rassurant.</p>
           </div>
         </article>
         <article>
@@ -170,7 +160,6 @@
           </svg>
           <div>
             <h2 data-i18n="reliableDelivery">Livraison fiable</h2>
-            <p data-i18n="reliableDeliveryText">Suivi clair jusqu'a reception.</p>
           </div>
         </article>
         <article>
@@ -179,7 +168,6 @@
           </svg>
           <div>
             <h2 data-i18n="verifiedQuality">Qualite verifiee</h2>
-            <p data-i18n="verifiedQualityText">Les articles sont controles avant depart.</p>
           </div>
         </article>
       </section>
@@ -236,7 +224,54 @@
         <span data-i18n="orderOnWhatsapp">Commander sur WhatsApp</span>
       </a>
     </aside>
+
+    <aside class="filter-panel" id="filterPanel" aria-hidden="true">
+      <div class="filter-header">
+        <div>
+          <p class="eyebrow" data-i18n="filterMenu">Menu</p>
+          <h2 data-i18n="filterTitle">Tout</h2>
+        </div>
+        <button class="icon-button" type="button" id="closeFilterPanel" aria-label="Fermer le menu" data-i18n-aria="closeFilterPanel">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M18 6 6 18M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+
+      <section class="filter-section" aria-labelledby="filterCategoriesTitle">
+        <h3 id="filterCategoriesTitle" data-i18n="filterCategories">Categories</h3>
+        <button class="filter-option active" type="button" data-category="all" data-i18n="catAll">Tout</button>
+        <button class="filter-option" type="button" data-category="beaute" data-i18n="catBeauty">Beaute</button>
+        <button class="filter-option" type="button" data-category="mode" data-i18n="catFashion">Mode & wax</button>
+        <button class="filter-option" type="button" data-category="maison" data-i18n="catHome">Maison</button>
+        <button class="filter-option" type="button" data-category="accessoires" data-i18n="catAccessories">Accessoires</button>
+        <button class="filter-option" type="button" data-category="librairie" data-i18n="catBooks">Librairie</button>
+      </section>
+
+      <section class="filter-section" aria-labelledby="filterStoresTitle">
+        <h3 id="filterStoresTitle" data-i18n="filterStores">Boutiques</h3>
+        <button class="filter-option active" type="button" data-store="all" data-i18n="storeAll">Toutes les boutiques</button>
+        <button class="filter-option" type="button" data-store="Efia's Garden Boutique">Efia's Garden Boutique</button>
+        <button class="filter-option" type="button" data-store="NINOSWEET BOUTIQUE (Enfants)">Ninosweet Boutique</button>
+        <button class="filter-option" type="button" data-store="Fandam Boutique">Fandam Boutique</button>
+        <button class="filter-option" type="button" data-store="Smaat Trade Boutique">Smaat Trade Boutique</button>
+        <button class="filter-option" type="button" data-store="All items">All items</button>
+      </section>
+
+      <section class="filter-section" aria-labelledby="filterDealsTitle">
+        <h3 id="filterDealsTitle" data-i18n="filterDeals">Filtres</h3>
+        <button class="filter-option active" type="button" data-special-filter="all" data-i18n="filterAll">Tous les articles</button>
+        <button class="filter-option" type="button" data-special-filter="promos" data-i18n="navPromos">Promos</button>
+        <button class="filter-option" type="button" data-special-filter="lowPrice" data-i18n="filterLowPrice">Petits prix</button>
+      </section>
+    </aside>
+
     <div class="overlay" id="overlay"></div>
+    <button class="back-to-top" type="button" id="backToTop" aria-label="Revenir en haut" data-i18n-aria="backToTop">
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="m6 15 6-6 6 6" />
+      </svg>
+    </button>
 
     <footer class="footer">
       <div>

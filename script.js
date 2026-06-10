@@ -11,12 +11,14 @@ const translations = {
     languageLabel: "Choisir la langue",
     order: "Commander",
     cartLabel: "Voir le panier",
-    navAll: "Toutes les boutiques",
+    navAll: "Tout",
+    navPromos: "Promos",
     navElectronics: "Electronique",
     navFashion: "Mode",
     navHome: "Maison",
     navDeals: "Bons plans",
     navDelivery: "Livraison",
+    navSupport: "Service Client",
     heroEyebrow: "Commandez, souriez, recevez.",
     heroTitle: 'Le <span class="highlight-word">sourire</span> <span class="keep-together">en un click.</span>',
     heroText:
@@ -62,6 +64,16 @@ const translations = {
     cart: "Panier",
     yourSelection: "Votre selection",
     closeCart: "Fermer le panier",
+    closeFilterPanel: "Fermer le menu",
+    filterMenu: "Menu",
+    filterTitle: "Tout",
+    filterCategories: "Categories",
+    filterStores: "Boutiques",
+    filterDeals: "Filtres",
+    filterAll: "Tous les articles",
+    filterLowPrice: "Petits prix",
+    storeAll: "Toutes les boutiques",
+    backToTop: "Revenir en haut",
     orderOnWhatsapp: "Commander sur WhatsApp",
     footerText: "Plateforme de commerce en ligne, boutiques partenaires, verification qualite et livraison.",
     services: "Services",
@@ -81,12 +93,14 @@ const translations = {
     languageLabel: "Choose language",
     order: "Order",
     cartLabel: "View cart",
-    navAll: "All stores",
+    navAll: "All",
+    navPromos: "Promos",
     navElectronics: "Electronics",
     navFashion: "Fashion",
     navHome: "Home",
     navDeals: "Deals",
     navDelivery: "Delivery",
+    navSupport: "Customer Service",
     heroEyebrow: "Order, smile, receive.",
     heroTitle: 'The <span class="highlight-word">smile</span> <span class="keep-together">in one click.</span>',
     heroText:
@@ -132,6 +146,16 @@ const translations = {
     cart: "Cart",
     yourSelection: "Your selection",
     closeCart: "Close cart",
+    closeFilterPanel: "Close menu",
+    filterMenu: "Menu",
+    filterTitle: "All",
+    filterCategories: "Categories",
+    filterStores: "Stores",
+    filterDeals: "Filters",
+    filterAll: "All items",
+    filterLowPrice: "Low prices",
+    storeAll: "All stores",
+    backToTop: "Back to top",
     orderOnWhatsapp: "Order on WhatsApp",
     footerText: "Online commerce platform, partner stores, quality check and delivery.",
     services: "Services",
@@ -478,6 +502,8 @@ const icons = {
 };
 
 let currentCategory = "all";
+let currentStore = "all";
+let currentSpecialFilter = "all";
 let query = "";
 let cart = [];
 
@@ -485,10 +511,16 @@ const grid = document.querySelector("#productGrid");
 const resultCount = document.querySelector("#resultCount");
 const searchForm = document.querySelector(".search");
 const searchInput = document.querySelector("#searchInput");
-const categoryButtons = document.querySelectorAll(".category");
+const categoryButtons = document.querySelectorAll("[data-category]");
+const storeButtons = document.querySelectorAll("[data-store]");
+const specialFilterButtons = document.querySelectorAll("[data-special-filter]");
+const quickFilterButtons = document.querySelectorAll("[data-quick-filter]");
 const cartPanel = document.querySelector("#cartPanel");
+const filterPanel = document.querySelector("#filterPanel");
 const overlay = document.querySelector("#overlay");
 const cartButton = document.querySelector(".cart-button");
+const openFilterPanelButton = document.querySelector("#openFilterPanel");
+const closeFilterPanelButton = document.querySelector("#closeFilterPanel");
 const closeCart = document.querySelector("#closeCart");
 const cartCount = document.querySelector("#cartCount");
 const cartItems = document.querySelector("#cartItems");
@@ -496,7 +528,7 @@ const checkoutLink = document.querySelector("#checkoutLink");
 const heroSlides = document.querySelectorAll(".hero-slide");
 const heroBackground = document.querySelector(".hero-background");
 const languageSelect = document.querySelector("#languageSelect");
-const languageFlag = document.querySelector(".language-flag");
+const backToTop = document.querySelector("#backToTop");
 
 function t(key) {
   return translations[currentLanguage][key] || translations.fr[key] || key;
@@ -523,7 +555,6 @@ function applyLanguage(language) {
   });
 
   if (languageSelect) languageSelect.value = currentLanguage;
-  if (languageFlag) languageFlag.textContent = currentLanguage === "en" ? "🇺🇸" : "🇫🇷";
   renderProducts();
   renderCart();
 }
@@ -630,11 +661,16 @@ function renderProducts() {
   const normalizedQuery = query.trim().toLowerCase();
   const filtered = products.filter((product) => {
     const matchesCategory = currentCategory === "all" || product.category === currentCategory;
+    const matchesStore = currentStore === "all" || product.store === currentStore;
+    const matchesSpecialFilter =
+      currentSpecialFilter === "all" ||
+      (currentSpecialFilter === "promos" && Boolean(product.oldPrice)) ||
+      (currentSpecialFilter === "lowPrice" && Number(product.price.replace(/\D/g, "")) <= 5000);
     const haystack = `${product.name} ${product.store} ${product.description}`.toLowerCase();
-    return matchesCategory && haystack.includes(normalizedQuery);
+    return matchesCategory && matchesStore && matchesSpecialFilter && haystack.includes(normalizedQuery);
   });
 
-  resultCount.textContent = String(filtered.length);
+  if (resultCount) resultCount.textContent = String(filtered.length);
 
   grid.innerHTML = filtered
     .map(
@@ -700,6 +736,7 @@ function renderCart() {
 }
 
 function openCart() {
+  closeFilterPanel();
   cartPanel.classList.add("open");
   overlay.classList.add("open");
   cartPanel.setAttribute("aria-hidden", "false");
@@ -707,8 +744,32 @@ function openCart() {
 
 function closeCartPanel() {
   cartPanel.classList.remove("open");
-  overlay.classList.remove("open");
   cartPanel.setAttribute("aria-hidden", "true");
+  if (!filterPanel?.classList.contains("open")) overlay.classList.remove("open");
+}
+
+function openFilters() {
+  closeCartPanel();
+  filterPanel.classList.add("open");
+  overlay.classList.add("open");
+  filterPanel.setAttribute("aria-hidden", "false");
+  openFilterPanelButton?.setAttribute("aria-expanded", "true");
+}
+
+function closeFilterPanel() {
+  filterPanel?.classList.remove("open");
+  filterPanel?.setAttribute("aria-hidden", "true");
+  openFilterPanelButton?.setAttribute("aria-expanded", "false");
+  if (!cartPanel?.classList.contains("open")) overlay.classList.remove("open");
+}
+
+function closePanels() {
+  closeCartPanel();
+  closeFilterPanel();
+}
+
+function setActiveButton(buttons, activeButton) {
+  buttons.forEach((button) => button.classList.toggle("active", button === activeButton));
 }
 
 searchForm.addEventListener("submit", (event) => {
@@ -725,10 +786,40 @@ searchInput.addEventListener("input", () => {
 
 categoryButtons.forEach((button) => {
   button.addEventListener("click", () => {
-    categoryButtons.forEach((item) => item.classList.remove("active"));
-    button.classList.add("active");
     currentCategory = button.dataset.category;
+    setActiveButton(categoryButtons, button);
     renderProducts();
+    document.querySelector("#catalogue").scrollIntoView({ behavior: "smooth", block: "start" });
+  });
+});
+
+storeButtons.forEach((button) => {
+  button.addEventListener("click", () => {
+    currentStore = button.dataset.store;
+    setActiveButton(storeButtons, button);
+    renderProducts();
+    document.querySelector("#catalogue").scrollIntoView({ behavior: "smooth", block: "start" });
+  });
+});
+
+specialFilterButtons.forEach((button) => {
+  button.addEventListener("click", () => {
+    currentSpecialFilter = button.dataset.specialFilter;
+    setActiveButton(specialFilterButtons, button);
+    renderProducts();
+    document.querySelector("#catalogue").scrollIntoView({ behavior: "smooth", block: "start" });
+  });
+});
+
+quickFilterButtons.forEach((button) => {
+  button.addEventListener("click", () => {
+    currentSpecialFilter = button.dataset.quickFilter === "deals" ? "lowPrice" : button.dataset.quickFilter;
+    const matchingPanelButton = Array.from(specialFilterButtons).find(
+      (item) => item.dataset.specialFilter === currentSpecialFilter,
+    );
+    if (matchingPanelButton) setActiveButton(specialFilterButtons, matchingPanelButton);
+    renderProducts();
+    document.querySelector("#catalogue").scrollIntoView({ behavior: "smooth", block: "start" });
   });
 });
 
@@ -746,9 +837,24 @@ grid.addEventListener("click", (event) => {
 
 cartButton.addEventListener("click", openCart);
 closeCart.addEventListener("click", closeCartPanel);
-overlay.addEventListener("click", closeCartPanel);
+openFilterPanelButton?.addEventListener("click", openFilters);
+closeFilterPanelButton?.addEventListener("click", closeFilterPanel);
+overlay.addEventListener("click", closePanels);
 languageSelect?.addEventListener("change", (event) => {
   applyLanguage(event.target.value);
+});
+backToTop?.addEventListener("click", () => {
+  window.scrollTo({ top: 0, behavior: "smooth" });
+});
+window.addEventListener(
+  "scroll",
+  () => {
+    backToTop?.classList.toggle("visible", window.scrollY > 420);
+  },
+  { passive: true },
+);
+window.addEventListener("keydown", (event) => {
+  if (event.key === "Escape") closePanels();
 });
 
 applyLanguage("fr");
