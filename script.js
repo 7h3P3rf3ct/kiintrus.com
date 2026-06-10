@@ -678,7 +678,9 @@ async function loadPublishedProducts() {
 
 function renderDynamicFilters() {
   if (categoryFilterList) {
-    const categories = Array.from(new Set([...fallbackCategories, ...products.map((product) => product.category)]));
+    const categories = Array.from(new Set([...fallbackCategories, ...products.map((product) => product.category)])).sort((a, b) =>
+      categoryLabel(a).localeCompare(categoryLabel(b), currentLanguage, { sensitivity: "base" }),
+    );
     categoryFilterList.innerHTML = [
       `<button class="filter-option ${currentCategory === "all" ? "active" : ""}" type="button" data-category="all">${t("catAll")}</button>`,
       ...categories.map(
@@ -689,7 +691,9 @@ function renderDynamicFilters() {
   }
 
   if (storeFilterList) {
-    const stores = Array.from(new Set(products.map((product) => product.store))).sort((a, b) => a.localeCompare(b));
+    const stores = Array.from(new Set(products.map((product) => product.store).filter(Boolean))).sort((a, b) =>
+      a.localeCompare(b, currentLanguage, { sensitivity: "base" }),
+    );
     storeFilterList.innerHTML = [
       `<button class="filter-option ${currentStore === "all" ? "active" : ""}" type="button" data-store="all">${t("storeAll")}</button>`,
       ...stores.map(
@@ -920,16 +924,24 @@ function startHeroInfiniteScroll() {
 
 function renderProducts() {
   const normalizedQuery = query.trim().toLowerCase();
-  const filtered = products.filter((product) => {
-    const matchesCategory = currentCategory === "all" || product.category === currentCategory;
-    const matchesStore = currentStore === "all" || product.store === currentStore;
-    const matchesSpecialFilter =
-      currentSpecialFilter === "all" ||
-      (currentSpecialFilter === "promos" && Boolean(product.oldPrice)) ||
-      (currentSpecialFilter === "lowPrice" && Number(product.price.replace(/\D/g, "")) <= 5000);
-    const haystack = `${product.name} ${product.store} ${product.description}`.toLowerCase();
-    return matchesCategory && matchesStore && matchesSpecialFilter && haystack.includes(normalizedQuery);
-  });
+  const filtered = products
+    .filter((product) => {
+      const matchesCategory = currentCategory === "all" || product.category === currentCategory;
+      const matchesStore = currentStore === "all" || product.store === currentStore;
+      const matchesSpecialFilter =
+        currentSpecialFilter === "all" ||
+        (currentSpecialFilter === "promos" && Boolean(product.oldPrice)) ||
+        (currentSpecialFilter === "lowPrice" && Number(product.price.replace(/\D/g, "")) <= 5000);
+      const haystack = `${product.name} ${product.store} ${product.description}`.toLowerCase();
+      return matchesCategory && matchesStore && matchesSpecialFilter && haystack.includes(normalizedQuery);
+    })
+    .sort((a, b) => {
+      const categoryOrder = categoryLabel(a.category).localeCompare(categoryLabel(b.category), currentLanguage, { sensitivity: "base" });
+      if (categoryOrder) return categoryOrder;
+      const nameOrder = a.name.localeCompare(b.name, currentLanguage, { sensitivity: "base" });
+      if (nameOrder) return nameOrder;
+      return a.store.localeCompare(b.store, currentLanguage, { sensitivity: "base" });
+    });
 
   if (resultCount) resultCount.textContent = String(filtered.length);
 
