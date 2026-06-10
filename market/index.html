@@ -19,31 +19,38 @@
   <body>
     <main class="market-shell">
       <section class="auth-view" id="authView">
-        <header class="auth-header">
-          <img src="assets/kiintrus-logo-white.png" alt="Kiintrus" />
-          <span>Market.kiintrus.com</span>
-        </header>
-
         <div class="auth-brand">
+          <div class="auth-brand-top">
+            <img src="assets/kiintrus-logo-white.png" alt="Kiintrus" />
+            <span>Market console</span>
+          </div>
           <div class="auth-copy">
-            <p class="eyebrow">Espace marchand</p>
-            <h1>Gerez vos articles avec le sourire.</h1>
+            <p class="eyebrow">Kiintrus Market</p>
+            <h1>Un espace pro pour piloter les boutiques.</h1>
             <p>
-              Connectez votre boutique, ajoutez vos produits, suivez le stock et preparez les articles qui seront
-              visibles sur Kiintrus.
+              Ajoutez les articles, suivez les stocks, preparez les validations et gardez le catalogue marchand
+              organise depuis un tableau de bord prive.
             </p>
           </div>
-          <div class="auth-visual" aria-hidden="true">
-            <img src="assets/hero-marketplace.png" alt="" />
-            <div class="auth-badge">
-              <strong>Catalogue controle</strong>
-              <span>Stocks, photos, prix</span>
+          <div class="auth-preview" aria-hidden="true">
+            <div class="preview-head">
+              <span>Stock aujourd'hui</span>
+              <strong>+24</strong>
             </div>
-          </div>
-          <div class="auth-points">
-            <span>Paiement securise</span>
-            <span>Qualite verifiee</span>
-            <span>Livraison fiable</span>
+            <div class="preview-row">
+              <span></span>
+              <div>
+                <strong>Articles en validation</strong>
+                <small>7 produits</small>
+              </div>
+            </div>
+            <div class="preview-row">
+              <span></span>
+              <div>
+                <strong>Boutiques actives</strong>
+                <small>12 comptes</small>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -93,192 +100,7 @@
           </form>
         </div>
       </section>
-
-      <section class="dashboard-view" id="dashboardView" hidden>
-        <aside class="sidebar">
-          <a class="dashboard-logo" href="#">
-            <img src="assets/kiintrus-logo-white.png" alt="Kiintrus Market" />
-          </a>
-          <nav aria-label="Navigation dashboard">
-            <button class="active" type="button" data-panel="overview">Vue generale</button>
-            <button type="button" data-panel="products">Articles</button>
-            <button type="button" data-panel="stores" data-admin-only>Boutiques</button>
-            <button type="button" data-panel="settings">Compte</button>
-          </nav>
-          <button class="logout-button" type="button" id="logoutButton">Deconnexion</button>
-        </aside>
-
-        <div class="workspace">
-          <header class="workspace-header">
-            <div>
-              <p class="eyebrow" id="roleLabel">Admin principale</p>
-              <h1 id="workspaceTitle">Dashboard Kiintrus Market</h1>
-            </div>
-            <div class="header-actions">
-              <span id="activeStoreBadge">Toutes les boutiques</span>
-              <button class="secondary-action" type="button" id="openNewProduct">Nouvel article</button>
-            </div>
-          </header>
-
-          <section class="panel active" id="overviewPanel">
-            <div class="metrics-grid">
-              <article>
-                <span>Articles</span>
-                <strong id="metricProducts">0</strong>
-              </article>
-              <article>
-                <span>Stock total</span>
-                <strong id="metricStock">0</strong>
-              </article>
-              <article>
-                <span>Boutiques</span>
-                <strong id="metricStores">0</strong>
-              </article>
-              <article>
-                <span>En attente</span>
-                <strong id="metricPending">0</strong>
-              </article>
-            </div>
-
-            <div class="content-grid">
-              <section class="work-card">
-                <div class="card-head">
-                  <h2>Articles recents</h2>
-                  <button type="button" data-panel-shortcut="products">Voir tout</button>
-                </div>
-                <div class="table-list" id="recentProducts"></div>
-              </section>
-              <section class="work-card">
-                <div class="card-head">
-                  <h2>Activite</h2>
-                </div>
-                <div class="activity-list" id="activityList"></div>
-              </section>
-            </div>
-          </section>
-
-          <section class="panel" id="productsPanel">
-            <div class="panel-toolbar">
-              <div>
-                <h2>Articles</h2>
-                <p>Publiez, modifiez le stock et preparez la validation catalogue.</p>
-              </div>
-              <div class="filters">
-                <select id="productStoreFilter"></select>
-                <input id="productSearch" type="search" placeholder="Rechercher un article" />
-              </div>
-            </div>
-            <div class="product-table" id="productTable"></div>
-          </section>
-
-          <section class="panel" id="storesPanel">
-            <div class="panel-toolbar">
-              <div>
-                <h2>Boutiques</h2>
-                <p>Reserve a l'admin principale : creation et validation des comptes marchands.</p>
-              </div>
-            </div>
-            <div class="store-admin-grid">
-              <form class="work-card compact-form" id="createStoreForm">
-                <h3>Creer une boutique</h3>
-                <label>
-                  Nom
-                  <input id="storeName" type="text" required />
-                </label>
-                <label>
-                  Email marchand
-                  <input id="storeEmail" type="email" required />
-                </label>
-                <label>
-                  Telephone
-                  <input id="storePhone" type="tel" />
-                </label>
-                <button class="primary-action" type="submit">Creer le compte</button>
-              </form>
-              <div class="work-card">
-                <div class="card-head">
-                  <h2>Comptes boutiques</h2>
-                </div>
-                <div class="store-list" id="storeList"></div>
-              </div>
-            </div>
-          </section>
-
-          <section class="panel" id="settingsPanel">
-            <div class="work-card settings-card">
-              <h2>Connexion backend</h2>
-              <p>
-                Cette interface est isolee pour `market.kiintrus.com`. La prochaine etape est de remplacer le stockage
-                local par Supabase Auth, Storage et Database.
-              </p>
-              <div class="backend-checklist">
-                <span>Supabase Auth pour admin et marchands</span>
-                <span>Table `stores` pour les boutiques</span>
-                <span>Table `products` avec stock, statut et boutique</span>
-                <span>Bucket Storage pour les photos articles</span>
-              </div>
-            </div>
-          </section>
-        </div>
-      </section>
-
-      <dialog class="product-dialog" id="productDialog">
-        <form id="productForm" method="dialog">
-          <div class="dialog-head">
-            <div>
-              <p class="eyebrow">Article</p>
-              <h2>Ajouter un produit</h2>
-            </div>
-            <button type="button" id="closeDialog" aria-label="Fermer">×</button>
-          </div>
-          <div class="form-grid">
-            <label>
-              Boutique
-              <select id="productStore"></select>
-            </label>
-            <label>
-              Categorie
-              <select id="productCategory">
-                <option value="beaute">Beaute</option>
-                <option value="mode">Mode & wax</option>
-                <option value="maison">Maison</option>
-                <option value="librairie">Librairie</option>
-                <option value="accessoires">Accessoires</option>
-              </select>
-            </label>
-            <label>
-              Nom
-              <input id="productName" type="text" required />
-            </label>
-            <label>
-              Prix
-              <input id="productPrice" type="text" placeholder="12 000 F CFA" required />
-            </label>
-            <label>
-              Stock
-              <input id="productStock" type="number" min="0" value="1" required />
-            </label>
-            <label>
-              Statut
-              <select id="productStatus">
-                <option value="draft">Brouillon</option>
-                <option value="pending">En validation</option>
-                <option value="published">Publie</option>
-              </select>
-            </label>
-            <label class="wide">
-              Description
-              <textarea id="productDescription" rows="3" required></textarea>
-            </label>
-            <label class="wide upload-zone">
-              Photo
-              <input id="productImage" type="file" accept="image/*" />
-            </label>
-          </div>
-          <button class="primary-action" type="submit">Enregistrer</button>
-        </form>
-      </dialog>
-    </main>
+    </main>    </main>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="supabase-config.js"></script>

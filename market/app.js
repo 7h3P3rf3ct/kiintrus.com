@@ -90,6 +90,8 @@ const createStoreForm = document.querySelector("#createStoreForm");
 const productStore = document.querySelector("#productStore");
 const productStoreFilterSelect = document.querySelector("#productStoreFilter");
 const productSearch = document.querySelector("#productSearch");
+const isLoginPage = Boolean(authView);
+const isDashboardPage = Boolean(dashboardView);
 
 function loadState() {
   if (useSupabase) return structuredClone(seedState);
@@ -285,9 +287,20 @@ function setPanel(panelName) {
 
 function renderAuth() {
   const loggedIn = Boolean(currentUser());
-  authView.hidden = loggedIn;
-  dashboardView.hidden = !loggedIn;
-  if (loggedIn) renderDashboard();
+
+  if (isLoginPage && loggedIn) {
+    window.location.href = "dashboard.html";
+    return;
+  }
+
+  if (isDashboardPage && !loggedIn) {
+    window.location.href = "index.html";
+    return;
+  }
+
+  if (authView) authView.hidden = loggedIn;
+  if (dashboardView) dashboardView.hidden = !loggedIn;
+  if (isDashboardPage && loggedIn) renderDashboard();
 }
 
 function renderDashboard() {
@@ -431,7 +444,7 @@ authTabs.forEach((button) => {
   });
 });
 
-loginForm.addEventListener("submit", (event) => {
+loginForm?.addEventListener("submit", (event) => {
   event.preventDefault();
   const email = document.querySelector("#loginEmail").value.trim();
   const password = document.querySelector("#loginPassword").value;
@@ -440,7 +453,7 @@ loginForm.addEventListener("submit", (event) => {
   });
 });
 
-registerForm.addEventListener("submit", async (event) => {
+registerForm?.addEventListener("submit", async (event) => {
   event.preventDefault();
   const name = document.querySelector("#registerStore").value.trim();
   const email = document.querySelector("#registerEmail").value.trim();
@@ -494,7 +507,7 @@ registerForm.addEventListener("submit", async (event) => {
   registerForm.querySelector(".helper-text").textContent = "Demande envoyee. L'admin pourra valider le compte.";
 });
 
-logoutButton.addEventListener("click", async () => {
+logoutButton?.addEventListener("click", async () => {
   if (useSupabase) {
     await supabaseClient.auth.signOut();
   }
@@ -511,16 +524,16 @@ document.querySelectorAll("[data-panel-shortcut]").forEach((button) => {
   button.addEventListener("click", () => setPanel(button.dataset.panelShortcut));
 });
 
-openNewProduct.addEventListener("click", () => {
+openNewProduct?.addEventListener("click", () => {
   productForm.reset();
   document.querySelector("#productStock").value = "1";
   document.querySelector("#productStatus").value = isAdmin() ? "published" : "pending";
   productDialog.showModal();
 });
 
-closeDialog.addEventListener("click", () => productDialog.close());
+closeDialog?.addEventListener("click", () => productDialog.close());
 
-productForm.addEventListener("submit", async (event) => {
+productForm?.addEventListener("submit", async (event) => {
   event.preventDefault();
   const selectedStoreId = productStore.value;
   const selectedFile = document.querySelector("#productImage").files?.[0];
@@ -570,7 +583,7 @@ productForm.addEventListener("submit", async (event) => {
   renderDashboard();
 });
 
-createStoreForm.addEventListener("submit", (event) => {
+createStoreForm?.addEventListener("submit", (event) => {
   event.preventDefault();
   if (!isAdmin()) return;
   const name = document.querySelector("#storeName").value.trim();
@@ -615,17 +628,17 @@ createStoreForm.addEventListener("submit", (event) => {
   renderDashboard();
 });
 
-productStoreFilterSelect.addEventListener("change", (event) => {
+productStoreFilterSelect?.addEventListener("change", (event) => {
   productStoreFilter = event.target.value;
   renderDashboard();
 });
 
-productSearch.addEventListener("input", (event) => {
+productSearch?.addEventListener("input", (event) => {
   productQuery = event.target.value;
   renderDashboard();
 });
 
-document.querySelector("#productTable").addEventListener("click", (event) => {
+document.querySelector("#productTable")?.addEventListener("click", (event) => {
   const button = event.target.closest("[data-stock]");
   if (!button) return;
   const product = state.products.find((item) => item.id === button.dataset.stock);
