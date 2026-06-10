@@ -261,6 +261,11 @@ svg {
   gap: 8px;
 }
 
+.all-menu-button span[aria-hidden="true"] {
+  font-size: 1.25rem;
+  line-height: 1;
+}
+
 .hero {
   position: relative;
   display: flex;
@@ -524,6 +529,16 @@ svg {
 
 .marketplace {
   background: #fff;
+  padding-top: clamp(18px, 2.6vw, 32px);
+}
+
+.marketplace .section-head {
+  margin-bottom: 12px;
+}
+
+.marketplace .section-head h2 {
+  font-size: 1rem;
+  line-height: 1.2;
 }
 
 .product-grid {

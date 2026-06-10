@@ -48,7 +48,7 @@ const translations = {
     catAccessories: "Accessoires",
     catAccessoriesDesc: "Selfie, gadgets utiles",
     catalog: "Catalogue",
-    featuredItems: "En vedette",
+    featuredItems: "Tout",
     heroPrev: "Faire defiler a gauche",
     heroNext: "Faire defiler a droite",
     itemsLabel: "articles",
@@ -140,7 +140,7 @@ const translations = {
     catAccessories: "Accessories",
     catAccessoriesDesc: "Selfie, useful gadgets",
     catalog: "Catalog",
-    featuredItems: "Featured",
+    featuredItems: "All",
     heroPrev: "Scroll left",
     heroNext: "Scroll right",
     itemsLabel: "items",
@@ -680,13 +680,12 @@ function renderDynamicFilters() {
     const categories = Array.from(new Set([...fallbackCategories, ...products.map((product) => product.category)])).sort((a, b) =>
       categoryLabel(a).localeCompare(categoryLabel(b), currentLanguage, { sensitivity: "base" }),
     );
-    categoryFilterList.innerHTML = [
-      `<button class="filter-option ${currentCategory === "all" ? "active" : ""}" type="button" data-category="all">${t("catAll")}</button>`,
-      ...categories.map(
+    categoryFilterList.innerHTML = categories
+      .map(
         (category) =>
           `<button class="filter-option ${currentCategory === category ? "active" : ""}" type="button" data-category="${escapeHtml(category)}">${escapeHtml(categoryLabel(category))}</button>`,
-      ),
-    ].join("");
+      )
+      .join("");
   }
 
   if (storeFilterList) {
@@ -828,6 +827,53 @@ function orderUrl(product) {
   return `${WHATSAPP_ORDER_URL}?text=${encodeURIComponent(text)}`;
 }
 
+function normalizedProductIdentity(value) {
+  return String(value || "")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-zA-Z0-9]+/g, " ")
+    .trim()
+    .toLowerCase();
+}
+
+function productGroupKey(product) {
+  return [product.store, product.price, normalizedProductIdentity(product.name)].join("|");
+}
+
+function productVariants(product) {
+  const key = productGroupKey(product);
+  return products.filter((item) => productGroupKey(item) === key);
+}
+
+function groupProductList(list) {
+  const groups = new Map();
+  list.forEach((product) => {
+    const key = productGroupKey(product);
+    if (!groups.has(key)) {
+      groups.set(key, { ...product, variants: [] });
+    }
+    groups.get(key).variants.push(product);
+  });
+
+  return Array.from(groups.values()).map((product) => {
+    if (product.variants.length < 2) return product;
+    const variantImages = uniqueList(product.variants.flatMap((variant) => productImages(variant)));
+    return {
+      ...product,
+      image: variantImages[0] || product.image,
+      images: variantImages,
+      colors: uniqueList(product.variants.flatMap((variant) => variant.colors || [])),
+      tag: product.tag || product.variants[0].tag,
+    };
+  });
+}
+
+function variantLabel(product, index, variants) {
+  const baseLabel = product.tag || categoryLabel(product.category) || `${currentLanguage === "en" ? "Option" : "Choix"} ${index + 1}`;
+  const duplicates = variants.filter((item) => (item.tag || categoryLabel(item.category)) === baseLabel);
+  return duplicates.length > 1 ? `${baseLabel} ${duplicates.indexOf(product) + 1}` : baseLabel;
+}
+
 function productImages(product) {
   const directImages = uniqueList([
     product.image,
@@ -835,6 +881,9 @@ function productImages(product) {
     ...normalizeList(product.gallery),
     ...normalizeList(product.galleryImages),
   ]);
+  if (product.variants?.length > 1) {
+    return uniqueList([...directImages, ...product.variants.flatMap((variant) => productImages(variant))]).slice(0, 8);
+  }
   const siblingImages = products
     .filter(
       (item) =>
@@ -866,9 +915,12 @@ function productSizes(product) {
 }
 
 function relatedProducts(product, limit = 4) {
-  return products
-    .filter((item) => String(item.id) !== String(product.id) && (item.category === product.category || item.store === product.store))
-    .slice(0, limit);
+  return groupProductList(
+    products.filter(
+      (item) =>
+        productGroupKey(item) !== productGroupKey(product) && (item.category === product.category || item.store === product.store),
+    ),
+  ).slice(0, limit);
 }
 
 function heroTitle(product) {
@@ -923,24 +975,26 @@ function startHeroInfiniteScroll() {
 
 function renderProducts() {
   const normalizedQuery = query.trim().toLowerCase();
-  const filtered = products
-    .filter((product) => {
-      const matchesCategory = currentCategory === "all" || product.category === currentCategory;
-      const matchesStore = currentStore === "all" || product.store === currentStore;
-      const matchesSpecialFilter =
-        currentSpecialFilter === "all" ||
-        (currentSpecialFilter === "promos" && Boolean(product.oldPrice)) ||
-        (currentSpecialFilter === "lowPrice" && Number(product.price.replace(/\D/g, "")) <= 5000);
-      const haystack = `${product.name} ${product.store} ${product.description}`.toLowerCase();
-      return matchesCategory && matchesStore && matchesSpecialFilter && haystack.includes(normalizedQuery);
-    })
-    .sort((a, b) => {
-      const categoryOrder = categoryLabel(a.category).localeCompare(categoryLabel(b.category), currentLanguage, { sensitivity: "base" });
-      if (categoryOrder) return categoryOrder;
-      const nameOrder = a.name.localeCompare(b.name, currentLanguage, { sensitivity: "base" });
-      if (nameOrder) return nameOrder;
-      return a.store.localeCompare(b.store, currentLanguage, { sensitivity: "base" });
-    });
+  const filtered = groupProductList(
+    products
+      .filter((product) => {
+        const matchesCategory = currentCategory === "all" || product.category === currentCategory;
+        const matchesStore = currentStore === "all" || product.store === currentStore;
+        const matchesSpecialFilter =
+          currentSpecialFilter === "all" ||
+          (currentSpecialFilter === "promos" && Boolean(product.oldPrice)) ||
+          (currentSpecialFilter === "lowPrice" && Number(product.price.replace(/\D/g, "")) <= 5000);
+        const haystack = `${product.name} ${product.store} ${product.description}`.toLowerCase();
+        return matchesCategory && matchesStore && matchesSpecialFilter && haystack.includes(normalizedQuery);
+      })
+      .sort((a, b) => {
+        const categoryOrder = categoryLabel(a.category).localeCompare(categoryLabel(b.category), currentLanguage, { sensitivity: "base" });
+        if (categoryOrder) return categoryOrder;
+        const nameOrder = a.name.localeCompare(b.name, currentLanguage, { sensitivity: "base" });
+        if (nameOrder) return nameOrder;
+        return a.store.localeCompare(b.store, currentLanguage, { sensitivity: "base" });
+      }),
+  );
 
   if (resultCount) resultCount.textContent = String(filtered.length);
 
@@ -1014,6 +1068,25 @@ function renderOptionGroup(label, values) {
   `;
 }
 
+function renderVariantGroup(product) {
+  const variants = productVariants(product);
+  if (variants.length < 2) return "";
+
+  return `
+    <div class="detail-option-group">
+      <h4>${currentLanguage === "en" ? "Variants" : "Variantes"}</h4>
+      <div class="detail-options">
+        ${variants
+          .map(
+            (variant, index) =>
+              `<button type="button" class="${String(variant.id) === String(product.id) ? "active" : ""}" data-open-product="${escapeHtml(variant.id)}">${escapeHtml(variantLabel(variant, index, variants))}</button>`,
+          )
+          .join("")}
+      </div>
+    </div>
+  `;
+}
+
 function renderProductDetail(product) {
   const images = productImages(product);
   const similar = relatedProducts(product);
@@ -1049,6 +1122,7 @@ function renderProductDetail(product) {
         </div>
         <section class="detail-block">
           <h4>${t("choices")}</h4>
+          ${renderVariantGroup(product)}
           ${renderOptionGroup(t("colorsLabel"), productColors(product))}
           ${renderOptionGroup(t("sizesLabel"), productSizes(product))}
         </section>
@@ -1270,6 +1344,11 @@ productDetailContent?.addEventListener("click", (event) => {
 
   const optionButton = event.target.closest(".detail-options button");
   if (optionButton) {
+    const product = products.find((item) => String(item.id) === String(optionButton.dataset.openProduct));
+    if (product) {
+      openProductDetail(product);
+      return;
+    }
     optionButton.parentElement.querySelectorAll("button").forEach((item) => item.classList.toggle("active", item === optionButton));
     return;
   }
@@ -1293,7 +1372,15 @@ productDetailContent?.addEventListener("click", (event) => {
 
 cartButton.addEventListener("click", openCart);
 closeCart.addEventListener("click", closeCartPanel);
-openFilterPanelButton?.addEventListener("click", openFilters);
+openFilterPanelButton?.addEventListener("click", () => {
+  currentCategory = "all";
+  currentStore = "all";
+  currentSpecialFilter = "all";
+  renderDynamicFilters();
+  setActiveButton(specialFilterButtons, Array.from(specialFilterButtons).find((button) => button.dataset.specialFilter === "all"));
+  renderProducts();
+  openFilters();
+});
 closeFilterPanelButton?.addEventListener("click", closeFilterPanel);
 closeProductDetailButton?.addEventListener("click", closeProductDetail);
 overlay.addEventListener("click", closePanels);
