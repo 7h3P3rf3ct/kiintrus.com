@@ -564,6 +564,23 @@ textarea:focus {
   color: var(--warn);
 }
 
+.status.draft {
+  background: #eef2f7;
+  color: #475569;
+}
+
+.status.archived,
+.status.rejected {
+  background: #ffe8e8;
+  color: #b42318;
+}
+
+.row-actions {
+  display: grid;
+  justify-items: end;
+  gap: 8px;
+}
+
 .stock-stepper {
   display: flex;
   align-items: center;
@@ -578,6 +595,33 @@ textarea:focus {
   background: #fff;
   color: var(--blue-deep);
   font-weight: 900;
+}
+
+.status-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 6px;
+}
+
+.status-actions button {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fff;
+  color: var(--blue-deep);
+  font-size: 0.76rem;
+  font-weight: 900;
+  padding: 7px 9px;
+}
+
+.status-actions button[data-status="published"] {
+  background: var(--blue);
+  border-color: var(--blue);
+  color: #fff;
+}
+
+.status-actions button[data-status="archived"] {
+  color: #b42318;
 }
 
 .compact-form,
@@ -747,7 +791,8 @@ textarea:focus {
   }
 
   .product-row .status,
-  .product-row .stock-stepper {
+  .product-row .row-actions {
     grid-column: 2;
+    justify-items: start;
   }
 }

@@ -5,6 +5,14 @@ const supabaseClient =
     ? window.supabase.createClient(supabaseConfig.url, supabaseConfig.anonKey)
     : null;
 const useSupabase = Boolean(supabaseClient);
+const seedCatalog = window.KIINTRUS_SEED_CATALOG || { stores: [], products: [] };
+const defaultCategories = [
+  { id: "cat-beaute", name: "Beaute", slug: "beaute", status: "active" },
+  { id: "cat-mode", name: "Mode & wax", slug: "mode", status: "active" },
+  { id: "cat-maison", name: "Maison", slug: "maison", status: "active" },
+  { id: "cat-librairie", name: "Librairie", slug: "librairie", status: "active" },
+  { id: "cat-accessoires", name: "Accessoires", slug: "accessoires", status: "active" },
+];
 
 const seedState = {
   session: null,
@@ -17,52 +25,13 @@ const seedState = {
       role: "admin",
       status: "active",
     },
-    {
-      id: "store-efia",
-      name: "Efia's Garden Boutique",
-      email: "efia@kiintrus.com",
-      phone: "+228 90 00 00 01",
-      role: "merchant",
-      status: "active",
-    },
-    {
-      id: "store-nino",
-      name: "Ninosweet Boutique",
-      email: "ninosweet@kiintrus.com",
-      phone: "+228 90 00 00 02",
-      role: "merchant",
-      status: "pending",
-    },
+    ...seedCatalog.stores,
   ],
-  products: [
-    {
-      id: "prod-1",
-      storeId: "store-efia",
-      name: "CREME SOLAIRE DR RASHEEL",
-      category: "beaute",
-      price: "6 000 F CFA",
-      stock: 18,
-      status: "published",
-      description: "Creme solaire DR Rasheel.",
-      image: "assets/products/dr-rasheel-solaire.jpg",
-      createdAt: "2026-06-10T09:30:00.000Z",
-    },
-    {
-      id: "prod-2",
-      storeId: "store-efia",
-      name: "Gel Nettoyant SAFI",
-      category: "beaute",
-      price: "13 000 F CFA",
-      stock: 7,
-      status: "pending",
-      description: "Gel nettoyant exfoliant anti tache.",
-      image: "assets/products/safi-gel-nettoyant.jpg",
-      createdAt: "2026-06-10T10:15:00.000Z",
-    },
-  ],
+  categories: defaultCategories,
+  products: seedCatalog.products,
   activity: [
-    "Dashboard marchand separe de la vitrine publique.",
-    "Pret pour branchement Supabase Auth, Database et Storage.",
+    "Catalogue actuel importe dans le dashboard.",
+    "Les articles publies alimentent automatiquement la vitrine publique.",
   ],
 };
 
@@ -87,7 +56,9 @@ const productDialog = document.querySelector("#productDialog");
 const closeDialog = document.querySelector("#closeDialog");
 const productForm = document.querySelector("#productForm");
 const createStoreForm = document.querySelector("#createStoreForm");
+const createCategoryForm = document.querySelector("#createCategoryForm");
 const productStore = document.querySelector("#productStore");
+const productCategory = document.querySelector("#productCategory");
 const productStoreFilterSelect = document.querySelector("#productStoreFilter");
 const productSearch = document.querySelector("#productSearch");
 const isLoginPage = Boolean(authView);
@@ -210,6 +181,15 @@ function mapProductFromDb(product) {
   };
 }
 
+function mapCategoryFromDb(category) {
+  return {
+    id: category.id,
+    name: category.name,
+    slug: category.slug,
+    status: category.status || "active",
+  };
+}
+
 function slugify(value) {
   return value
     .toLowerCase()
@@ -274,9 +254,18 @@ async function loadSupabaseWorkspace() {
     .order("created_at", { ascending: false });
   if (productsError) throw productsError;
 
+  const { data: categories, error: categoriesError } = await supabaseClient
+    .from("categories")
+    .select("id, name, slug, status")
+    .order("name", { ascending: true });
+
   state.stores = stores.map(mapStoreFromDb);
   state.products = products.map(mapProductFromDb);
-  state.activity = ["Donnees chargees depuis Supabase.", ...seedState.activity];
+  state.categories = categoriesError ? defaultCategories : categories.map(mapCategoryFromDb);
+  state.activity = [
+    categoriesError ? "Supabase charge sans table categories pour le moment." : "Donnees chargees depuis Supabase.",
+    ...seedState.activity,
+  ];
 }
 
 function setPanel(panelName) {
@@ -313,12 +302,14 @@ function renderDashboard() {
   document.querySelectorAll("[data-admin-only]").forEach((node) => {
     node.hidden = !isAdmin();
   });
-  if (!isAdmin() && activePanel === "stores") setPanel("overview");
+  if (!isAdmin() && ["stores", "categories"].includes(activePanel)) setPanel("overview");
 
   renderStoreOptions();
+  renderCategoryOptions();
   renderMetrics();
   renderProducts();
   renderStores();
+  renderCategories();
   renderActivity();
 }
 
@@ -338,6 +329,14 @@ function renderStoreOptions() {
   productStore.innerHTML = activeStores
     .filter((store) => isAdmin() || store.id === currentUser()?.id)
     .map((store) => `<option value="${store.id}">${escapeHtml(store.name)}</option>`)
+    .join("");
+}
+
+function renderCategoryOptions() {
+  if (!productCategory) return;
+  productCategory.innerHTML = state.categories
+    .filter((category) => category.status !== "archived")
+    .map((category) => `<option value="${escapeHtml(category.slug)}">${escapeHtml(category.name)}</option>`)
     .join("");
 }
 
@@ -364,9 +363,12 @@ function productRow(product, compact = false) {
       ${
         compact
           ? ""
-          : `<div class="stock-stepper">
-              <button type="button" data-stock="${product.id}" data-delta="-1">-</button>
-              <button type="button" data-stock="${product.id}" data-delta="1">+</button>
+          : `<div class="row-actions">
+              <div class="stock-stepper">
+                <button type="button" data-stock="${product.id}" data-delta="-1">-</button>
+                <button type="button" data-stock="${product.id}" data-delta="1">+</button>
+              </div>
+              <div class="status-actions">${productStatusActions(product)}</div>
             </div>`
       }
     </article>
@@ -378,7 +380,29 @@ function statusLabel(status) {
     draft: "Brouillon",
     pending: "En validation",
     published: "Publie",
+    archived: "Retire",
+    rejected: "Rejete",
   }[status] || status;
+}
+
+function productStatusActions(product) {
+  const actions = [];
+  if (isAdmin()) {
+    if (product.status !== "published") actions.push({ status: "published", label: "Publier" });
+    if (product.status === "published") actions.push({ status: "draft", label: "Depublier" });
+    if (product.status !== "archived") actions.push({ status: "archived", label: "Retirer" });
+  } else if (product.status === "draft") {
+    actions.push({ status: "pending", label: "Soumettre" });
+  } else if (product.status === "archived") {
+    actions.push({ status: "draft", label: "Restaurer" });
+  }
+
+  return actions
+    .map(
+      (action) =>
+        `<button type="button" data-status="${action.status}" data-product="${product.id}">${escapeHtml(action.label)}</button>`,
+    )
+    .join("");
 }
 
 function renderProducts() {
@@ -400,6 +424,22 @@ function renderStores() {
           <strong>${escapeHtml(store.name)}</strong>
           <span>${escapeHtml(store.email)} · ${escapeHtml(store.phone || "Telephone a ajouter")}</span>
           <span class="status ${store.status === "active" ? "published" : "pending"}">${store.status === "active" ? "Actif" : "En attente"}</span>
+        </article>
+      `,
+    )
+    .join("");
+}
+
+function renderCategories() {
+  const list = document.querySelector("#categoryList");
+  if (!list) return;
+  list.innerHTML = state.categories
+    .map(
+      (category) => `
+        <article class="store-row">
+          <strong>${escapeHtml(category.name)}</strong>
+          <span>${escapeHtml(category.slug)}</span>
+          <span class="status ${category.status === "active" ? "published" : "draft"}">${category.status === "active" ? "Active" : "Masquee"}</span>
         </article>
       `,
     )
@@ -628,6 +668,36 @@ createStoreForm?.addEventListener("submit", (event) => {
   renderDashboard();
 });
 
+createCategoryForm?.addEventListener("submit", (event) => {
+  event.preventDefault();
+  if (!isAdmin()) return;
+  const name = document.querySelector("#categoryName").value.trim();
+  const slug = slugify(document.querySelector("#categorySlug").value.trim() || name);
+  if (!name || !slug) return;
+
+  if (useSupabase) {
+    supabaseClient
+      .from("categories")
+      .insert({ name, slug, status: "active" })
+      .then(async ({ error }) => {
+        if (error) throw error;
+        createCategoryForm.reset();
+        await loadSupabaseWorkspace();
+        renderDashboard();
+      })
+      .catch((error) => {
+        alert(error.message || "Impossible de creer la categorie.");
+      });
+    return;
+  }
+
+  state.categories.push({ id: `cat-${Date.now()}`, name, slug, status: "active" });
+  state.activity.push(`Categorie ${name} ajoutee.`);
+  saveState();
+  createCategoryForm.reset();
+  renderDashboard();
+});
+
 productStoreFilterSelect?.addEventListener("change", (event) => {
   productStoreFilter = event.target.value;
   renderDashboard();
@@ -639,8 +709,37 @@ productSearch?.addEventListener("input", (event) => {
 });
 
 document.querySelector("#productTable")?.addEventListener("click", (event) => {
-  const button = event.target.closest("[data-stock]");
-  if (!button) return;
+  const stockButton = event.target.closest("[data-stock]");
+  const statusButton = event.target.closest("[data-status]");
+  if (!stockButton && !statusButton) return;
+
+  if (statusButton) {
+    const product = state.products.find((item) => item.id === statusButton.dataset.product);
+    if (!product) return;
+    const nextStatus = statusButton.dataset.status;
+    product.status = nextStatus;
+
+    if (useSupabase) {
+      supabaseClient
+        .from("products")
+        .update({ status: nextStatus })
+        .eq("id", product.id)
+        .then(async ({ error }) => {
+          if (error) throw error;
+          await loadSupabaseWorkspace();
+          renderDashboard();
+        })
+        .catch((error) => alert(error.message || "Impossible de changer le statut."));
+      return;
+    }
+
+    state.activity.push(`${product.name} passe en statut ${statusLabel(nextStatus)}.`);
+    saveState();
+    renderDashboard();
+    return;
+  }
+
+  const button = stockButton;
   const product = state.products.find((item) => item.id === button.dataset.stock);
   if (!product) return;
   product.stock = Math.max(0, Number(product.stock || 0) + Number(button.dataset.delta));

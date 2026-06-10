@@ -59,6 +59,15 @@ create table if not exists public.store_requests (
   updated_at timestamptz not null default now()
 );
 
+create table if not exists public.categories (
+  id uuid primary key default gen_random_uuid(),
+  name text not null,
+  slug text not null unique,
+  status text not null default 'active' check (status in ('active', 'archived')),
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
 create table if not exists public.products (
   id uuid primary key default gen_random_uuid(),
   store_id uuid not null references public.stores(id) on delete cascade,
@@ -79,6 +88,7 @@ create index if not exists stores_owner_id_idx on public.stores(owner_id);
 create index if not exists stores_status_idx on public.stores(status);
 create index if not exists store_requests_user_id_idx on public.store_requests(user_id);
 create index if not exists store_requests_status_idx on public.store_requests(status);
+create index if not exists categories_status_idx on public.categories(status);
 create index if not exists products_store_id_idx on public.products(store_id);
 create index if not exists products_status_idx on public.products(status);
 create index if not exists products_created_at_idx on public.products(created_at desc);
@@ -106,6 +116,11 @@ for each row execute function public.set_updated_at();
 drop trigger if exists store_requests_set_updated_at on public.store_requests;
 create trigger store_requests_set_updated_at
 before update on public.store_requests
+for each row execute function public.set_updated_at();
+
+drop trigger if exists categories_set_updated_at on public.categories;
+create trigger categories_set_updated_at
+before update on public.categories
 for each row execute function public.set_updated_at();
 
 drop trigger if exists products_set_updated_at on public.products;
@@ -171,6 +186,7 @@ $kiintrus_function$;
 alter table public.profiles enable row level security;
 alter table public.stores enable row level security;
 alter table public.store_requests enable row level security;
+alter table public.categories enable row level security;
 alter table public.products enable row level security;
 
 drop policy if exists "profiles_select_own_or_admin" on public.profiles;
@@ -217,6 +233,13 @@ for select
 to authenticated
 using (owner_id = auth.uid() or public.is_admin());
 
+drop policy if exists "stores_public_active_select" on public.stores;
+create policy "stores_public_active_select"
+on public.stores
+for select
+to anon, authenticated
+using (status = 'active');
+
 drop policy if exists "stores_admin_insert" on public.stores;
 create policy "stores_admin_insert"
 on public.stores
@@ -227,6 +250,35 @@ with check (public.is_admin());
 drop policy if exists "stores_admin_update" on public.stores;
 create policy "stores_admin_update"
 on public.stores
+for update
+to authenticated
+using (public.is_admin())
+with check (public.is_admin());
+
+drop policy if exists "categories_public_active_select" on public.categories;
+create policy "categories_public_active_select"
+on public.categories
+for select
+to anon, authenticated
+using (status = 'active');
+
+drop policy if exists "categories_admin_all_select" on public.categories;
+create policy "categories_admin_all_select"
+on public.categories
+for select
+to authenticated
+using (public.is_admin());
+
+drop policy if exists "categories_admin_insert" on public.categories;
+create policy "categories_admin_insert"
+on public.categories
+for insert
+to authenticated
+with check (public.is_admin());
+
+drop policy if exists "categories_admin_update" on public.categories;
+create policy "categories_admin_update"
+on public.categories
 for update
 to authenticated
 using (public.is_admin())

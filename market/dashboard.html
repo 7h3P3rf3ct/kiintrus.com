@@ -26,6 +26,7 @@
           <nav aria-label="Navigation dashboard">
             <button class="active" type="button" data-panel="overview">Vue generale</button>
             <button type="button" data-panel="products">Articles</button>
+            <button type="button" data-panel="categories" data-admin-only>Categories</button>
             <button type="button" data-panel="stores" data-admin-only>Boutiques</button>
             <button type="button" data-panel="settings">Compte</button>
           </nav>
@@ -128,6 +129,35 @@
             </div>
           </section>
 
+          <section class="panel" id="categoriesPanel">
+            <div class="panel-toolbar">
+              <div>
+                <h2>Categories</h2>
+                <p>Les categories actives alimentent les filtres du site et le formulaire d'articles.</p>
+              </div>
+            </div>
+            <div class="store-admin-grid">
+              <form class="work-card compact-form" id="createCategoryForm">
+                <h3>Creer une categorie</h3>
+                <label>
+                  Nom
+                  <input id="categoryName" type="text" placeholder="Ex: Electronique" required />
+                </label>
+                <label>
+                  Identifiant
+                  <input id="categorySlug" type="text" placeholder="electronique" />
+                </label>
+                <button class="primary-action" type="submit">Ajouter</button>
+              </form>
+              <div class="work-card">
+                <div class="card-head">
+                  <h2>Categories actives</h2>
+                </div>
+                <div class="store-list" id="categoryList"></div>
+              </div>
+            </div>
+          </section>
+
           <section class="panel" id="settingsPanel">
             <div class="work-card settings-card">
               <h2>Connexion backend</h2>
@@ -202,10 +232,11 @@
           <button class="primary-action" type="submit">Enregistrer</button>
         </form>
       </dialog>
-    </main>    </main>
+    </main>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="supabase-config.js"></script>
+    <script src="catalog-seed.js"></script>
     <script src="app.js"></script>
   </body>
 </html>

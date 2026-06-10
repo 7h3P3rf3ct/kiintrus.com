@@ -67,8 +67,8 @@ svg {
   position: sticky;
   top: 0;
   z-index: 20;
-  background: var(--orange);
-  box-shadow: 0 8px 22px rgba(124, 69, 0, 0.18);
+  background: var(--blue-deep);
+  box-shadow: 0 8px 24px rgba(5, 28, 62, 0.16);
 }
 
 .mainbar {
@@ -77,7 +77,7 @@ svg {
   align-items: center;
   gap: 10px;
   padding: 5px clamp(16px, 4vw, 56px);
-  background: var(--orange);
+  background: linear-gradient(90deg, #061a33 0%, var(--blue-deep) 46%, #063f83 100%);
 }
 
 .brand {
@@ -127,7 +127,7 @@ svg {
   display: grid;
   place-items: center;
   border: 0;
-  background: var(--blue-deep);
+  background: var(--orange);
   color: #fff;
 }
 
@@ -191,8 +191,7 @@ svg {
 }
 
 .catalog-link:hover {
-  border-color: #fff;
-  background: rgba(255, 255, 255, 0.12);
+  border-color: var(--orange);
 }
 
 .cart-button {
@@ -212,7 +211,7 @@ svg {
   display: grid;
   place-items: center;
   border-radius: 999px;
-  background: var(--blue-deep);
+  background: var(--orange);
   color: #fff;
   font-size: 0.75rem;
 }
@@ -301,6 +300,27 @@ svg {
   gap: clamp(10px, 1.6vw, 20px);
   width: min(1740px, calc(100vw - clamp(36px, 8vw, 140px)));
   margin: 0 auto;
+}
+
+.hero-carousel::before,
+.hero-carousel::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  z-index: 2;
+  width: 34px;
+  pointer-events: none;
+}
+
+.hero-carousel::before {
+  left: 0;
+  background: linear-gradient(90deg, rgba(244, 247, 251, 0.75), rgba(244, 247, 251, 0));
+}
+
+.hero-carousel::after {
+  right: 0;
+  background: linear-gradient(270deg, rgba(244, 247, 251, 0.75), rgba(244, 247, 251, 0));
 }
 
 .hero-shelf {
@@ -999,15 +1019,19 @@ svg {
   }
 
   .hero-carousel {
-    grid-template-columns: 40px minmax(0, 1fr) 40px;
-    gap: 8px;
+    grid-template-columns: minmax(0, 1fr);
     width: 100%;
+  }
+
+  .hero-carousel::before,
+  .hero-carousel::after {
+    width: 28px;
   }
 
   .hero-shelf {
     gap: 10px;
-    padding-bottom: 4px;
-    grid-auto-columns: 148px;
+    padding: 0 28px 4px;
+    grid-auto-columns: min(58vw, 210px);
   }
 
   .hero-card,
@@ -1016,8 +1040,7 @@ svg {
   }
 
   .hero-arrow {
-    width: 40px;
-    height: 40px;
+    display: none;
   }
 
   .service-highlights,

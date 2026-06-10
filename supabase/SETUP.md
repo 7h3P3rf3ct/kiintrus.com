@@ -17,11 +17,20 @@ Le script cree :
 
 - `profiles` : profil utilisateur lie a Supabase Auth.
 - `stores` : boutiques marchandes.
+- `categories` : categories actives visibles dans le dashboard et les filtres.
 - `products` : articles, prix, stock, statut et image.
 - `product-images` : bucket Storage public pour les photos produits.
 - Les politiques RLS pour separer admin, marchands et catalogue public.
 
-## Etape 3 - Configurer Auth
+## Etape 3 - Importer le catalogue actuel
+
+1. Ouvrir `SQL Editor`.
+2. Copier tout le contenu de `supabase/seed-current-catalog.sql`.
+3. Executer le script.
+
+Ce script ajoute les boutiques et articles actuels du site avec le statut `published`. Il peut etre relance sans dupliquer les articles deja importes.
+
+## Etape 4 - Configurer Auth
 
 Dans `Authentication > URL Configuration` :
 
@@ -33,7 +42,7 @@ Ajouter dans Redirect URLs :
 - `http://localhost:8080/market/`
 - `https://market.kiintrus.com/`
 
-## Etape 4 - Recuperer les cles publiques
+## Etape 5 - Recuperer les cles publiques
 
 Dans `Project Settings > API`, recuperer :
 
@@ -52,7 +61,7 @@ Remplacer les valeurs dans `market/config.js`, puis adapter le chargement si nec
 
 Important : ne jamais mettre la service role key dans le navigateur.
 
-## Etape 5 - Premier compte admin
+## Etape 6 - Premier compte admin
 
 1. Creer l'utilisateur admin dans Supabase Auth.
 2. Recuperer son `user id`.
@@ -65,16 +74,17 @@ on conflict (id) do update
 set role = 'admin', full_name = excluded.full_name;
 ```
 
-## Etape 6 - Prochaine integration dans le code
+## Etape 7 - Integration dans le code
 
-Une fois `market/config.js` rempli, le dashboard peut etre branche a :
+Le dashboard utilise deja :
 
 - `supabase.auth.signInWithPassword`
 - `supabase.auth.signUp`
 - `supabase.from('stores')`
+- `supabase.from('categories')`
 - `supabase.from('products')`
 - `supabase.storage.from('product-images').upload`
 
-Le stockage local actuel reste seulement une demo de secours.
+La vitrine publique lit les articles `published` depuis Supabase. Les articles `draft`, `pending`, `rejected` ou `archived` ne sont pas affiches sur le site.
 
 Dans la version actuelle, `market/` charge deja Supabase si `market/supabase-config.js` est present. Le mode local sert uniquement de secours si le client Supabase n'est pas disponible.

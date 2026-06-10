@@ -1,0 +1,350 @@
+window.KIINTRUS_SEED_CATALOG = {
+  "stores": [
+    {
+      "id": "store-efia-s-garden-boutique",
+      "name": "Efia's Garden Boutique",
+      "email": "boutique1@kiintrus.com",
+      "phone": "+228 90 05 50 53",
+      "role": "merchant",
+      "status": "active"
+    },
+    {
+      "id": "store-librairie",
+      "name": "LIBRAIRIE",
+      "email": "boutique2@kiintrus.com",
+      "phone": "+228 90 05 50 53",
+      "role": "merchant",
+      "status": "active"
+    },
+    {
+      "id": "store-fatima-boutique",
+      "name": "Fatima Boutique",
+      "email": "boutique3@kiintrus.com",
+      "phone": "+228 90 05 50 53",
+      "role": "merchant",
+      "status": "active"
+    },
+    {
+      "id": "store-ninosweet-boutique-enfants",
+      "name": "NINOSWEET BOUTIQUE (Enfants)",
+      "email": "boutique4@kiintrus.com",
+      "phone": "+228 90 05 50 53",
+      "role": "merchant",
+      "status": "active"
+    },
+    {
+      "id": "store-fandam-boutique",
+      "name": "Fandam Boutique",
+      "email": "boutique5@kiintrus.com",
+      "phone": "+228 90 05 50 53",
+      "role": "merchant",
+      "status": "active"
+    },
+    {
+      "id": "store-smaat-trade-boutique",
+      "name": "Smaat Trade Boutique",
+      "email": "boutique6@kiintrus.com",
+      "phone": "+228 90 05 50 53",
+      "role": "merchant",
+      "status": "active"
+    },
+    {
+      "id": "store-all-items",
+      "name": "All items",
+      "email": "boutique7@kiintrus.com",
+      "phone": "+228 90 05 50 53",
+      "role": "merchant",
+      "status": "active"
+    }
+  ],
+  "products": [
+    {
+      "id": "catalog-1",
+      "storeId": "store-efia-s-garden-boutique",
+      "name": "CREME SOLAIRE DR RASHEEL",
+      "category": "beaute",
+      "price": "6 000 F CFA",
+      "stock": 1,
+      "status": "published",
+      "description": "Votre creme solaire DR RASHEL.",
+      "image": "assets/products/dr-rasheel-solaire.jpg",
+      "createdAt": "2026-06-10T09:01:00.000Z"
+    },
+    {
+      "id": "catalog-2",
+      "storeId": "store-efia-s-garden-boutique",
+      "name": "Gel Nettoyant SAFI",
+      "category": "beaute",
+      "price": "13 000 F CFA",
+      "stock": 1,
+      "status": "published",
+      "description": "Gel nettoyant : exfoliant, anti tache, reduit les cernes.",
+      "image": "assets/products/safi-gel-nettoyant.jpg",
+      "createdAt": "2026-06-10T09:02:00.000Z"
+    },
+    {
+      "id": "catalog-3",
+      "storeId": "store-efia-s-garden-boutique",
+      "name": "Creme visage jour AIKEN",
+      "category": "beaute",
+      "price": "15 000 F CFA",
+      "stock": 1,
+      "status": "published",
+      "description": "Creme visage jour : reduit taches, boutons et illumine.",
+      "image": "assets/products/aiken-jour.jpg",
+      "createdAt": "2026-06-10T09:03:00.000Z"
+    },
+    {
+      "id": "catalog-4",
+      "storeId": "store-librairie",
+      "name": "ROMAN \"PARTI POUR DE BON\"",
+      "category": "librairie",
+      "price": "5 000 F CFA",
+      "stock": 1,
+      "status": "published",
+      "description": "Disponible en precommande uniquement.",
+      "image": "assets/products/roman-parti-pour-de-bon.jpg",
+      "createdAt": "2026-06-10T09:04:00.000Z"
+    },
+    {
+      "id": "catalog-5",
+      "storeId": "store-fatima-boutique",
+      "name": "BATON POUR SELFIE",
+      "category": "accessoires",
+      "price": "3 000 F CFA",
+      "stock": 1,
+      "status": "published",
+      "description": "Tige pour poser son telephone et prendre des photos.",
+      "image": "assets/products/selfie-stick.jpg",
+      "createdAt": "2026-06-10T09:05:00.000Z"
+    },
+    {
+      "id": "catalog-6",
+      "storeId": "store-ninosweet-boutique-enfants",
+      "name": "SHORT + TSHIRT FILLE (NINOSWEET)",
+      "category": "mode",
+      "price": "2 500 F CFA",
+      "stock": 1,
+      "status": "published",
+      "description": "Ensemble pour fille de 3 mois a 2 ans.",
+      "image": "assets/products/ninosweet-fille-rose.jpg",
+      "createdAt": "2026-06-10T09:06:00.000Z"
+    },
+    {
+      "id": "catalog-7",
+      "storeId": "store-ninosweet-boutique-enfants",
+      "name": "SHORT + TSHIRT FILLE (NINOSWEET)",
+      "category": "mode",
+      "price": "2 500 F CFA",
+      "stock": 1,
+      "status": "published",
+      "description": "Ensemble pour fille de 3 mois a 3 ans. Tailles disponibles.",
+      "image": "assets/products/ninosweet-fille-rouge.jpg",
+      "createdAt": "2026-06-10T09:07:00.000Z"
+    },
+    {
+      "id": "catalog-8",
+      "storeId": "store-ninosweet-boutique-enfants",
+      "name": "SHORT + TSHIRT GARCON (NINOSWEET)",
+      "category": "mode",
+      "price": "2 500 F CFA",
+      "stock": 1,
+      "status": "published",
+      "description": "Ensemble garcon de 2 mois a 3 ans. Tailles disponibles.",
+      "image": "assets/products/ninosweet-garcon.jpg",
+      "createdAt": "2026-06-10T09:08:00.000Z"
+    },
+    {
+      "id": "catalog-9",
+      "storeId": "store-fandam-boutique",
+      "name": "IMITATION GRAND SUPER",
+      "category": "mode",
+      "price": "15 000 F CFA",
+      "stock": 1,
+      "status": "published",
+      "description": "Imitation des imprimes du Grand Super.",
+      "image": "assets/products/grand-super-green.jpg",
+      "createdAt": "2026-06-10T09:09:00.000Z"
+    },
+    {
+      "id": "catalog-10",
+      "storeId": "store-fandam-boutique",
+      "name": "IMITATION GRAND SUPER",
+      "category": "mode",
+      "price": "15 000 F CFA",
+      "stock": 1,
+      "status": "published",
+      "description": "Imitation des imprimes du Grand Super.",
+      "image": "assets/products/grand-super-pink.jpg",
+      "createdAt": "2026-06-10T09:10:00.000Z"
+    },
+    {
+      "id": "catalog-11",
+      "storeId": "store-fandam-boutique",
+      "name": "IMITATION GRAND SUPER",
+      "category": "mode",
+      "price": "15 000 F CFA",
+      "stock": 1,
+      "status": "published",
+      "description": "Imitation des imprimes du Grand Super.",
+      "image": "assets/products/grand-super-blue-pack.jpg",
+      "createdAt": "2026-06-10T09:11:00.000Z"
+    },
+    {
+      "id": "catalog-12",
+      "storeId": "store-smaat-trade-boutique",
+      "name": "Coussins de decoration pour fauteuil",
+      "category": "maison",
+      "price": "2 000 F CFA",
+      "stock": 1,
+      "status": "published",
+      "description": "Coussins decoration fauteuil. Dimensions : 30/30 cm.",
+      "image": "assets/products/coussins-fauteuil.jpg",
+      "createdAt": "2026-06-10T09:12:00.000Z"
+    },
+    {
+      "id": "catalog-13",
+      "storeId": "store-smaat-trade-boutique",
+      "name": "Coussins pour le lit",
+      "category": "maison",
+      "price": "3 500 F CFA",
+      "stock": 1,
+      "status": "published",
+      "description": "Coussins dimensions 30/33 cm par coussin.",
+      "image": "assets/products/coussins-lit.jpg",
+      "createdAt": "2026-06-10T09:13:00.000Z"
+    },
+    {
+      "id": "catalog-14",
+      "storeId": "store-all-items",
+      "name": "COMPLEMENTS ALIMENTAIRES PRINCESS",
+      "category": "beaute",
+      "price": "20 000 F CFA",
+      "stock": 1,
+      "status": "published",
+      "description": "Complements alimentaires pour raffermir le corps.",
+      "image": "assets/products/princess-complements.jpg",
+      "createdAt": "2026-06-10T09:14:00.000Z"
+    },
+    {
+      "id": "catalog-15",
+      "storeId": "store-all-items",
+      "name": "Mousse nettoyante",
+      "category": "beaute",
+      "price": "12 000 F CFA",
+      "stock": 1,
+      "status": "published",
+      "description": "Mousse nettoyante pour peau acneique et sensible.",
+      "image": "assets/products/mousse-nettoyante.jpg",
+      "createdAt": "2026-06-10T09:15:00.000Z"
+    },
+    {
+      "id": "catalog-16",
+      "storeId": "store-all-items",
+      "name": "Creme anti cernes",
+      "category": "beaute",
+      "price": "10 000 F CFA",
+      "stock": 1,
+      "status": "published",
+      "description": "Peau abimee, anti-age, illumine le contour des yeux.",
+      "image": "assets/products/creme-anti-cernes.jpg",
+      "createdAt": "2026-06-10T09:16:00.000Z"
+    },
+    {
+      "id": "catalog-17",
+      "storeId": "store-all-items",
+      "name": "Toner ALIA",
+      "category": "beaute",
+      "price": "13 000 F CFA",
+      "stock": 1,
+      "status": "published",
+      "description": "Toner : tonifie la peau, regenere et illumine.",
+      "image": "assets/products/toner-alia.jpg",
+      "createdAt": "2026-06-10T09:17:00.000Z"
+    },
+    {
+      "id": "catalog-18",
+      "storeId": "store-all-items",
+      "name": "Gel nettoyant ALIA",
+      "category": "beaute",
+      "price": "15 000 F CFA",
+      "stock": 1,
+      "status": "published",
+      "description": "Gel nettoyant : illumine le teint.",
+      "image": "assets/products/gel-nettoyant-alia.jpg",
+      "createdAt": "2026-06-10T09:18:00.000Z"
+    },
+    {
+      "id": "catalog-19",
+      "storeId": "store-all-items",
+      "name": "Rouleau de jade",
+      "category": "beaute",
+      "price": "13 000 F CFA",
+      "stock": 1,
+      "status": "published",
+      "description": "Rouleau de jade.",
+      "image": "assets/products/rouleau-jade-set.jpg",
+      "createdAt": "2026-06-10T09:19:00.000Z"
+    },
+    {
+      "id": "catalog-20",
+      "storeId": "store-all-items",
+      "name": "Rouleau de jade",
+      "category": "beaute",
+      "price": "6 000 F CFA",
+      "stock": 1,
+      "status": "published",
+      "description": "Rouleau de jade : massage facial.",
+      "image": "assets/products/rouleau-jade-massage.jpg",
+      "createdAt": "2026-06-10T09:20:00.000Z"
+    },
+    {
+      "id": "catalog-21",
+      "storeId": "store-all-items",
+      "name": "Creme visage (nuit) ALIA",
+      "category": "beaute",
+      "price": "15 000 F CFA",
+      "stock": 1,
+      "status": "published",
+      "description": "Creme visage nuit : hydratante, eclaircissante.",
+      "image": "assets/products/creme-nuit-alia.jpg",
+      "createdAt": "2026-06-10T09:21:00.000Z"
+    },
+    {
+      "id": "catalog-22",
+      "storeId": "store-all-items",
+      "name": "Creme visage AIKEN",
+      "category": "beaute",
+      "price": "13 000 F CFA",
+      "stock": 1,
+      "status": "published",
+      "description": "Creme visage : eclat, protection et cicatrisation.",
+      "image": "assets/products/creme-visage-aiken.jpg",
+      "createdAt": "2026-06-10T09:22:00.000Z"
+    },
+    {
+      "id": "catalog-23",
+      "storeId": "store-all-items",
+      "name": "Creme solaire AIKEN",
+      "category": "beaute",
+      "price": "13 000 F CFA",
+      "stock": 1,
+      "status": "published",
+      "description": "Creme solaire : eclat et protection.",
+      "image": "assets/products/creme-solaire-aiken.jpg",
+      "createdAt": "2026-06-10T09:23:00.000Z"
+    },
+    {
+      "id": "catalog-24",
+      "storeId": "store-all-items",
+      "name": "Creme visage (nuit) SAFI",
+      "category": "beaute",
+      "price": "15 000 F CFA",
+      "stock": 1,
+      "status": "published",
+      "description": "Creme visage nuit : eclaircit le teint, exfolie le visage.",
+      "image": "assets/products/creme-nuit-safi.jpg",
+      "createdAt": "2026-06-10T09:24:00.000Z"
+    }
+  ]
+};
