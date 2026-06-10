@@ -304,30 +304,15 @@ svg {
 
 .hero-carousel::before,
 .hero-carousel::after {
-  content: "";
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  z-index: 2;
-  width: 34px;
-  pointer-events: none;
-}
-
-.hero-carousel::before {
-  left: 0;
-  background: linear-gradient(90deg, rgba(244, 247, 251, 0.75), rgba(244, 247, 251, 0));
-}
-
-.hero-carousel::after {
-  right: 0;
-  background: linear-gradient(270deg, rgba(244, 247, 251, 0.75), rgba(244, 247, 251, 0));
+  content: none;
 }
 
 .hero-shelf {
+  --hero-gap: 14px;
   display: grid;
   grid-auto-flow: column;
-  grid-auto-columns: clamp(150px, 12.5vw, 210px);
-  gap: clamp(10px, 1vw, 16px);
+  grid-auto-columns: calc((100% - 84px) / 7);
+  gap: var(--hero-gap);
   min-width: 0;
   overflow-x: auto;
   overscroll-behavior-inline: contain;
@@ -600,6 +585,53 @@ svg {
   width: 100%;
   height: 100%;
   object-fit: cover;
+}
+
+.product-image-arrow {
+  position: absolute;
+  top: 50%;
+  z-index: 3;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 34px;
+  border: 1px solid rgba(255, 255, 255, 0.72);
+  border-radius: 8px;
+  background: rgba(6, 26, 51, 0.58);
+  color: #fff;
+  opacity: 0;
+  transform: translateY(-50%);
+  transition: opacity 150ms ease, background 150ms ease;
+}
+
+.product-image-arrow-prev {
+  left: 8px;
+}
+
+.product-image-arrow-next {
+  right: 8px;
+}
+
+.product-image-arrow svg {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.product-card:hover .product-image-arrow,
+.product-card:focus-within .product-image-arrow {
+  opacity: 1;
+}
+
+.product-image-arrow:hover,
+.product-image-arrow:focus-visible {
+  background: rgba(0, 63, 131, 0.86);
+  outline: 0;
 }
 
 .tag {
@@ -1272,12 +1304,12 @@ svg {
 
   .hero-carousel::before,
   .hero-carousel::after {
-    width: 28px;
+    content: none;
   }
 
   .hero-shelf {
-    gap: 10px;
-    padding: 0 28px 4px;
+    --hero-gap: 10px;
+    padding: 0 0 4px;
     grid-auto-columns: calc((100% - 20px) / 3);
   }
 

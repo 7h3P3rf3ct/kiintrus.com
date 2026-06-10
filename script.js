@@ -542,7 +542,6 @@ let currentSpecialFilter = "all";
 let query = "";
 let cart = [];
 let activeProduct = null;
-let cardImageTimer;
 let heroScrollTimer;
 let heroScrollPaused = false;
 
@@ -955,7 +954,17 @@ function renderProducts() {
             <span class="tag">${escapeHtml(product.tag || tagForCategory(product.category))}</span>
             ${
               gallery.length
-                ? `<img class="product-card-image" src="${escapeHtml(gallery[0])}" alt="${escapeHtml(product.imageAlt || product.name)}" data-images="${escapeHtml(gallery.join("|"))}" data-image-index="0" />`
+                ? `<img class="product-card-image" src="${escapeHtml(gallery[0])}" alt="${escapeHtml(product.imageAlt || product.name)}" data-images="${escapeHtml(gallery.join("|"))}" data-image-index="0" />
+                  ${
+                    gallery.length > 1
+                      ? `<button class="product-image-arrow product-image-arrow-prev" type="button" aria-label="Image precedente" data-image-step="-1" data-stop-card>
+                          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>
+                        </button>
+                        <button class="product-image-arrow product-image-arrow-next" type="button" aria-label="Image suivante" data-image-step="1" data-stop-card>
+                          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
+                        </button>`
+                      : ""
+                  }`
                 : `<svg viewBox="0 0 24 24" aria-hidden="true">${icons[product.icon || iconForCategory(product.category)]}</svg>`
             }
           </div>
@@ -978,25 +987,19 @@ function renderProducts() {
       },
     )
     .join("");
-  startCardImageRotation();
 }
 
-function startCardImageRotation() {
-  window.clearInterval(cardImageTimer);
-  const rotatingImages = Array.from(document.querySelectorAll(".product-card-image")).filter((image) => {
-    return (image.dataset.images || "").split("|").filter(Boolean).length > 1;
-  });
-  if (!rotatingImages.length) return;
+function changeProductCardImage(button) {
+  const visual = button.closest(".product-visual");
+  const image = visual?.querySelector(".product-card-image");
+  const images = (image?.dataset.images || "").split("|").filter(Boolean);
+  if (!image || images.length < 2) return;
 
-  cardImageTimer = window.setInterval(() => {
-    rotatingImages.forEach((image) => {
-      const images = (image.dataset.images || "").split("|").filter(Boolean);
-      if (images.length < 2) return;
-      const nextIndex = (Number(image.dataset.imageIndex || 0) + 1) % images.length;
-      image.dataset.imageIndex = String(nextIndex);
-      image.src = images[nextIndex];
-    });
-  }, 3200);
+  const step = Number(button.dataset.imageStep || 1);
+  const currentIndex = Number(image.dataset.imageIndex || 0);
+  const nextIndex = (currentIndex + step + images.length) % images.length;
+  image.dataset.imageIndex = String(nextIndex);
+  image.src = images[nextIndex];
 }
 
 function renderOptionGroup(label, values) {
@@ -1222,6 +1225,12 @@ quickFilterButtons.forEach((button) => {
 });
 
 grid.addEventListener("click", (event) => {
+  const imageArrow = event.target.closest("[data-image-step]");
+  if (imageArrow) {
+    changeProductCardImage(imageArrow);
+    return;
+  }
+
   const button = event.target.closest("[data-add]");
   if (button) {
     const product = products.find((item) => String(item.id) === String(button.dataset.add));
