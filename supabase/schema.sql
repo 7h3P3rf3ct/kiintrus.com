@@ -3,26 +3,29 @@
 
 create extension if not exists "pgcrypto";
 
-do $$
+do $kiintrus$
 begin
   create type public.user_role as enum ('admin', 'merchant');
 exception
   when duplicate_object then null;
-end $$;
+end;
+$kiintrus$;
 
-do $$
+do $kiintrus$
 begin
   create type public.store_status as enum ('pending', 'active', 'suspended');
 exception
   when duplicate_object then null;
-end $$;
+end;
+$kiintrus$;
 
-do $$
+do $kiintrus$
 begin
   create type public.product_status as enum ('draft', 'pending', 'published', 'rejected', 'archived');
 exception
   when duplicate_object then null;
-end $$;
+end;
+$kiintrus$;
 
 create table if not exists public.profiles (
   id uuid primary key references auth.users(id) on delete cascade,
@@ -83,12 +86,12 @@ create index if not exists products_created_at_idx on public.products(created_at
 create or replace function public.set_updated_at()
 returns trigger
 language plpgsql
-as $$
+as $kiintrus_function$
 begin
   new.updated_at = now();
   return new;
 end;
-$$;
+$kiintrus_function$;
 
 drop trigger if exists profiles_set_updated_at on public.profiles;
 create trigger profiles_set_updated_at
@@ -115,7 +118,7 @@ returns trigger
 language plpgsql
 security definer
 set search_path = public
-as $$
+as $kiintrus_function$
 begin
   insert into public.profiles (id, full_name, role)
   values (
@@ -127,7 +130,7 @@ begin
 
   return new;
 end;
-$$;
+$kiintrus_function$;
 
 drop trigger if exists on_auth_user_created on auth.users;
 create trigger on_auth_user_created
@@ -140,14 +143,14 @@ language sql
 stable
 security definer
 set search_path = public
-as $$
+as $kiintrus_function$
   select exists (
     select 1
     from public.profiles
     where id = auth.uid()
       and role = 'admin'
   );
-$$;
+$kiintrus_function$;
 
 create or replace function public.owns_store(target_store_id uuid)
 returns boolean
@@ -155,7 +158,7 @@ language sql
 stable
 security definer
 set search_path = public
-as $$
+as $kiintrus_function$
   select exists (
     select 1
     from public.stores
@@ -163,7 +166,7 @@ as $$
       and owner_id = auth.uid()
       and status = 'active'
   );
-$$;
+$kiintrus_function$;
 
 alter table public.profiles enable row level security;
 alter table public.stores enable row level security;
