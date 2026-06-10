@@ -81,6 +81,14 @@ const translations = {
     filterLowPrice: "Petits prix",
     storeAll: "Toutes les boutiques",
     backToTop: "Revenir en haut",
+    productDetails: "Details article",
+    closeProductDetail: "Fermer la fiche article",
+    choices: "Choix disponibles",
+    colorsLabel: "Couleurs",
+    sizesLabel: "Tailles",
+    descriptionLabel: "Description",
+    similarItems: "Articles similaires",
+    viewDetails: "Voir les details",
     orderOnWhatsapp: "Commander sur WhatsApp",
     footerText: "Plateforme de commerce en ligne, boutiques partenaires, verification qualite et livraison.",
     services: "Services",
@@ -165,6 +173,14 @@ const translations = {
     filterLowPrice: "Low prices",
     storeAll: "All stores",
     backToTop: "Back to top",
+    productDetails: "Item details",
+    closeProductDetail: "Close item details",
+    choices: "Available options",
+    colorsLabel: "Colors",
+    sizesLabel: "Sizes",
+    descriptionLabel: "Description",
+    similarItems: "Similar items",
+    viewDetails: "View details",
     orderOnWhatsapp: "Order on WhatsApp",
     footerText: "Online commerce platform, partner stores, quality check and delivery.",
     services: "Services",
@@ -525,6 +541,10 @@ let currentStore = "all";
 let currentSpecialFilter = "all";
 let query = "";
 let cart = [];
+let activeProduct = null;
+let cardImageTimer;
+let heroScrollTimer;
+let heroScrollPaused = false;
 
 const grid = document.querySelector("#productGrid");
 const resultCount = document.querySelector("#resultCount");
@@ -536,10 +556,14 @@ const specialFilterButtons = document.querySelectorAll("[data-special-filter]");
 const quickFilterButtons = document.querySelectorAll("[data-quick-filter]");
 const cartPanel = document.querySelector("#cartPanel");
 const filterPanel = document.querySelector("#filterPanel");
+const productDetailPanel = document.querySelector("#productDetailPanel");
+const productDetailTitle = document.querySelector("#productDetailTitle");
+const productDetailContent = document.querySelector("#productDetailContent");
 const overlay = document.querySelector("#overlay");
 const cartButton = document.querySelector(".cart-button");
 const openFilterPanelButton = document.querySelector("#openFilterPanel");
 const closeFilterPanelButton = document.querySelector("#closeFilterPanel");
+const closeProductDetailButton = document.querySelector("#closeProductDetail");
 const closeCart = document.querySelector("#closeCart");
 const cartCount = document.querySelector("#cartCount");
 const cartItems = document.querySelector("#cartItems");
@@ -597,6 +621,22 @@ function iconForCategory(category) {
   }[category] || "basket";
 }
 
+function uniqueList(values) {
+  return Array.from(new Set(values.filter(Boolean)));
+}
+
+function normalizeList(value) {
+  if (!value) return [];
+  if (Array.isArray(value)) return value.filter(Boolean);
+  if (typeof value === "string") {
+    return value
+      .split(/[,\n|]/)
+      .map((item) => item.trim())
+      .filter(Boolean);
+  }
+  return [];
+}
+
 function mapProductFromDb(product) {
   return {
     id: product.id,
@@ -607,8 +647,11 @@ function mapProductFromDb(product) {
     description: product.description,
     tag: tagForCategory(product.category),
     image: product.image_url || "assets/hero-marketplace.png",
+    images: normalizeList(product.image_urls || product.gallery_urls || product.gallery_images),
     imageAlt: product.name,
     colors: ["#eaf3ff", "#fff4d5"],
+    choiceColors: normalizeList(product.colors_available || product.color_options),
+    sizes: normalizeList(product.sizes || product.size_options),
     icon: iconForCategory(product.category),
     stock: product.stock,
   };
@@ -782,6 +825,49 @@ function orderUrl(product) {
   return `${WHATSAPP_ORDER_URL}?text=${encodeURIComponent(text)}`;
 }
 
+function productImages(product) {
+  const directImages = uniqueList([
+    product.image,
+    ...normalizeList(product.images),
+    ...normalizeList(product.gallery),
+    ...normalizeList(product.galleryImages),
+  ]);
+  const siblingImages = products
+    .filter(
+      (item) =>
+        String(item.id) !== String(product.id) &&
+        item.image &&
+        (item.name === product.name || (item.category === product.category && item.store === product.store)),
+    )
+    .map((item) => item.image);
+  return uniqueList([...directImages, ...siblingImages]).slice(0, 6);
+}
+
+function productColors(product) {
+  const explicitColors = normalizeList(product.choiceColors || product.colorOptions || product.availableColors);
+  if (explicitColors.length) return explicitColors;
+  if (product.category === "mode") return ["Rose", "Rouge", "Bleu", "Vert"];
+  if (product.category === "maison") return ["Orange", "Bleu", "Vert"];
+  if (product.category === "beaute") return ["Standard"];
+  return ["Standard"];
+}
+
+function productSizes(product) {
+  const explicitSizes = normalizeList(product.sizes || product.sizeOptions || product.availableSizes);
+  if (explicitSizes.length) return explicitSizes;
+  const name = String(product.name || "").toLowerCase();
+  if (name.includes("ninosweet")) return ["3 mois", "6 mois", "12 mois", "2 ans", "3 ans"];
+  if (name.includes("grand super")) return ["6 yards", "12 yards"];
+  if (product.category === "maison") return ["30/30 cm", "30/33 cm"];
+  return [];
+}
+
+function relatedProducts(product, limit = 4) {
+  return products
+    .filter((item) => String(item.id) !== String(product.id) && (item.category === product.category || item.store === product.store))
+    .slice(0, limit);
+}
+
 function heroTitle(product) {
   const name = String(product.name || "");
   if (name.includes("DR RASHEEL")) return "DR Rasheel";
@@ -797,7 +883,8 @@ function renderHeroShelf() {
   if (!heroShelf) return;
 
   const heroProducts = products.filter((product) => product.image).slice(0, 14);
-  heroShelf.innerHTML = heroProducts
+  const loopProducts = heroProducts.length > 1 ? [...heroProducts, ...heroProducts] : heroProducts;
+  heroShelf.innerHTML = loopProducts
     .map(
       (product) => `
         <a class="hero-card" href="#catalogue" data-hero-product="${escapeHtml(product.id)}">
@@ -809,6 +896,26 @@ function renderHeroShelf() {
     )
     .join("");
   heroShelf.scrollLeft = 0;
+  heroShelf.dataset.loopSize = String(heroProducts.length);
+  startHeroInfiniteScroll();
+}
+
+function startHeroInfiniteScroll() {
+  window.clearInterval(heroScrollTimer);
+  if (!heroShelf || heroShelf.children.length < 2) return;
+
+  heroScrollTimer = window.setInterval(() => {
+    if (heroScrollPaused || productDetailPanel?.classList.contains("open")) return;
+    const resetPoint = heroShelf.scrollWidth / 2;
+    if (!resetPoint || heroShelf.scrollLeft >= resetPoint) {
+      heroShelf.scrollLeft = 0;
+      return;
+    }
+    const firstCard = heroShelf.querySelector(".hero-card");
+    const gap = parseFloat(getComputedStyle(heroShelf).columnGap || "0");
+    const step = firstCard ? firstCard.getBoundingClientRect().width + gap : heroShelf.clientWidth * 0.6;
+    heroShelf.scrollBy({ left: step, behavior: "smooth" });
+  }, 2600);
 }
 
 function renderProducts() {
@@ -828,35 +935,158 @@ function renderProducts() {
 
   grid.innerHTML = filtered
     .map(
-      (product) => `
-        <article class="product-card">
+      (product) => {
+        const gallery = productImages(product);
+        return `
+        <article class="product-card" data-product="${escapeHtml(product.id)}" tabindex="0" aria-label="${escapeHtml(`${t("viewDetails")} ${product.name}`)}">
           <div class="product-visual" style="--tone-a:${(product.colors || ["#eaf3ff", "#fff4d5"])[0]};--tone-b:${(product.colors || ["#eaf3ff", "#fff4d5"])[1]}">
             <span class="tag">${escapeHtml(product.tag || tagForCategory(product.category))}</span>
             ${
-              product.image
-                ? `<img src="${escapeHtml(product.image)}" alt="${escapeHtml(product.imageAlt || product.name)}" />`
+              gallery.length
+                ? `<img class="product-card-image" src="${escapeHtml(gallery[0])}" alt="${escapeHtml(product.imageAlt || product.name)}" data-images="${escapeHtml(gallery.join("|"))}" data-image-index="0" />`
                 : `<svg viewBox="0 0 24 24" aria-hidden="true">${icons[product.icon || iconForCategory(product.category)]}</svg>`
             }
           </div>
           <div class="product-body">
             <span class="store">${escapeHtml(product.store)}</span>
             <h3>${escapeHtml(product.name)}</h3>
-            <p>${escapeHtml(product.description)}</p>
             <div class="price-row">
               <span class="price">${escapeHtml(product.price)}</span>
               ${product.oldPrice ? `<span class="old-price">${escapeHtml(product.oldPrice)}</span>` : ""}
             </div>
             <div class="product-actions">
-              <a href="${orderUrl(product)}" target="_blank" rel="noreferrer">${t("order")}</a>
-              <button type="button" aria-label="${escapeHtml(`${t("addToCart")} ${product.name}`)}" data-add="${product.id}">
+              <a href="${orderUrl(product)}" target="_blank" rel="noreferrer" data-stop-card>${t("order")}</a>
+              <button type="button" aria-label="${escapeHtml(`${t("addToCart")} ${product.name}`)}" data-add="${product.id}" data-stop-card>
                 <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
               </button>
             </div>
           </div>
         </article>
-      `,
+      `;
+      },
     )
     .join("");
+  startCardImageRotation();
+}
+
+function startCardImageRotation() {
+  window.clearInterval(cardImageTimer);
+  const rotatingImages = Array.from(document.querySelectorAll(".product-card-image")).filter((image) => {
+    return (image.dataset.images || "").split("|").filter(Boolean).length > 1;
+  });
+  if (!rotatingImages.length) return;
+
+  cardImageTimer = window.setInterval(() => {
+    rotatingImages.forEach((image) => {
+      const images = (image.dataset.images || "").split("|").filter(Boolean);
+      if (images.length < 2) return;
+      const nextIndex = (Number(image.dataset.imageIndex || 0) + 1) % images.length;
+      image.dataset.imageIndex = String(nextIndex);
+      image.src = images[nextIndex];
+    });
+  }, 3200);
+}
+
+function renderOptionGroup(label, values) {
+  if (!values.length) return "";
+  return `
+    <div class="detail-option-group">
+      <h4>${escapeHtml(label)}</h4>
+      <div class="detail-options">
+        ${values.map((value, index) => `<button type="button" class="${index === 0 ? "active" : ""}">${escapeHtml(value)}</button>`).join("")}
+      </div>
+    </div>
+  `;
+}
+
+function renderProductDetail(product) {
+  const images = productImages(product);
+  const similar = relatedProducts(product);
+  productDetailTitle.textContent = product.name;
+  productDetailContent.innerHTML = `
+    <div class="detail-layout">
+      <div class="detail-gallery">
+        <div class="detail-main-image">
+          ${
+            images[0]
+              ? `<img id="detailMainImage" src="${escapeHtml(images[0])}" alt="${escapeHtml(product.imageAlt || product.name)}" />`
+              : `<svg viewBox="0 0 24 24" aria-hidden="true">${icons[product.icon || iconForCategory(product.category)]}</svg>`
+          }
+        </div>
+        <div class="detail-thumbs">
+          ${images
+            .map(
+              (image, index) => `
+                <button type="button" class="${index === 0 ? "active" : ""}" data-detail-image="${escapeHtml(image)}">
+                  <img src="${escapeHtml(image)}" alt="" />
+                </button>
+              `,
+            )
+            .join("")}
+        </div>
+      </div>
+      <div class="detail-info">
+        <span class="store">${escapeHtml(product.store)}</span>
+        <h3>${escapeHtml(product.name)}</h3>
+        <div class="price-row">
+          <span class="price">${escapeHtml(product.price)}</span>
+          ${product.oldPrice ? `<span class="old-price">${escapeHtml(product.oldPrice)}</span>` : ""}
+        </div>
+        <section class="detail-block">
+          <h4>${t("choices")}</h4>
+          ${renderOptionGroup(t("colorsLabel"), productColors(product))}
+          ${renderOptionGroup(t("sizesLabel"), productSizes(product))}
+        </section>
+        <section class="detail-block">
+          <h4>${t("descriptionLabel")}</h4>
+          <p>${escapeHtml(product.description || "")}</p>
+        </section>
+        <div class="detail-actions">
+          <a href="${orderUrl(product)}" target="_blank" rel="noreferrer">${t("order")}</a>
+          <button type="button" data-add="${escapeHtml(product.id)}">${t("addToCart")}</button>
+        </div>
+      </div>
+    </div>
+    ${
+      similar.length
+        ? `
+          <section class="similar-products">
+            <h3>${t("similarItems")}</h3>
+            <div class="similar-grid">
+              ${similar
+                .map(
+                  (item) => `
+                    <button type="button" class="similar-card" data-open-product="${escapeHtml(item.id)}">
+                      ${item.image ? `<img src="${escapeHtml(item.image)}" alt="" />` : ""}
+                      <span>${escapeHtml(heroTitle(item))}</span>
+                      <strong>${escapeHtml(item.price)}</strong>
+                    </button>
+                  `,
+                )
+                .join("")}
+            </div>
+          </section>
+        `
+        : ""
+    }
+  `;
+}
+
+function openProductDetail(product) {
+  activeProduct = product;
+  closeCartPanel();
+  closeFilterPanel();
+  renderProductDetail(product);
+  productDetailPanel.classList.add("open");
+  overlay.classList.add("open");
+  productDetailPanel.setAttribute("aria-hidden", "false");
+}
+
+function closeProductDetail() {
+  productDetailPanel?.classList.remove("open");
+  productDetailPanel?.setAttribute("aria-hidden", "true");
+  activeProduct = null;
+  if (!cartPanel?.classList.contains("open") && !filterPanel?.classList.contains("open")) overlay.classList.remove("open");
 }
 
 function renderCart() {
@@ -891,6 +1121,7 @@ function renderCart() {
 
 function openCart() {
   closeFilterPanel();
+  closeProductDetail();
   cartPanel.classList.add("open");
   overlay.classList.add("open");
   cartPanel.setAttribute("aria-hidden", "false");
@@ -920,6 +1151,7 @@ function closeFilterPanel() {
 function closePanels() {
   closeCartPanel();
   closeFilterPanel();
+  closeProductDetail();
 }
 
 function setActiveButton(buttons, activeButton) {
@@ -979,20 +1211,70 @@ quickFilterButtons.forEach((button) => {
 
 grid.addEventListener("click", (event) => {
   const button = event.target.closest("[data-add]");
-  if (!button) return;
+  if (button) {
+    const product = products.find((item) => String(item.id) === String(button.dataset.add));
+    if (!product) return;
 
-  const product = products.find((item) => String(item.id) === String(button.dataset.add));
-  if (!product) return;
+    cart = [...cart, product];
+    renderCart();
+    openCart();
+    return;
+  }
 
-  cart = [...cart, product];
-  renderCart();
-  openCart();
+  if (event.target.closest("[data-stop-card]")) return;
+  const card = event.target.closest("[data-product]");
+  if (!card) return;
+  const product = products.find((item) => String(item.id) === String(card.dataset.product));
+  if (product) openProductDetail(product);
+});
+
+grid.addEventListener("keydown", (event) => {
+  if (event.key !== "Enter" && event.key !== " ") return;
+  const card = event.target.closest("[data-product]");
+  if (!card) return;
+  event.preventDefault();
+  const product = products.find((item) => String(item.id) === String(card.dataset.product));
+  if (product) openProductDetail(product);
+});
+
+productDetailContent?.addEventListener("click", (event) => {
+  const thumb = event.target.closest("[data-detail-image]");
+  if (thumb) {
+    const image = thumb.dataset.detailImage;
+    const mainImage = document.querySelector("#detailMainImage");
+    if (mainImage && image) mainImage.src = image;
+    productDetailContent.querySelectorAll("[data-detail-image]").forEach((item) => item.classList.toggle("active", item === thumb));
+    return;
+  }
+
+  const optionButton = event.target.closest(".detail-options button");
+  if (optionButton) {
+    optionButton.parentElement.querySelectorAll("button").forEach((item) => item.classList.toggle("active", item === optionButton));
+    return;
+  }
+
+  const similarButton = event.target.closest("[data-open-product]");
+  if (similarButton) {
+    const product = products.find((item) => String(item.id) === String(similarButton.dataset.openProduct));
+    if (product) openProductDetail(product);
+    return;
+  }
+
+  const addButton = event.target.closest("[data-add]");
+  if (addButton) {
+    const product = products.find((item) => String(item.id) === String(addButton.dataset.add));
+    if (!product) return;
+    cart = [...cart, product];
+    renderCart();
+    openCart();
+  }
 });
 
 cartButton.addEventListener("click", openCart);
 closeCart.addEventListener("click", closeCartPanel);
 openFilterPanelButton?.addEventListener("click", openFilters);
 closeFilterPanelButton?.addEventListener("click", closeFilterPanel);
+closeProductDetailButton?.addEventListener("click", closeProductDetail);
 overlay.addEventListener("click", closePanels);
 languageSelect?.addEventListener("change", (event) => {
   applyLanguage(event.target.value);
@@ -1002,6 +1284,26 @@ heroPrev?.addEventListener("click", () => {
 });
 heroNext?.addEventListener("click", () => {
   heroShelf?.scrollBy({ left: Math.round(heroShelf.clientWidth * 0.82), behavior: "smooth" });
+});
+heroShelf?.addEventListener("click", (event) => {
+  const card = event.target.closest("[data-hero-product]");
+  if (!card) return;
+  event.preventDefault();
+  const product = products.find((item) => String(item.id) === String(card.dataset.heroProduct));
+  if (product) openProductDetail(product);
+});
+["pointerdown", "touchstart", "wheel"].forEach((eventName) => {
+  heroShelf?.addEventListener(
+    eventName,
+    () => {
+      heroScrollPaused = true;
+      window.clearTimeout(heroShelf.resumeTimer);
+      heroShelf.resumeTimer = window.setTimeout(() => {
+        heroScrollPaused = false;
+      }, 1800);
+    },
+    { passive: true },
+  );
 });
 backToTop?.addEventListener("click", () => {
   window.scrollTo({ top: 0, behavior: "smooth" });
