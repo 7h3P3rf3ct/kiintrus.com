@@ -1,5 +1,10 @@
 const WHATSAPP_CATALOG_URL = "https://wa.me/c/22890055053";
 const WHATSAPP_ORDER_URL = "https://wa.me/22890055053";
+const supabaseConfig = window.KIINTRUS_SUPABASE;
+const publicSupabaseClient =
+  window.supabase && supabaseConfig?.url && supabaseConfig?.anonKey
+    ? window.supabase.createClient(supabaseConfig.url, supabaseConfig.anonKey)
+    : null;
 
 const translations = {
   fr: {
@@ -43,7 +48,9 @@ const translations = {
     catAccessories: "Accessoires",
     catAccessoriesDesc: "Selfie, gadgets utiles",
     catalog: "Catalogue",
-    featuredItems: "Articles en vedette",
+    featuredItems: "En vedette",
+    heroPrev: "Faire defiler a gauche",
+    heroNext: "Faire defiler a droite",
     itemsLabel: "articles",
     securePayment: "Paiement securise",
     securePaymentText: "Un parcours simple et rassurant.",
@@ -125,7 +132,9 @@ const translations = {
     catAccessories: "Accessories",
     catAccessoriesDesc: "Selfie, useful gadgets",
     catalog: "Catalog",
-    featuredItems: "Featured items",
+    featuredItems: "Featured",
+    heroPrev: "Scroll left",
+    heroNext: "Scroll right",
     itemsLabel: "items",
     securePayment: "Secure payment",
     securePaymentText: "A simple and reassuring process.",
@@ -170,7 +179,7 @@ const translations = {
 
 let currentLanguage = "fr";
 
-const products = [
+let products = [
   {
     id: 1,
     name: "CREME SOLAIRE DR RASHEEL",
@@ -486,6 +495,16 @@ const products = [
   },
 ];
 
+const fallbackProducts = products.map((product) => ({ ...product }));
+const categoryTranslationKeys = {
+  beaute: "catBeauty",
+  mode: "catFashion",
+  maison: "catHome",
+  accessoires: "catAccessories",
+  librairie: "catBooks",
+};
+const fallbackCategories = ["beaute", "mode", "maison", "accessoires", "librairie"];
+
 const icons = {
   phone: '<path d="M8 2.8h8a2 2 0 0 1 2 2v14.4a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V4.8a2 2 0 0 1 2-2Z"/><path d="M10 18h4"/>',
   headphones: '<path d="M4 14v-2a8 8 0 0 1 16 0v2"/><path d="M4 14h3v6H5a1 1 0 0 1-1-1v-5ZM20 14h-3v6h2a1 1 0 0 0 1-1v-5Z"/>',
@@ -511,8 +530,8 @@ const grid = document.querySelector("#productGrid");
 const resultCount = document.querySelector("#resultCount");
 const searchForm = document.querySelector(".search");
 const searchInput = document.querySelector("#searchInput");
-const categoryButtons = document.querySelectorAll("[data-category]");
-const storeButtons = document.querySelectorAll("[data-store]");
+const categoryFilterList = document.querySelector("#categoryFilters");
+const storeFilterList = document.querySelector("#storeFilters");
 const specialFilterButtons = document.querySelectorAll("[data-special-filter]");
 const quickFilterButtons = document.querySelectorAll("[data-quick-filter]");
 const cartPanel = document.querySelector("#cartPanel");
@@ -525,6 +544,9 @@ const closeCart = document.querySelector("#closeCart");
 const cartCount = document.querySelector("#cartCount");
 const cartItems = document.querySelector("#cartItems");
 const checkoutLink = document.querySelector("#checkoutLink");
+const heroShelf = document.querySelector("#heroShelf");
+const heroPrev = document.querySelector("#heroPrev");
+const heroNext = document.querySelector("#heroNext");
 const heroSlides = document.querySelectorAll(".hero-slide");
 const heroBackground = document.querySelector(".hero-background");
 const languageSelect = document.querySelector("#languageSelect");
@@ -532,6 +554,107 @@ const backToTop = document.querySelector("#backToTop");
 
 function t(key) {
   return translations[currentLanguage][key] || translations.fr[key] || key;
+}
+
+function escapeHtml(value = "") {
+  return String(value)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
+function formatCfaPrice(value) {
+  return `${Number(value || 0).toLocaleString("fr-FR")} F CFA`;
+}
+
+function categoryLabel(category) {
+  const key = categoryTranslationKeys[category];
+  if (key) return t(key);
+  return String(category || "")
+    .replaceAll("-", " ")
+    .replace(/\b\w/g, (letter) => letter.toUpperCase());
+}
+
+function tagForCategory(category) {
+  return {
+    beaute: "Soin",
+    mode: "Mode",
+    maison: "Maison",
+    accessoires: "Accessoire",
+    librairie: "Livre",
+  }[category] || categoryLabel(category);
+}
+
+function iconForCategory(category) {
+  return {
+    beaute: "beauty",
+    mode: "fabric",
+    maison: "home",
+    accessoires: "camera",
+    librairie: "book",
+  }[category] || "basket";
+}
+
+function mapProductFromDb(product) {
+  return {
+    id: product.id,
+    name: product.name,
+    category: product.category,
+    store: product.stores?.name || "Kiintrus",
+    price: formatCfaPrice(product.price_cfa),
+    description: product.description,
+    tag: tagForCategory(product.category),
+    image: product.image_url || "assets/hero-marketplace.png",
+    imageAlt: product.name,
+    colors: ["#eaf3ff", "#fff4d5"],
+    icon: iconForCategory(product.category),
+    stock: product.stock,
+  };
+}
+
+async function loadPublishedProducts() {
+  if (!publicSupabaseClient) return;
+
+  const { data, error } = await publicSupabaseClient
+    .from("products")
+    .select("id, name, category, description, price_cfa, stock, status, image_url, created_at, stores(name)")
+    .eq("status", "published")
+    .order("created_at", { ascending: false });
+
+  if (error || !data?.length) {
+    products = fallbackProducts.map((product) => ({ ...product }));
+    return;
+  }
+
+  products = [...data.map(mapProductFromDb), ...fallbackProducts.map((product) => ({ ...product }))];
+  if (!products.some((product) => product.category === currentCategory)) currentCategory = "all";
+  if (!products.some((product) => product.store === currentStore)) currentStore = "all";
+}
+
+function renderDynamicFilters() {
+  if (categoryFilterList) {
+    const categories = Array.from(new Set([...fallbackCategories, ...products.map((product) => product.category)]));
+    categoryFilterList.innerHTML = [
+      `<button class="filter-option ${currentCategory === "all" ? "active" : ""}" type="button" data-category="all">${t("catAll")}</button>`,
+      ...categories.map(
+        (category) =>
+          `<button class="filter-option ${currentCategory === category ? "active" : ""}" type="button" data-category="${escapeHtml(category)}">${escapeHtml(categoryLabel(category))}</button>`,
+      ),
+    ].join("");
+  }
+
+  if (storeFilterList) {
+    const stores = Array.from(new Set(products.map((product) => product.store))).sort((a, b) => a.localeCompare(b));
+    storeFilterList.innerHTML = [
+      `<button class="filter-option ${currentStore === "all" ? "active" : ""}" type="button" data-store="all">${t("storeAll")}</button>`,
+      ...stores.map(
+        (store) =>
+          `<button class="filter-option ${currentStore === store ? "active" : ""}" type="button" data-store="${escapeHtml(store)}">${escapeHtml(store)}</button>`,
+      ),
+    ].join("");
+  }
 }
 
 function applyLanguage(language) {
@@ -555,6 +678,8 @@ function applyLanguage(language) {
   });
 
   if (languageSelect) languageSelect.value = currentLanguage;
+  renderDynamicFilters();
+  renderHeroShelf();
   renderProducts();
   renderCart();
 }
@@ -657,6 +782,35 @@ function orderUrl(product) {
   return `${WHATSAPP_ORDER_URL}?text=${encodeURIComponent(text)}`;
 }
 
+function heroTitle(product) {
+  const name = String(product.name || "");
+  if (name.includes("DR RASHEEL")) return "DR Rasheel";
+  if (name.includes("NINOSWEET")) return "Ninosweet";
+  if (name.includes("COUSSINS") || name.includes("Coussins")) return "Coussins";
+  if (name.includes("SELFIE")) return "Selfie";
+  if (name.includes("GRAND SUPER")) return "Grand Super";
+  if (name.length > 22) return `${name.slice(0, 20).trim()}...`;
+  return name;
+}
+
+function renderHeroShelf() {
+  if (!heroShelf) return;
+
+  const heroProducts = products.filter((product) => product.image).slice(0, 14);
+  heroShelf.innerHTML = heroProducts
+    .map(
+      (product) => `
+        <a class="hero-card" href="#catalogue" data-hero-product="${escapeHtml(product.id)}">
+          <span>${escapeHtml(categoryLabel(product.category))}</span>
+          <img src="${escapeHtml(product.image)}" alt="${escapeHtml(product.imageAlt || product.name)}" />
+          <strong>${escapeHtml(heroTitle(product))}</strong>
+        </a>
+      `,
+    )
+    .join("");
+  heroShelf.scrollLeft = 0;
+}
+
 function renderProducts() {
   const normalizedQuery = query.trim().toLowerCase();
   const filtered = products.filter((product) => {
@@ -676,25 +830,25 @@ function renderProducts() {
     .map(
       (product) => `
         <article class="product-card">
-          <div class="product-visual" style="--tone-a:${product.colors[0]};--tone-b:${product.colors[1]}">
-            <span class="tag">${product.tag}</span>
+          <div class="product-visual" style="--tone-a:${(product.colors || ["#eaf3ff", "#fff4d5"])[0]};--tone-b:${(product.colors || ["#eaf3ff", "#fff4d5"])[1]}">
+            <span class="tag">${escapeHtml(product.tag || tagForCategory(product.category))}</span>
             ${
               product.image
-                ? `<img src="${product.image}" alt="${product.imageAlt || product.name}" />`
-                : `<svg viewBox="0 0 24 24" aria-hidden="true">${icons[product.icon]}</svg>`
+                ? `<img src="${escapeHtml(product.image)}" alt="${escapeHtml(product.imageAlt || product.name)}" />`
+                : `<svg viewBox="0 0 24 24" aria-hidden="true">${icons[product.icon || iconForCategory(product.category)]}</svg>`
             }
           </div>
           <div class="product-body">
-            <span class="store">${product.store}</span>
-            <h3>${product.name}</h3>
-            <p>${product.description}</p>
+            <span class="store">${escapeHtml(product.store)}</span>
+            <h3>${escapeHtml(product.name)}</h3>
+            <p>${escapeHtml(product.description)}</p>
             <div class="price-row">
-              <span class="price">${product.price}</span>
-              ${product.oldPrice ? `<span class="old-price">${product.oldPrice}</span>` : ""}
+              <span class="price">${escapeHtml(product.price)}</span>
+              ${product.oldPrice ? `<span class="old-price">${escapeHtml(product.oldPrice)}</span>` : ""}
             </div>
             <div class="product-actions">
               <a href="${orderUrl(product)}" target="_blank" rel="noreferrer">${t("order")}</a>
-              <button type="button" aria-label="${t("addToCart")} ${product.name}" data-add="${product.id}">
+              <button type="button" aria-label="${escapeHtml(`${t("addToCart")} ${product.name}`)}" data-add="${product.id}">
                 <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
               </button>
             </div>
@@ -784,22 +938,22 @@ searchInput.addEventListener("input", () => {
   renderProducts();
 });
 
-categoryButtons.forEach((button) => {
-  button.addEventListener("click", () => {
-    currentCategory = button.dataset.category;
-    setActiveButton(categoryButtons, button);
-    renderProducts();
-    document.querySelector("#catalogue").scrollIntoView({ behavior: "smooth", block: "start" });
-  });
+categoryFilterList?.addEventListener("click", (event) => {
+  const button = event.target.closest("[data-category]");
+  if (!button) return;
+  currentCategory = button.dataset.category;
+  setActiveButton(categoryFilterList.querySelectorAll("[data-category]"), button);
+  renderProducts();
+  document.querySelector("#catalogue").scrollIntoView({ behavior: "smooth", block: "start" });
 });
 
-storeButtons.forEach((button) => {
-  button.addEventListener("click", () => {
-    currentStore = button.dataset.store;
-    setActiveButton(storeButtons, button);
-    renderProducts();
-    document.querySelector("#catalogue").scrollIntoView({ behavior: "smooth", block: "start" });
-  });
+storeFilterList?.addEventListener("click", (event) => {
+  const button = event.target.closest("[data-store]");
+  if (!button) return;
+  currentStore = button.dataset.store;
+  setActiveButton(storeFilterList.querySelectorAll("[data-store]"), button);
+  renderProducts();
+  document.querySelector("#catalogue").scrollIntoView({ behavior: "smooth", block: "start" });
 });
 
 specialFilterButtons.forEach((button) => {
@@ -827,7 +981,7 @@ grid.addEventListener("click", (event) => {
   const button = event.target.closest("[data-add]");
   if (!button) return;
 
-  const product = products.find((item) => item.id === Number(button.dataset.add));
+  const product = products.find((item) => String(item.id) === String(button.dataset.add));
   if (!product) return;
 
   cart = [...cart, product];
@@ -843,6 +997,12 @@ overlay.addEventListener("click", closePanels);
 languageSelect?.addEventListener("change", (event) => {
   applyLanguage(event.target.value);
 });
+heroPrev?.addEventListener("click", () => {
+  heroShelf?.scrollBy({ left: -Math.round(heroShelf.clientWidth * 0.82), behavior: "smooth" });
+});
+heroNext?.addEventListener("click", () => {
+  heroShelf?.scrollBy({ left: Math.round(heroShelf.clientWidth * 0.82), behavior: "smooth" });
+});
 backToTop?.addEventListener("click", () => {
   window.scrollTo({ top: 0, behavior: "smooth" });
 });
@@ -857,5 +1017,13 @@ window.addEventListener("keydown", (event) => {
   if (event.key === "Escape") closePanels();
 });
 
-applyLanguage("fr");
-startHeroCarousel();
+async function initPublicSite() {
+  applyLanguage("fr");
+  await loadPublishedProducts();
+  renderDynamicFilters();
+  renderHeroShelf();
+  renderProducts();
+  startHeroCarousel();
+}
+
+initPublicSite();

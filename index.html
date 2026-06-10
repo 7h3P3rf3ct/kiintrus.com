@@ -111,27 +111,18 @@
           poster="assets/hero-marketplace.png"
           aria-hidden="true"
         ></video>
-        <div class="hero-shelf" aria-label="Articles Kiintrus en avant">
-          <a class="hero-card hero-card-large" href="#catalogue">
-            <span data-i18n="catBeauty">Beaute</span>
-            <img src="assets/products/dr-rasheel-solaire.jpg" alt="Creme solaire DR Rasheel" />
-            <strong>DR Rasheel</strong>
-          </a>
-          <a class="hero-card" href="#catalogue">
-            <span data-i18n="catFashion">Mode & wax</span>
-            <img src="assets/products/ninosweet-fille-rose.jpg" alt="Ensemble fille Ninosweet" />
-            <strong>Ninosweet</strong>
-          </a>
-          <a class="hero-card" href="#catalogue">
-            <span data-i18n="catHome">Maison</span>
-            <img src="assets/products/coussins-fauteuil.jpg" alt="Coussins de decoration" />
-            <strong>Coussins</strong>
-          </a>
-          <a class="hero-card" href="#catalogue">
-            <span data-i18n="catAccessories">Accessoires</span>
-            <img src="assets/products/selfie-stick.jpg" alt="Baton pour selfie" />
-            <strong>Selfie</strong>
-          </a>
+        <div class="hero-carousel" aria-label="Articles Kiintrus en avant">
+          <button class="hero-arrow hero-arrow-left" type="button" id="heroPrev" aria-label="Faire defiler a gauche" data-i18n-aria="heroPrev">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="m15 18-6-6 6-6" />
+            </svg>
+          </button>
+          <div class="hero-shelf" id="heroShelf"></div>
+          <button class="hero-arrow hero-arrow-right" type="button" id="heroNext" aria-label="Faire defiler a droite" data-i18n-aria="heroNext">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="m9 18 6-6-6-6" />
+            </svg>
+          </button>
         </div>
       </section>
 
@@ -240,22 +231,26 @@
 
       <section class="filter-section" aria-labelledby="filterCategoriesTitle">
         <h3 id="filterCategoriesTitle" data-i18n="filterCategories">Categories</h3>
-        <button class="filter-option active" type="button" data-category="all" data-i18n="catAll">Tout</button>
-        <button class="filter-option" type="button" data-category="beaute" data-i18n="catBeauty">Beaute</button>
-        <button class="filter-option" type="button" data-category="mode" data-i18n="catFashion">Mode & wax</button>
-        <button class="filter-option" type="button" data-category="maison" data-i18n="catHome">Maison</button>
-        <button class="filter-option" type="button" data-category="accessoires" data-i18n="catAccessories">Accessoires</button>
-        <button class="filter-option" type="button" data-category="librairie" data-i18n="catBooks">Librairie</button>
+        <div id="categoryFilters">
+          <button class="filter-option active" type="button" data-category="all" data-i18n="catAll">Tout</button>
+          <button class="filter-option" type="button" data-category="beaute" data-i18n="catBeauty">Beaute</button>
+          <button class="filter-option" type="button" data-category="mode" data-i18n="catFashion">Mode & wax</button>
+          <button class="filter-option" type="button" data-category="maison" data-i18n="catHome">Maison</button>
+          <button class="filter-option" type="button" data-category="accessoires" data-i18n="catAccessories">Accessoires</button>
+          <button class="filter-option" type="button" data-category="librairie" data-i18n="catBooks">Librairie</button>
+        </div>
       </section>
 
       <section class="filter-section" aria-labelledby="filterStoresTitle">
         <h3 id="filterStoresTitle" data-i18n="filterStores">Boutiques</h3>
-        <button class="filter-option active" type="button" data-store="all" data-i18n="storeAll">Toutes les boutiques</button>
-        <button class="filter-option" type="button" data-store="Efia's Garden Boutique">Efia's Garden Boutique</button>
-        <button class="filter-option" type="button" data-store="NINOSWEET BOUTIQUE (Enfants)">Ninosweet Boutique</button>
-        <button class="filter-option" type="button" data-store="Fandam Boutique">Fandam Boutique</button>
-        <button class="filter-option" type="button" data-store="Smaat Trade Boutique">Smaat Trade Boutique</button>
-        <button class="filter-option" type="button" data-store="All items">All items</button>
+        <div id="storeFilters">
+          <button class="filter-option active" type="button" data-store="all" data-i18n="storeAll">Toutes les boutiques</button>
+          <button class="filter-option" type="button" data-store="Efia's Garden Boutique">Efia's Garden Boutique</button>
+          <button class="filter-option" type="button" data-store="NINOSWEET BOUTIQUE (Enfants)">Ninosweet Boutique</button>
+          <button class="filter-option" type="button" data-store="Fandam Boutique">Fandam Boutique</button>
+          <button class="filter-option" type="button" data-store="Smaat Trade Boutique">Smaat Trade Boutique</button>
+          <button class="filter-option" type="button" data-store="All items">All items</button>
+        </div>
       </section>
 
       <section class="filter-section" aria-labelledby="filterDealsTitle">
@@ -293,6 +288,8 @@
       </div>
     </footer>
 
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="market/supabase-config.js"></script>
     <script src="script.js"></script>
   </body>
 </html>
