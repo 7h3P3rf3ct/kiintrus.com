@@ -550,6 +550,7 @@ const resultCount = document.querySelector("#resultCount");
 const searchForm = document.querySelector(".search");
 const searchInput = document.querySelector("#searchInput");
 const categoryFilterList = document.querySelector("#categoryFilters");
+const catalogCategoryStrip = document.querySelector("#catalogCategoryStrip");
 const storeFilterList = document.querySelector("#storeFilters");
 const specialFilterButtons = document.querySelectorAll("[data-special-filter]");
 const quickFilterButtons = document.querySelectorAll("[data-quick-filter]");
@@ -711,8 +712,9 @@ async function loadPublishedProducts() {
 }
 
 function renderDynamicFilters() {
+  const categoryOptions = categoryFilterOptions();
   if (categoryFilterList) {
-    categoryFilterList.innerHTML = categoryFilterOptions()
+    categoryFilterList.innerHTML = categoryOptions
       .map(
         (category) =>
           `<button class="filter-option ${currentCategory === category.value ? "active" : ""}" type="button" data-category="${escapeHtml(category.value)}">${escapeHtml(category.label)}</button>`,
@@ -729,6 +731,16 @@ function renderDynamicFilters() {
       ...stores.map(
         (store) =>
           `<button class="filter-option ${currentStore === store ? "active" : ""}" type="button" data-store="${escapeHtml(store)}">${escapeHtml(store)}</button>`,
+      ),
+    ].join("");
+  }
+
+  if (catalogCategoryStrip) {
+    catalogCategoryStrip.innerHTML = [
+      `<button class="catalog-filter ${currentCategory === "all" ? "active" : ""}" type="button" data-catalog-category="all">${t("catAll")}</button>`,
+      ...categoryOptions.map(
+        (category) =>
+          `<button class="catalog-filter ${currentCategory === category.value ? "active" : ""}" type="button" data-catalog-category="${escapeHtml(category.value)}">${escapeHtml(category.label)}</button>`,
       ),
     ].join("");
   }
@@ -869,7 +881,7 @@ function normalizedProductIdentity(value) {
 }
 
 function productGroupKey(product) {
-  return [product.category, product.price, normalizedProductIdentity(product.name)].join("|");
+  return [product.price, normalizedProductIdentity(product.name)].join("|");
 }
 
 function productVariants(product) {
@@ -1037,7 +1049,6 @@ function renderProducts() {
         return `
         <article class="product-card" data-product="${escapeHtml(product.id)}" tabindex="0" aria-label="${escapeHtml(`${t("viewDetails")} ${product.name}`)}">
           <div class="product-visual" style="--tone-a:${(product.colors || ["#eaf3ff", "#fff4d5"])[0]};--tone-b:${(product.colors || ["#eaf3ff", "#fff4d5"])[1]}">
-            <span class="tag">${escapeHtml(product.tag || tagForCategory(product.category))}</span>
             ${
               gallery.length
                 ? `<img class="product-card-image" src="${escapeHtml(gallery[0])}" alt="${escapeHtml(product.imageAlt || product.name)}" data-images="${escapeHtml(gallery.join("|"))}" data-image-index="0" />
@@ -1055,17 +1066,10 @@ function renderProducts() {
             }
           </div>
           <div class="product-body">
-            <span class="store">${escapeHtml(displayStore(product.store))}</span>
             <h3>${escapeHtml(product.name)}</h3>
             <div class="price-row">
               <span class="price">${escapeHtml(product.price)}</span>
               ${product.oldPrice ? `<span class="old-price">${escapeHtml(product.oldPrice)}</span>` : ""}
-            </div>
-            <div class="product-actions">
-              <a href="${orderUrl(product)}" target="_blank" rel="noreferrer" data-stop-card>${t("order")}</a>
-              <button type="button" aria-label="${escapeHtml(`${t("addToCart")} ${product.name}`)}" data-add="${product.id}" data-stop-card>
-                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
-              </button>
             </div>
           </div>
         </article>
@@ -1295,9 +1299,17 @@ categoryFilterList?.addEventListener("click", (event) => {
   const button = event.target.closest("[data-category]");
   if (!button) return;
   currentCategory = button.dataset.category;
-  setActiveButton(categoryFilterList.querySelectorAll("[data-category]"), button);
+  renderDynamicFilters();
   renderProducts();
   document.querySelector("#catalogue").scrollIntoView({ behavior: "smooth", block: "start" });
+});
+
+catalogCategoryStrip?.addEventListener("click", (event) => {
+  const button = event.target.closest("[data-catalog-category]");
+  if (!button) return;
+  currentCategory = button.dataset.catalogCategory;
+  renderDynamicFilters();
+  renderProducts();
 });
 
 storeFilterList?.addEventListener("click", (event) => {

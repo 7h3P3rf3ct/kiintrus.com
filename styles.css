@@ -541,6 +541,41 @@ svg {
   line-height: 1.2;
 }
 
+.catalog-filter-strip {
+  display: flex;
+  gap: 8px;
+  margin: 0 0 16px;
+  padding: 0 0 6px;
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+  scroll-snap-type: x proximity;
+  scrollbar-width: none;
+}
+
+.catalog-filter-strip::-webkit-scrollbar {
+  display: none;
+}
+
+.catalog-filter {
+  flex: 0 0 auto;
+  min-height: 34px;
+  padding: 0 13px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: #fff;
+  color: var(--blue-deep);
+  font-size: 0.86rem;
+  font-weight: 900;
+  scroll-snap-align: start;
+}
+
+.catalog-filter.active,
+.catalog-filter:hover {
+  border-color: var(--orange);
+  background: var(--orange);
+  color: #fff;
+}
+
 .product-grid {
   display: grid;
   grid-template-columns: repeat(5, minmax(0, 1fr));
@@ -608,15 +643,15 @@ svg {
   position: absolute;
   top: 50%;
   z-index: 3;
-  display: inline-flex;
+  display: none;
   align-items: center;
   justify-content: center;
-  width: 22px;
+  width: 18px;
   height: 30px;
   padding: 0;
   border: 0;
   border-radius: 6px;
-  background: rgba(6, 26, 51, 0.32);
+  background: transparent !important;
   box-shadow: none;
   color: #fff;
   opacity: 0;
@@ -643,15 +678,21 @@ svg {
   filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.38));
 }
 
-.product-card:hover .product-image-arrow,
-.product-card:focus-within .product-image-arrow {
-  opacity: 1;
-}
-
 .product-image-arrow:hover,
 .product-image-arrow:focus-visible {
-  background: rgba(6, 26, 51, 0.58);
+  background: transparent !important;
   outline: 0;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .product-image-arrow {
+    display: inline-flex;
+  }
+
+  .product-card:hover .product-image-arrow,
+  .product-card:focus-within .product-image-arrow {
+    opacity: 1;
+  }
 }
 
 .tag {
