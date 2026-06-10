@@ -44,7 +44,7 @@ const seedState = {
       stock: 18,
       status: "published",
       description: "Creme solaire DR Rasheel.",
-      image: "../assets/products/dr-rasheel-solaire.jpg",
+      image: "assets/products/dr-rasheel-solaire.jpg",
       createdAt: "2026-06-10T09:30:00.000Z",
     },
     {
@@ -56,7 +56,7 @@ const seedState = {
       stock: 7,
       status: "pending",
       description: "Gel nettoyant exfoliant anti tache.",
-      image: "../assets/products/safi-gel-nettoyant.jpg",
+      image: "assets/products/safi-gel-nettoyant.jpg",
       createdAt: "2026-06-10T10:15:00.000Z",
     },
   ],
@@ -161,12 +161,12 @@ function visibleProducts() {
 function fileToDataUrl(file) {
   return new Promise((resolve) => {
     if (!file) {
-      resolve("../assets/hero-marketplace.png");
+      resolve("assets/hero-marketplace.png");
       return;
     }
     const reader = new FileReader();
-    reader.addEventListener("load", () => resolve(String(reader.result || "../assets/hero-marketplace.png")));
-    reader.addEventListener("error", () => resolve("../assets/hero-marketplace.png"));
+    reader.addEventListener("load", () => resolve(String(reader.result || "assets/hero-marketplace.png")));
+    reader.addEventListener("error", () => resolve("assets/hero-marketplace.png"));
     reader.readAsDataURL(file);
   });
 }
@@ -202,7 +202,7 @@ function mapProductFromDb(product) {
     stock: product.stock,
     status: product.status,
     description: product.description,
-    image: product.image_url || "../assets/hero-marketplace.png",
+    image: product.image_url || "assets/hero-marketplace.png",
     imagePath: product.image_path,
     createdAt: product.created_at,
   };
@@ -219,7 +219,7 @@ function slugify(value) {
 }
 
 async function uploadProductImage(file, storeId) {
-  if (!useSupabase || !file) return "../assets/hero-marketplace.png";
+  if (!useSupabase || !file) return "assets/hero-marketplace.png";
 
   const extension = file.name.split(".").pop() || "jpg";
   const path = `${storeId}/${Date.now()}-${crypto.randomUUID()}.${extension}`;
