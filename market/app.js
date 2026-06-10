@@ -1,4 +1,10 @@
 const STORAGE_KEY = "kiintrus-market-dashboard";
+const supabaseConfig = window.KIINTRUS_SUPABASE;
+const supabaseClient =
+  window.supabase && supabaseConfig?.url && supabaseConfig?.anonKey
+    ? window.supabase.createClient(supabaseConfig.url, supabaseConfig.anonKey)
+    : null;
+const useSupabase = Boolean(supabaseClient);
 
 const seedState = {
   session: null,
@@ -86,6 +92,7 @@ const productStoreFilterSelect = document.querySelector("#productStoreFilter");
 const productSearch = document.querySelector("#productSearch");
 
 function loadState() {
+  if (useSupabase) return structuredClone(seedState);
   try {
     const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || "null");
     return saved ? { ...seedState, ...saved } : structuredClone(seedState);
@@ -95,6 +102,7 @@ function loadState() {
 }
 
 function saveState() {
+  if (useSupabase) return;
   localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
 }
 
@@ -108,6 +116,26 @@ function escapeHtml(value = "") {
 }
 
 function currentUser() {
+  if (useSupabase && state.session) {
+    if (state.session.role === "admin") {
+      return {
+        id: state.session.profileId,
+        name: state.session.fullName || "Kiintrus Admin",
+        email: state.session.email,
+        role: "admin",
+        status: "active",
+      };
+    }
+
+    return state.stores.find((store) => store.ownerId === state.session.profileId) || {
+      id: state.session.profileId,
+      name: state.session.fullName || state.session.email,
+      email: state.session.email,
+      role: "merchant",
+      status: "pending",
+    };
+  }
+
   return state.stores.find((store) => store.id === state.session?.storeId) || null;
 }
 
@@ -141,6 +169,112 @@ function fileToDataUrl(file) {
     reader.addEventListener("error", () => resolve("../assets/hero-marketplace.png"));
     reader.readAsDataURL(file);
   });
+}
+
+function parseCfaPrice(value) {
+  return Number(String(value).replace(/[^\d]/g, "")) || 0;
+}
+
+function formatCfaPrice(value) {
+  return `${Number(value || 0).toLocaleString("fr-FR")} F CFA`;
+}
+
+function mapStoreFromDb(store) {
+  return {
+    id: store.id,
+    name: store.name,
+    email: store.email,
+    phone: store.phone || "",
+    role: "merchant",
+    status: store.status,
+    ownerId: store.owner_id,
+  };
+}
+
+function mapProductFromDb(product) {
+  return {
+    id: product.id,
+    storeId: product.store_id,
+    name: product.name,
+    category: product.category,
+    price: formatCfaPrice(product.price_cfa),
+    priceCfa: product.price_cfa,
+    stock: product.stock,
+    status: product.status,
+    description: product.description,
+    image: product.image_url || "../assets/hero-marketplace.png",
+    imagePath: product.image_path,
+    createdAt: product.created_at,
+  };
+}
+
+function slugify(value) {
+  return value
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 70);
+}
+
+async function uploadProductImage(file, storeId) {
+  if (!useSupabase || !file) return "../assets/hero-marketplace.png";
+
+  const extension = file.name.split(".").pop() || "jpg";
+  const path = `${storeId}/${Date.now()}-${crypto.randomUUID()}.${extension}`;
+  const { error } = await supabaseClient.storage.from(supabaseConfig.productImagesBucket).upload(path, file, {
+    cacheControl: "3600",
+    upsert: false,
+  });
+  if (error) throw error;
+
+  const { data } = supabaseClient.storage.from(supabaseConfig.productImagesBucket).getPublicUrl(path);
+  return {
+    url: data.publicUrl,
+    path,
+  };
+}
+
+async function loadSupabaseWorkspace() {
+  if (!useSupabase) return;
+
+  const { data: sessionData } = await supabaseClient.auth.getSession();
+  const authUser = sessionData.session?.user;
+  if (!authUser) {
+    state.session = null;
+    return;
+  }
+
+  const { data: profile, error: profileError } = await supabaseClient
+    .from("profiles")
+    .select("id, full_name, role")
+    .eq("id", authUser.id)
+    .single();
+  if (profileError) throw profileError;
+
+  state.session = {
+    profileId: profile.id,
+    fullName: profile.full_name,
+    role: profile.role,
+    email: authUser.email,
+  };
+
+  const { data: stores, error: storesError } = await supabaseClient
+    .from("stores")
+    .select("id, name, email, phone, status, owner_id")
+    .order("created_at", { ascending: false });
+  if (storesError) throw storesError;
+
+  const { data: products, error: productsError } = await supabaseClient
+    .from("products")
+    .select("id, store_id, name, category, description, price_cfa, stock, status, image_url, image_path, created_at")
+    .order("created_at", { ascending: false });
+  if (productsError) throw productsError;
+
+  state.stores = stores.map(mapStoreFromDb);
+  state.products = products.map(mapProductFromDb);
+  state.activity = ["Donnees chargees depuis Supabase.", ...seedState.activity];
 }
 
 function setPanel(panelName) {
@@ -271,7 +405,15 @@ function emptyMessage(message) {
   return `<p class="helper-text">${escapeHtml(message)}</p>`;
 }
 
-function login(email) {
+async function login(email, password) {
+  if (useSupabase) {
+    const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
+    if (error) throw error;
+    await loadSupabaseWorkspace();
+    renderAuth();
+    return true;
+  }
+
   const user = state.stores.find((store) => store.email.toLowerCase() === email.toLowerCase());
   if (!user) return false;
   state.session = { storeId: user.id };
@@ -292,17 +434,51 @@ authTabs.forEach((button) => {
 loginForm.addEventListener("submit", (event) => {
   event.preventDefault();
   const email = document.querySelector("#loginEmail").value.trim();
-  if (!login(email)) {
-    loginForm.querySelector(".helper-text").textContent = "Compte introuvable dans cette demo.";
-  }
+  const password = document.querySelector("#loginPassword").value;
+  login(email, password).catch((error) => {
+    loginForm.querySelector(".helper-text").textContent = error.message || "Connexion impossible.";
+  });
 });
 
-registerForm.addEventListener("submit", (event) => {
+registerForm.addEventListener("submit", async (event) => {
   event.preventDefault();
   const name = document.querySelector("#registerStore").value.trim();
   const email = document.querySelector("#registerEmail").value.trim();
   const phone = document.querySelector("#registerPhone").value.trim();
-  if (!name || !email) return;
+  const password = document.querySelector("#registerPassword").value;
+  if (!name || !email || !password) return;
+
+  if (useSupabase) {
+    const { data, error } = await supabaseClient.auth.signUp({
+      email,
+      password,
+      options: {
+        emailRedirectTo: `${window.location.origin}/market/`,
+        data: {
+          full_name: name,
+          role: "merchant",
+        },
+      },
+    });
+    if (error) {
+      registerForm.querySelector(".helper-text").textContent = error.message;
+      return;
+    }
+
+    if (data.session?.user) {
+      await supabaseClient.from("store_requests").insert({
+        store_name: name,
+        email,
+        phone,
+        user_id: data.session.user.id,
+      });
+    }
+
+    registerForm.reset();
+    registerForm.querySelector(".helper-text").textContent =
+      "Demande envoyee. Verifiez l'email marchand puis l'admin pourra valider la boutique.";
+    return;
+  }
 
   state.stores.push({
     id: `store-${Date.now()}`,
@@ -318,7 +494,10 @@ registerForm.addEventListener("submit", (event) => {
   registerForm.querySelector(".helper-text").textContent = "Demande envoyee. L'admin pourra valider le compte.";
 });
 
-logoutButton.addEventListener("click", () => {
+logoutButton.addEventListener("click", async () => {
+  if (useSupabase) {
+    await supabaseClient.auth.signOut();
+  }
   state.session = null;
   saveState();
   renderAuth();
@@ -343,16 +522,45 @@ closeDialog.addEventListener("click", () => productDialog.close());
 
 productForm.addEventListener("submit", async (event) => {
   event.preventDefault();
+  const selectedStoreId = productStore.value;
+  const selectedFile = document.querySelector("#productImage").files?.[0];
+
+  if (useSupabase) {
+    try {
+      const uploaded = await uploadProductImage(selectedFile, selectedStoreId);
+      const status = isAdmin() ? document.querySelector("#productStatus").value : "pending";
+      const { error } = await supabaseClient.from("products").insert({
+        store_id: selectedStoreId,
+        name: document.querySelector("#productName").value.trim(),
+        category: document.querySelector("#productCategory").value,
+        price_cfa: parseCfaPrice(document.querySelector("#productPrice").value),
+        stock: Number(document.querySelector("#productStock").value || 0),
+        status,
+        description: document.querySelector("#productDescription").value.trim(),
+        image_url: uploaded.url || uploaded,
+        image_path: uploaded.path || null,
+        created_by: state.session.profileId,
+      });
+      if (error) throw error;
+      productDialog.close();
+      await loadSupabaseWorkspace();
+      renderDashboard();
+    } catch (error) {
+      alert(error.message || "Impossible d'enregistrer l'article.");
+    }
+    return;
+  }
+
   const product = {
     id: `prod-${Date.now()}`,
-    storeId: productStore.value,
+    storeId: selectedStoreId,
     name: document.querySelector("#productName").value.trim(),
     category: document.querySelector("#productCategory").value,
     price: document.querySelector("#productPrice").value.trim(),
     stock: Number(document.querySelector("#productStock").value || 0),
     status: document.querySelector("#productStatus").value,
     description: document.querySelector("#productDescription").value.trim(),
-    image: await fileToDataUrl(document.querySelector("#productImage").files?.[0]),
+    image: await fileToDataUrl(selectedFile),
     createdAt: new Date().toISOString(),
   };
   state.products.push(product);
@@ -369,6 +577,29 @@ createStoreForm.addEventListener("submit", (event) => {
   const email = document.querySelector("#storeEmail").value.trim();
   const phone = document.querySelector("#storePhone").value.trim();
   if (!name || !email) return;
+
+  if (useSupabase) {
+    supabaseClient
+      .from("stores")
+      .insert({
+        name,
+        slug: `${slugify(name)}-${Date.now()}`,
+        email,
+        phone,
+        status: "active",
+        created_by: state.session.profileId,
+      })
+      .then(async ({ error }) => {
+        if (error) throw error;
+        createStoreForm.reset();
+        await loadSupabaseWorkspace();
+        renderDashboard();
+      })
+      .catch((error) => {
+        alert(error.message || "Impossible de creer la boutique.");
+      });
+    return;
+  }
 
   state.stores.push({
     id: `store-${Date.now()}`,
@@ -400,9 +631,39 @@ document.querySelector("#productTable").addEventListener("click", (event) => {
   const product = state.products.find((item) => item.id === button.dataset.stock);
   if (!product) return;
   product.stock = Math.max(0, Number(product.stock || 0) + Number(button.dataset.delta));
+
+  if (useSupabase) {
+    supabaseClient
+      .from("products")
+      .update({ stock: product.stock })
+      .eq("id", product.id)
+      .then(async ({ error }) => {
+        if (error) throw error;
+        await loadSupabaseWorkspace();
+        renderDashboard();
+      })
+      .catch((error) => alert(error.message || "Impossible de mettre le stock a jour."));
+    return;
+  }
+
   state.activity.push(`Stock mis a jour pour ${product.name}.`);
   saveState();
   renderDashboard();
 });
 
-renderAuth();
+async function init() {
+  if (useSupabase) {
+    try {
+      await loadSupabaseWorkspace();
+      supabaseClient.auth.onAuthStateChange(async () => {
+        await loadSupabaseWorkspace().catch(() => {});
+        renderAuth();
+      });
+    } catch (error) {
+      state.activity = [`Supabase: ${error.message}`, ...seedState.activity];
+    }
+  }
+  renderAuth();
+}
+
+init();

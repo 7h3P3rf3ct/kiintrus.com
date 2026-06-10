@@ -40,13 +40,15 @@ Dans `Project Settings > API`, recuperer :
 - Project URL
 - Publishable key ou anon public key
 
-Puis creer localement un fichier non versionne :
+Le projet contient deja `market/supabase-config.js` avec l'URL projet et la cle publique anon.
+
+Pour un environnement prive/local different, vous pouvez aussi creer un fichier non versionne :
 
 ```bash
 cp market/config.example.js market/config.js
 ```
 
-Remplacer les valeurs dans `market/config.js`.
+Remplacer les valeurs dans `market/config.js`, puis adapter le chargement si necessaire.
 
 Important : ne jamais mettre la service role key dans le navigateur.
 
@@ -74,3 +76,5 @@ Une fois `market/config.js` rempli, le dashboard peut etre branche a :
 - `supabase.storage.from('product-images').upload`
 
 Le stockage local actuel reste seulement une demo de secours.
+
+Dans la version actuelle, `market/` charge deja Supabase si `market/supabase-config.js` est present. Le mode local sert uniquement de secours si le client Supabase n'est pas disponible.
