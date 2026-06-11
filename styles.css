@@ -1143,7 +1143,7 @@ svg {
 
 .detail-actions {
   display: grid;
-  grid-template-columns: 1fr 0.8fr;
+  grid-template-columns: 1fr 1fr;
   gap: 10px;
 }
 
@@ -1153,12 +1153,19 @@ svg {
   border: 0;
   border-radius: 8px;
   font-weight: 800;
-}
-
-.detail-actions a {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  gap: 8px;
+}
+
+.detail-actions svg {
+  width: 24px;
+  height: 24px;
+  stroke-width: 2.2;
+}
+
+.detail-actions a {
   background: var(--blue);
   color: #fff;
 }
