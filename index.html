@@ -36,10 +36,7 @@
     <link rel="manifest" href="site.webmanifest" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
-      rel="stylesheet"
-    />
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
@@ -126,12 +123,7 @@
         </div>
       </section>
 
-      <section class="section marketplace" id="catalogue" aria-labelledby="catalogueTitle">
-        <div class="section-head">
-          <div>
-            <h2 id="catalogueTitle" data-i18n="featuredItems">Tout</h2>
-          </div>
-        </div>
+      <section class="section marketplace" id="catalogue" aria-label="Catalogue">
         <div class="catalog-filter-strip" id="catalogCategoryStrip" aria-label="Filtres du catalogue"></div>
 
         <div class="product-grid" id="productGrid" aria-live="polite"></div>
@@ -221,7 +213,6 @@
       <div class="filter-header">
         <div>
           <p class="eyebrow" data-i18n="filterMenu">Menu</p>
-          <h2 data-i18n="filterTitle">Tout</h2>
         </div>
         <button class="icon-button" type="button" id="closeFilterPanel" aria-label="Fermer le menu" data-i18n-aria="closeFilterPanel">
           <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -233,8 +224,9 @@
       <section class="filter-section" aria-labelledby="filterCategoriesTitle">
         <h3 id="filterCategoriesTitle" data-i18n="filterCategories">Categories</h3>
         <div id="categoryFilters">
+          <button class="filter-option active" type="button" data-category="all" data-i18n="allCategories">Toutes les categories</button>
           <button class="filter-option" type="button" data-category="beaute" data-i18n="catBeauty">Beaute</button>
-          <button class="filter-option" type="button" data-category="mode" data-i18n="catFashion">Mode & wax</button>
+          <button class="filter-option" type="button" data-category="mode">Mode</button>
           <button class="filter-option" type="button" data-category="maison" data-i18n="catHome">Maison</button>
           <button class="filter-option" type="button" data-category="accessoires" data-i18n="catAccessories">Accessoires</button>
           <button class="filter-option" type="button" data-category="librairie" data-i18n="catBooks">Librairie</button>

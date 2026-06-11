@@ -75,6 +75,7 @@ const translations = {
     filterMenu: "Menu",
     filterTitle: "Tout",
     filterCategories: "Categories",
+    allCategories: "Toutes les categories",
     filterStores: "Boutiques",
     filterDeals: "Filtres",
     filterAll: "Tous les articles",
@@ -167,6 +168,7 @@ const translations = {
     filterMenu: "Menu",
     filterTitle: "All",
     filterCategories: "Categories",
+    allCategories: "All categories",
     filterStores: "Stores",
     filterDeals: "Filters",
     filterAll: "All products",
@@ -623,8 +625,24 @@ function categoryFilterOptions() {
   const options = new Map();
   const addOption = (type, value, label) => {
     if (!value || !label) return;
-    const key = normalizedProductIdentity(label);
-    if (!options.has(key)) options.set(key, { value: categoryFilterValue(type, value), label });
+    const normalizedLabel = normalizedProductIdentity(label);
+    const key =
+      {
+        accessoire: "accessoires",
+        accessoires: "accessoires",
+        livre: "librairie",
+        librairie: "librairie",
+        mode: "mode",
+        "mode wax": "mode",
+        "mode et wax": "mode",
+      }[normalizedLabel] || normalizedLabel;
+    const displayLabel =
+      {
+        accessoires: "Accessoires",
+        librairie: categoryLabel("librairie"),
+        mode: currentLanguage === "en" ? "Fashion" : "Mode",
+      }[key] || label;
+    if (!options.has(key)) options.set(key, { value: categoryFilterValue(type, value), label: displayLabel });
   };
 
   fallbackCategories.forEach((category) => addOption("category", category, categoryLabel(category)));
@@ -714,12 +732,13 @@ async function loadPublishedProducts() {
 function renderDynamicFilters() {
   const categoryOptions = categoryFilterOptions();
   if (categoryFilterList) {
-    categoryFilterList.innerHTML = categoryOptions
-      .map(
+    categoryFilterList.innerHTML = [
+      `<button class="filter-option ${currentCategory === "all" ? "active" : ""}" type="button" data-category="all">${t("allCategories")}</button>`,
+      ...categoryOptions.map(
         (category) =>
           `<button class="filter-option ${currentCategory === category.value ? "active" : ""}" type="button" data-category="${escapeHtml(category.value)}">${escapeHtml(category.label)}</button>`,
-      )
-      .join("");
+      ),
+    ].join("");
   }
 
   if (storeFilterList) {
@@ -880,8 +899,12 @@ function normalizedProductIdentity(value) {
     .toLowerCase();
 }
 
+function normalizedProductPrice(value) {
+  return String(value || "").replace(/\D/g, "");
+}
+
 function productGroupKey(product) {
-  return [product.price, normalizedProductIdentity(product.name)].join("|");
+  return [normalizedProductPrice(product.price), normalizedProductIdentity(product.name)].join("|");
 }
 
 function productVariants(product) {
