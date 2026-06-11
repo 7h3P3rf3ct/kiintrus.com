@@ -24,13 +24,13 @@
             <img src="assets/kiintrus-logo-white.png" alt="Kiintrus Market" />
           </a>
           <nav aria-label="Navigation dashboard">
-            <button class="active" type="button" data-panel="overview">Vue generale</button>
+            <button class="active" type="button" data-panel="overview">Vue générale</button>
             <button type="button" data-panel="products">Articles</button>
-            <button type="button" data-panel="categories" data-admin-only>Categories</button>
+            <button type="button" data-panel="categories" data-admin-only>Catégories</button>
             <button type="button" data-panel="stores" data-admin-only>Boutiques</button>
             <button type="button" data-panel="settings">Compte</button>
           </nav>
-          <button class="logout-button" type="button" id="logoutButton">Deconnexion</button>
+          <button class="logout-button" type="button" id="logoutButton">Déconnexion</button>
         </aside>
 
         <div class="workspace">
@@ -38,10 +38,6 @@
             <div>
               <p class="eyebrow" id="roleLabel">Admin principale</p>
               <h1 id="workspaceTitle">Kiintrus Marketplace</h1>
-            </div>
-            <div class="header-actions">
-              <span id="activeStoreBadge">Toutes les boutiques</span>
-              <button class="secondary-action" type="button" id="openNewProduct">+ Article</button>
             </div>
           </header>
 
@@ -68,14 +64,14 @@
             <div class="content-grid">
               <section class="work-card">
                 <div class="card-head">
-                  <h2>Articles recents</h2>
+                  <h2>Articles récents</h2>
                   <button type="button" data-panel-shortcut="products">Voir tout</button>
                 </div>
                 <div class="table-list" id="recentProducts"></div>
               </section>
               <section class="work-card">
                 <div class="card-head">
-                  <h2>Activite</h2>
+                  <h2>Activité</h2>
                 </div>
                 <div class="activity-list" id="activityList"></div>
               </section>
@@ -86,16 +82,17 @@
             <div class="panel-toolbar">
               <div>
                 <h2>Articles</h2>
-                <p>Publiez, modifiez le stock et preparez la validation catalogue.</p>
+                <p>Publiez, modifiez le stock et préparez la validation catalogue.</p>
               </div>
+              <button class="corner-add" type="button" id="openNewProduct" aria-label="Ajouter un article">+</button>
               <div class="filters">
                 <select id="productStoreFilter"></select>
                 <select id="productStatusFilter">
                   <option value="all">Tous les statuts</option>
-                  <option value="published">Publies</option>
+                  <option value="published">Publiés</option>
                   <option value="draft">Brouillons</option>
                   <option value="pending">En validation</option>
-                  <option value="archived">Retires</option>
+                  <option value="archived">Retirés</option>
                 </select>
                 <input id="productSearch" type="search" placeholder="Rechercher un article" />
               </div>
@@ -117,30 +114,12 @@
           <section class="panel" id="categoriesPanel">
             <div class="panel-toolbar">
               <div>
-                <h2>Categories</h2>
-                <p>Les categories actives alimentent les filtres du site et le formulaire d'articles.</p>
+                <h2>Catégories</h2>
+                <p>Fiches catégories, statut et organisation des familles d’articles.</p>
               </div>
+              <button class="corner-add" type="button" id="openNewCategory" aria-label="Ajouter une catégorie">+</button>
             </div>
-            <div class="store-admin-grid">
-              <form class="work-card compact-form" id="createCategoryForm">
-                <h3>Creer une categorie</h3>
-                <label>
-                  Nom
-                  <input id="categoryName" type="text" placeholder="Ex: Electronique" required />
-                </label>
-                <label>
-                  Identifiant
-                  <input id="categorySlug" type="text" placeholder="electronique" />
-                </label>
-                <button class="primary-action" type="submit">Ajouter</button>
-              </form>
-              <div class="work-card">
-                <div class="card-head">
-                  <h2>Categories actives</h2>
-                </div>
-                <div class="store-list" id="categoryList"></div>
-              </div>
-            </div>
+            <div class="store-card-grid" id="categoryList"></div>
           </section>
 
           <section class="panel" id="settingsPanel">
@@ -148,7 +127,7 @@
               <form class="work-card compact-form" id="accountForm">
                 <h2>Compte</h2>
                 <label>
-                  Nom affiche
+                  Nom affiché
                   <input id="accountName" type="text" />
                 </label>
                 <label>
@@ -163,13 +142,13 @@
               </form>
               <section class="work-card settings-card">
                 <h2>Securite</h2>
-                <p>Gardez un mot de passe fort et deconnectez-vous apres chaque session sur un ordinateur partage.</p>
+                <p>Gardez un mot de passe fort et déconnectez-vous après chaque session sur un ordinateur partagé.</p>
                 <div class="backend-checklist">
-                  <span>Acces reserve aux comptes autorises</span>
+                  <span>Accès réservé aux comptes autorisés</span>
                   <span>Chaque marchand voit uniquement ses articles</span>
-                  <span>L'admin principale gere toutes les boutiques</span>
+                  <span>L’admin principale gère toutes les boutiques</span>
                 </div>
-                <button class="secondary-action" type="button" id="accountLogoutButton">Se deconnecter</button>
+                <button class="secondary-action" type="button" id="accountLogoutButton">Se déconnecter</button>
               </section>
             </div>
           </section>
@@ -192,18 +171,13 @@
               <select id="productStore"></select>
             </label>
             <label>
-              Categorie
-              <select id="productCategory">
-                <option value="beaute">Beaute</option>
-                <option value="mode">Mode & wax</option>
-                <option value="maison">Maison</option>
-                <option value="librairie">Librairie</option>
-                <option value="accessoires">Accessoires</option>
-              </select>
-            </label>
-            <label>
-              Nouvelle categorie
-              <input id="productNewCategory" type="text" placeholder="Ex: Electronique" />
+              Catégorie
+              <div class="combo-field">
+                <input id="productCategoryInput" type="text" placeholder="Renseigner ou sélectionner une catégorie" required />
+                <select id="productCategoryPicker" aria-label="Sélectionner une catégorie existante">
+                  <option value="">Choisir</option>
+                </select>
+              </div>
             </label>
             <label>
               Nom
@@ -222,7 +196,7 @@
               <select id="productStatus">
                 <option value="draft">Brouillon</option>
                 <option value="pending">En validation</option>
-                <option value="published">Publie</option>
+                <option value="published">Publié</option>
               </select>
             </label>
             <label class="wide">
@@ -232,11 +206,42 @@
             <label class="wide upload-zone">
               Photos
               <input id="productImage" type="file" accept="image/*" multiple />
-              <small>La premiere photo devient l'image principale visible sur le site.</small>
+              <small>La première photo devient l’image principale visible sur le site.</small>
             </label>
             <div class="wide image-preview-grid" id="productImagePreview"></div>
           </div>
           <button class="primary-action" type="submit">Enregistrer</button>
+        </form>
+      </dialog>
+
+      <dialog class="product-dialog" id="categoryDialog">
+        <form id="categoryForm" method="dialog">
+          <div class="dialog-head">
+            <div>
+              <p class="eyebrow">Catégorie</p>
+              <h2 id="categoryDialogTitle">Ajouter une catégorie</h2>
+            </div>
+            <button type="button" id="closeCategoryDialog" aria-label="Fermer">×</button>
+          </div>
+          <input id="categoryId" type="hidden" />
+          <div class="form-grid">
+            <label>
+              Nom
+              <input id="categoryName" type="text" placeholder="Ex: Électronique" required />
+            </label>
+            <label>
+              Identifiant
+              <input id="categorySlug" type="text" placeholder="electronique" />
+            </label>
+            <label>
+              Statut
+              <select id="categoryStatus">
+                <option value="active">Active</option>
+                <option value="archived">Masquée</option>
+              </select>
+            </label>
+          </div>
+          <button class="primary-action" type="submit">Enregistrer la catégorie</button>
         </form>
       </dialog>
 
@@ -264,7 +269,7 @@
               <input id="storeEmail" type="email" required />
             </label>
             <label>
-              Telephone
+              Téléphone
               <input id="storePhone" type="tel" />
             </label>
             <label>

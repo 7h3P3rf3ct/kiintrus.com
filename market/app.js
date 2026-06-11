@@ -7,7 +7,7 @@ const supabaseClient =
 const useSupabase = Boolean(supabaseClient);
 const seedCatalog = window.KIINTRUS_SEED_CATALOG || { stores: [], products: [] };
 const defaultCategories = [
-  { id: "cat-beaute", name: "Beaute", slug: "beaute", status: "active" },
+  { id: "cat-beaute", name: "Beauté", slug: "beaute", status: "active" },
   { id: "cat-mode", name: "Mode & wax", slug: "mode", status: "active" },
   { id: "cat-maison", name: "Maison", slug: "maison", status: "active" },
   { id: "cat-librairie", name: "Librairie", slug: "librairie", status: "active" },
@@ -30,8 +30,8 @@ const seedState = {
   categories: defaultCategories,
   products: seedCatalog.products,
   activity: [
-    "Catalogue actuel importe dans le dashboard.",
-    "Les articles publies alimentent automatiquement la vitrine publique.",
+    "Catalogue actuel importé dans le marketplace.",
+    "Les articles publiés alimentent automatiquement la vitrine publique.",
   ],
 };
 
@@ -50,21 +50,24 @@ const navButtons = document.querySelectorAll("[data-panel]");
 const panels = document.querySelectorAll(".panel");
 const roleLabel = document.querySelector("#roleLabel");
 const workspaceTitle = document.querySelector("#workspaceTitle");
-const activeStoreBadge = document.querySelector("#activeStoreBadge");
 const logoutButton = document.querySelector("#logoutButton");
 const accountLogoutButton = document.querySelector("#accountLogoutButton");
 const openNewProduct = document.querySelector("#openNewProduct");
 const openNewStore = document.querySelector("#openNewStore");
+const openNewCategory = document.querySelector("#openNewCategory");
 const productDialog = document.querySelector("#productDialog");
 const storeDialog = document.querySelector("#storeDialog");
+const categoryDialog = document.querySelector("#categoryDialog");
 const closeDialog = document.querySelector("#closeDialog");
 const closeStoreDialog = document.querySelector("#closeStoreDialog");
+const closeCategoryDialog = document.querySelector("#closeCategoryDialog");
 const productForm = document.querySelector("#productForm");
 const storeForm = document.querySelector("#storeForm");
 const accountForm = document.querySelector("#accountForm");
-const createCategoryForm = document.querySelector("#createCategoryForm");
+const categoryForm = document.querySelector("#categoryForm");
 const productStore = document.querySelector("#productStore");
-const productCategory = document.querySelector("#productCategory");
+const productCategoryInput = document.querySelector("#productCategoryInput");
+const productCategoryPicker = document.querySelector("#productCategoryPicker");
 const productStoreFilterSelect = document.querySelector("#productStoreFilter");
 const productStatusFilterSelect = document.querySelector("#productStatusFilter");
 const productSearch = document.querySelector("#productSearch");
@@ -124,7 +127,31 @@ function isAdmin() {
 }
 
 function storeName(storeId) {
-  return state.stores.find((store) => store.id === storeId)?.name || "Boutique";
+  const name = state.stores.find((store) => store.id === storeId)?.name || "Boutique";
+  return name === "All items" ? "Sélection Kiintrus" : name;
+}
+
+function visibleStores() {
+  return state.stores
+    .filter((store) => store.role !== "admin" && store.name !== "All items")
+    .sort((a, b) => a.name.localeCompare(b.name, "fr", { sensitivity: "base" }));
+}
+
+function formStores() {
+  return state.stores
+    .filter((store) => store.role !== "admin")
+    .sort((a, b) => storeName(a.id).localeCompare(storeName(b.id), "fr", { sensitivity: "base" }));
+}
+
+function activeCategories() {
+  return state.categories
+    .filter((category) => category.status !== "archived")
+    .sort((a, b) => a.name.localeCompare(b.name, "fr", { sensitivity: "base" }));
+}
+
+function findCategoryByNameOrSlug(value) {
+  const slug = slugify(value);
+  return state.categories.find((category) => category.slug === slug || category.name.toLowerCase() === value.toLowerCase());
 }
 
 function visibleProducts() {
@@ -310,7 +337,7 @@ async function loadSupabaseWorkspace() {
   state.products = products.map((product) => mapProductFromDb({ ...product, images: imagesByProduct[product.id] || [] }));
   state.categories = categoriesError ? defaultCategories : categories.map(mapCategoryFromDb);
   state.activity = [
-    categoriesError ? "Supabase charge sans table categories pour le moment." : "Donnees chargees depuis Supabase.",
+    categoriesError ? "Données chargées sans table catégories pour le moment." : "Données chargées.",
     ...seedState.activity,
   ];
 }
@@ -345,7 +372,6 @@ function renderDashboard() {
 
   roleLabel.textContent = isAdmin() ? "Admin principale" : "Compte marchand";
   workspaceTitle.textContent = isAdmin() ? "Kiintrus Marketplace" : user.name;
-  activeStoreBadge.textContent = isAdmin() ? "Toutes les boutiques" : user.name;
   document.querySelectorAll("[data-admin-only]").forEach((node) => {
     node.hidden = !isAdmin();
   });
@@ -362,30 +388,32 @@ function renderDashboard() {
 }
 
 function renderStoreOptions() {
-  const activeStores = state.stores.filter((store) => store.role !== "admin");
   const options = [
     ...(isAdmin() ? ['<option value="all">Toutes les boutiques</option>'] : []),
-    ...activeStores
+    ...visibleStores()
       .filter((store) => isAdmin() || store.id === currentUser()?.id)
       .map((store) => `<option value="${store.id}">${escapeHtml(store.name)}</option>`),
   ].join("");
 
   productStoreFilterSelect.innerHTML = options;
+  if (!Array.from(productStoreFilterSelect.options).some((option) => option.value === productStoreFilter)) {
+    productStoreFilter = "all";
+  }
   productStoreFilterSelect.value = productStoreFilter;
   if (!isAdmin()) productStoreFilterSelect.value = currentUser().id;
 
-  productStore.innerHTML = activeStores
+  productStore.innerHTML = formStores()
     .filter((store) => isAdmin() || store.id === currentUser()?.id)
-    .map((store) => `<option value="${store.id}">${escapeHtml(store.name)}</option>`)
+    .map((store) => `<option value="${store.id}">${escapeHtml(storeName(store.id))}</option>`)
     .join("");
 }
 
 function renderCategoryOptions() {
-  if (!productCategory) return;
-  productCategory.innerHTML = state.categories
-    .filter((category) => category.status !== "archived")
-    .map((category) => `<option value="${escapeHtml(category.slug)}">${escapeHtml(category.name)}</option>`)
-    .join("");
+  if (!productCategoryPicker) return;
+  productCategoryPicker.innerHTML = [
+    '<option value="">Choisir</option>',
+    ...activeCategories().map((category) => `<option value="${escapeHtml(category.slug)}">${escapeHtml(category.name)}</option>`),
+  ].join("");
 }
 
 function renderMetrics() {
@@ -427,9 +455,9 @@ function statusLabel(status) {
   return {
     draft: "Brouillon",
     pending: "En validation",
-    published: "Publie",
-    archived: "Retire",
-    rejected: "Rejete",
+    published: "Publié",
+    archived: "Retiré",
+    rejected: "Rejeté",
   }[status] || status;
 }
 
@@ -437,7 +465,7 @@ function productStatusActions(product) {
   const actions = [];
   if (isAdmin()) {
     if (product.status !== "published") actions.push({ status: "published", label: "Publier" });
-    if (product.status === "published") actions.push({ status: "draft", label: "Depublier" });
+    if (product.status === "published") actions.push({ status: "draft", label: "Dépublier" });
     if (product.status !== "archived") actions.push({ status: "archived", label: "Retirer" });
   } else if (product.status === "draft") {
     actions.push({ status: "pending", label: "Soumettre" });
@@ -455,23 +483,24 @@ function productStatusActions(product) {
 
 function renderProducts() {
   const products = visibleProducts().slice().sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-  document.querySelector("#productTable").innerHTML = products.map((product) => productRow(product)).join("") || emptyMessage("Aucun article trouve.");
+  document.querySelector("#productTable").innerHTML = products.map((product) => productRow(product)).join("") || emptyMessage("Aucun article trouvé.");
   document.querySelector("#recentProducts").innerHTML =
     products
       .slice(0, 5)
       .map((product) => productRow(product, true))
-      .join("") || emptyMessage("Aucun article publie pour le moment.");
+      .join("") || emptyMessage("Aucun article publié pour le moment.");
 }
 
 function renderStores() {
   document.querySelector("#storeList").innerHTML = state.stores
     .filter((store) => store.role !== "admin")
+    .sort((a, b) => a.name.localeCompare(b.name, "fr", { sensitivity: "base" }))
     .map(
       (store) => `
         <article class="store-card" data-edit-store="${store.id}" tabindex="0">
           <div>
-            <strong>${escapeHtml(store.name)}</strong>
-            <span>${escapeHtml(store.email)} · ${escapeHtml(store.phone || "Telephone a ajouter")}</span>
+            <strong>${escapeHtml(storeName(store.id))}</strong>
+            <span>${escapeHtml(store.email)} · ${escapeHtml(store.phone || "Téléphone à ajouter")}</span>
           </div>
           <small>${state.products.filter((product) => product.storeId === store.id).length} article(s)</small>
           <span class="status ${store.status === "active" ? "published" : "pending"}">${store.status === "active" ? "Actif" : "En attente"}</span>
@@ -493,12 +522,17 @@ function renderCategories() {
   const list = document.querySelector("#categoryList");
   if (!list) return;
   list.innerHTML = state.categories
+    .slice()
+    .sort((a, b) => a.name.localeCompare(b.name, "fr", { sensitivity: "base" }))
     .map(
       (category) => `
-        <article class="store-row">
-          <strong>${escapeHtml(category.name)}</strong>
-          <span>${escapeHtml(category.slug)}</span>
-          <span class="status ${category.status === "active" ? "published" : "draft"}">${category.status === "active" ? "Active" : "Masquee"}</span>
+        <article class="store-card" data-edit-category="${category.id}" tabindex="0">
+          <div>
+            <strong>${escapeHtml(category.name)}</strong>
+            <span>${escapeHtml(category.slug)}</span>
+          </div>
+          <small>${state.products.filter((product) => product.category === category.slug).length} article(s)</small>
+          <span class="status ${category.status === "active" ? "published" : "draft"}">${category.status === "active" ? "Active" : "Masquée"}</span>
         </article>
       `,
     )
@@ -588,7 +622,7 @@ registerForm?.addEventListener("submit", async (event) => {
 
     registerForm.reset();
     registerForm.querySelector(".helper-text").textContent =
-      "Demande envoyee. Verifiez l'email marchand puis l'admin pourra valider la boutique.";
+      "Demande envoyée. Vérifiez l’email marchand puis l’admin pourra valider la boutique.";
     return;
   }
 
@@ -600,10 +634,10 @@ registerForm?.addEventListener("submit", async (event) => {
     role: "merchant",
     status: "pending",
   });
-  state.activity.push(`Demande de creation recue pour ${name}.`);
+  state.activity.push(`Demande de création reçue pour ${name}.`);
   saveState();
   registerForm.reset();
-  registerForm.querySelector(".helper-text").textContent = "Demande envoyee. L'admin pourra valider le compte.";
+  registerForm.querySelector(".helper-text").textContent = "Demande envoyée. L’admin pourra valider le compte.";
 });
 
 logoutButton?.addEventListener("click", async () => {
@@ -642,8 +676,9 @@ function fillProductDialog(product) {
   document.querySelector("#productId").value = product?.id || "";
   document.querySelector("#productDialogTitle").textContent = product ? "Modifier l'article" : "Ajouter un produit";
   productStore.value = product?.storeId || productStore.value;
-  productCategory.value = product?.category || productCategory.value;
-  document.querySelector("#productNewCategory").value = "";
+  const category = state.categories.find((item) => item.slug === product?.category);
+  productCategoryInput.value = category?.name || product?.category || "";
+  productCategoryPicker.value = category?.slug || "";
   document.querySelector("#productName").value = product?.name || "";
   document.querySelector("#productPrice").value = product?.price || "";
   document.querySelector("#productStock").value = Number(product?.stock ?? 1);
@@ -652,7 +687,7 @@ function fillProductDialog(product) {
   const images = product?.images?.length ? product.images.map((image) => image.url) : product?.image ? [product.image] : [];
   document.querySelector("#productImagePreview").innerHTML =
     images.map((image) => `<img src="${escapeHtml(image)}" alt="${escapeHtml(product?.name || "Article")}" />`).join("") ||
-    `<span>Aucune photo ajoutee.</span>`;
+    `<span>Aucune photo ajoutée.</span>`;
 }
 
 function openProductDialog(productId = null) {
@@ -668,13 +703,15 @@ productForm?.addEventListener("submit", async (event) => {
   const productId = document.querySelector("#productId").value;
   const selectedStoreId = productStore.value;
   const selectedFiles = document.querySelector("#productImage").files;
-  const newCategoryName = document.querySelector("#productNewCategory").value.trim();
-  const category = newCategoryName ? slugify(newCategoryName) : document.querySelector("#productCategory").value;
+  const categoryName = productCategoryInput.value.trim();
+  const existingCategory = findCategoryByNameOrSlug(categoryName);
+  const category = existingCategory?.slug || slugify(categoryName);
+  if (!categoryName || !category) return;
 
   if (useSupabase) {
     try {
-      if (newCategoryName && isAdmin() && !state.categories.some((item) => item.slug === category)) {
-        await supabaseClient.from("categories").insert({ name: newCategoryName, slug: category, status: "active" });
+      if (!existingCategory && isAdmin()) {
+        await supabaseClient.from("categories").insert({ name: categoryName, slug: category, status: "active" });
       }
       const uploadedImages = await uploadProductImages(selectedFiles, selectedStoreId);
       const status = isAdmin() ? document.querySelector("#productStatus").value : "pending";
@@ -725,8 +762,8 @@ productForm?.addEventListener("submit", async (event) => {
   }
 
   const uploadedImages = await uploadProductImages(selectedFiles, selectedStoreId);
-  if (newCategoryName && !state.categories.some((item) => item.slug === category)) {
-    state.categories.push({ id: `cat-${Date.now()}`, name: newCategoryName, slug: category, status: "active" });
+  if (!existingCategory) {
+    state.categories.push({ id: `cat-${Date.now()}`, name: categoryName, slug: category, status: "active" });
   }
   const existingProduct = state.products.find((item) => item.id === productId);
   const product = existingProduct || {
@@ -747,7 +784,7 @@ productForm?.addEventListener("submit", async (event) => {
     product.images = uploadedImages.map((url, index) => ({ url, sortOrder: index }));
   }
   if (!existingProduct) state.products.push(product);
-  state.activity.push(`${product.name} ${existingProduct ? "modifie" : "ajoute"} par ${storeName(product.storeId)}.`);
+  state.activity.push(`${product.name} ${existingProduct ? "modifié" : "ajouté"} par ${storeName(product.storeId)}.`);
   saveState();
   productDialog.close();
   renderDashboard();
@@ -793,7 +830,7 @@ storeForm?.addEventListener("submit", (event) => {
         renderDashboard();
       })
       .catch((error) => {
-        alert(error.message || "Impossible de creer la boutique.");
+        alert(error.message || "Impossible de créer la boutique.");
       });
     return;
   }
@@ -812,39 +849,61 @@ storeForm?.addEventListener("submit", (event) => {
       status,
     });
   }
-  state.activity.push(`Boutique ${name} ${existingStore ? "modifiee" : "cree"}.`);
+  state.activity.push(`Boutique ${name} ${existingStore ? "modifiée" : "créée"}.`);
   saveState();
   storeDialog.close();
   renderDashboard();
 });
 
-createCategoryForm?.addEventListener("submit", (event) => {
+openNewCategory?.addEventListener("click", () => openCategoryDialog());
+closeCategoryDialog?.addEventListener("click", () => categoryDialog.close());
+
+function openCategoryDialog(categoryId = null) {
+  const category = categoryId ? state.categories.find((item) => item.id === categoryId) : null;
+  categoryForm.reset();
+  document.querySelector("#categoryDialogTitle").textContent = category ? "Modifier la catégorie" : "Ajouter une catégorie";
+  document.querySelector("#categoryId").value = category?.id || "";
+  document.querySelector("#categoryName").value = category?.name || "";
+  document.querySelector("#categorySlug").value = category?.slug || "";
+  document.querySelector("#categoryStatus").value = category?.status || "active";
+  categoryDialog.showModal();
+}
+
+categoryForm?.addEventListener("submit", (event) => {
   event.preventDefault();
   if (!isAdmin()) return;
+  const categoryId = document.querySelector("#categoryId").value;
   const name = document.querySelector("#categoryName").value.trim();
   const slug = slugify(document.querySelector("#categorySlug").value.trim() || name);
+  const status = document.querySelector("#categoryStatus").value;
   if (!name || !slug) return;
 
   if (useSupabase) {
-    supabaseClient
-      .from("categories")
-      .insert({ name, slug, status: "active" })
+    const request = categoryId
+      ? supabaseClient.from("categories").update({ name, slug, status }).eq("id", categoryId)
+      : supabaseClient.from("categories").insert({ name, slug, status });
+    request
       .then(async ({ error }) => {
         if (error) throw error;
-        createCategoryForm.reset();
+        categoryDialog.close();
         await loadSupabaseWorkspace();
         renderDashboard();
       })
       .catch((error) => {
-        alert(error.message || "Impossible de creer la categorie.");
+        alert(error.message || "Impossible d’enregistrer la catégorie.");
       });
     return;
   }
 
-  state.categories.push({ id: `cat-${Date.now()}`, name, slug, status: "active" });
-  state.activity.push(`Categorie ${name} ajoutee.`);
+  const existingCategory = state.categories.find((category) => category.id === categoryId);
+  if (existingCategory) {
+    Object.assign(existingCategory, { name, slug, status });
+  } else {
+    state.categories.push({ id: `cat-${Date.now()}`, name, slug, status });
+  }
+  state.activity.push(`Catégorie ${name} ${existingCategory ? "modifiée" : "ajoutée"}.`);
   saveState();
-  createCategoryForm.reset();
+  categoryDialog.close();
   renderDashboard();
 });
 
@@ -929,13 +988,24 @@ document.querySelector("#storeList")?.addEventListener("click", (event) => {
   openStoreDialog(card.dataset.editStore);
 });
 
+document.querySelector("#categoryList")?.addEventListener("click", (event) => {
+  const card = event.target.closest("[data-edit-category]");
+  if (!card) return;
+  openCategoryDialog(card.dataset.editCategory);
+});
+
+productCategoryPicker?.addEventListener("change", (event) => {
+  const category = state.categories.find((item) => item.slug === event.target.value);
+  if (category) productCategoryInput.value = category.name;
+});
+
 accountForm?.addEventListener("submit", async (event) => {
   event.preventDefault();
   const fullName = document.querySelector("#accountName").value.trim();
   if (useSupabase && state.session?.profileId) {
     const { error } = await supabaseClient.from("profiles").update({ full_name: fullName }).eq("id", state.session.profileId);
     if (error) {
-      alert(error.message || "Impossible de mettre le compte a jour.");
+      alert(error.message || "Impossible de mettre le compte à jour.");
       return;
     }
     await loadSupabaseWorkspace();

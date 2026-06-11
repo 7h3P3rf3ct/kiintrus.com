@@ -754,6 +754,12 @@ textarea:focus {
   grid-column: 1 / -1;
 }
 
+.combo-field {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(116px, 0.34fr);
+  gap: 8px;
+}
+
 .upload-zone input {
   border-style: dashed;
   background: #f8fbff;
@@ -876,6 +882,7 @@ textarea:focus {
   .store-admin-grid,
   .account-grid,
   .form-grid,
+  .combo-field,
   .filters {
     grid-template-columns: 1fr;
   }
