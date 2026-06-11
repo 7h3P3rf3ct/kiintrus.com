@@ -40,6 +40,8 @@ let activePanel = "overview";
 let productQuery = "";
 let productStoreFilter = "all";
 let productStatusFilter = "all";
+let selectedProductFiles = [];
+let existingProductImages = [];
 
 const authView = document.querySelector("#authView");
 const dashboardView = document.querySelector("#dashboardView");
@@ -65,6 +67,7 @@ const productForm = document.querySelector("#productForm");
 const storeForm = document.querySelector("#storeForm");
 const accountForm = document.querySelector("#accountForm");
 const categoryForm = document.querySelector("#categoryForm");
+const productDropZone = document.querySelector("#productDropZone");
 const productStore = document.querySelector("#productStore");
 const productCategoryInput = document.querySelector("#productCategoryInput");
 const productCategoryPicker = document.querySelector("#productCategoryPicker");
@@ -274,6 +277,44 @@ async function uploadProductImages(files, storeId) {
     uploads.push(await uploadProductImage(file, storeId));
   }
   return uploads;
+}
+
+function imageFilesFromItems(items = []) {
+  return Array.from(items)
+    .map((item) => (item.kind === "file" ? item.getAsFile() : item))
+    .filter((file) => file && file.type?.startsWith("image/"));
+}
+
+function mergeProductFiles(files) {
+  const incoming = imageFilesFromItems(files);
+  const known = new Set(selectedProductFiles.map((file) => `${file.name}-${file.size}-${file.lastModified}`));
+  incoming.forEach((file) => {
+    const key = `${file.name}-${file.size}-${file.lastModified}`;
+    if (!known.has(key)) {
+      selectedProductFiles.push(file);
+      known.add(key);
+    }
+  });
+  renderSelectedProductFiles();
+}
+
+function renderSelectedProductFiles(existingImages = existingProductImages) {
+  const preview = document.querySelector("#productImagePreview");
+  if (!preview) return;
+
+  const filePreviews = selectedProductFiles.map((file, index) => {
+    const url = URL.createObjectURL(file);
+    return `
+      <figure class="image-preview-item">
+        <img src="${url}" alt="${escapeHtml(file.name || `Photo ${index + 1}`)}" />
+        <button type="button" data-remove-file="${index}" aria-label="Retirer cette photo">×</button>
+      </figure>
+    `;
+  });
+
+  preview.innerHTML =
+    [...filePreviews, ...existingImages.map((image) => `<img src="${escapeHtml(image)}" alt="Photo existante" />`)].join("") ||
+    `<span>Aucune photo ajoutée.</span>`;
 }
 
 async function loadSupabaseWorkspace() {
@@ -671,8 +712,58 @@ openNewProduct?.addEventListener("click", () => {
 
 closeDialog?.addEventListener("click", () => productDialog.close());
 
+document.querySelector("#productImage")?.addEventListener("change", (event) => {
+  mergeProductFiles(event.target.files);
+  event.target.value = "";
+});
+
+productDropZone?.addEventListener("click", (event) => {
+  if (event.target.closest("[data-remove-file]")) return;
+  document.querySelector("#productImage")?.click();
+});
+
+productDropZone?.addEventListener("keydown", (event) => {
+  if (["Enter", " "].includes(event.key)) {
+    event.preventDefault();
+    document.querySelector("#productImage")?.click();
+  }
+});
+
+["dragenter", "dragover"].forEach((eventName) => {
+  productDropZone?.addEventListener(eventName, (event) => {
+    event.preventDefault();
+    productDropZone.classList.add("dragging");
+  });
+});
+
+["dragleave", "drop"].forEach((eventName) => {
+  productDropZone?.addEventListener(eventName, (event) => {
+    event.preventDefault();
+    productDropZone.classList.remove("dragging");
+  });
+});
+
+productDropZone?.addEventListener("drop", (event) => {
+  mergeProductFiles(event.dataTransfer?.files);
+});
+
+productDialog?.addEventListener("paste", (event) => {
+  const files = imageFilesFromItems(event.clipboardData?.items || []);
+  if (!files.length) return;
+  event.preventDefault();
+  mergeProductFiles(files);
+});
+
+document.querySelector("#productImagePreview")?.addEventListener("click", (event) => {
+  const button = event.target.closest("[data-remove-file]");
+  if (!button) return;
+  selectedProductFiles.splice(Number(button.dataset.removeFile), 1);
+  renderSelectedProductFiles();
+});
+
 function fillProductDialog(product) {
   productForm.reset();
+  selectedProductFiles = [];
   document.querySelector("#productId").value = product?.id || "";
   document.querySelector("#productDialogTitle").textContent = product ? "Modifier l'article" : "Ajouter un produit";
   productStore.value = product?.storeId || productStore.value;
@@ -684,10 +775,8 @@ function fillProductDialog(product) {
   document.querySelector("#productStock").value = Number(product?.stock ?? 1);
   document.querySelector("#productStatus").value = product?.status || (isAdmin() ? "published" : "pending");
   document.querySelector("#productDescription").value = product?.description || "";
-  const images = product?.images?.length ? product.images.map((image) => image.url) : product?.image ? [product.image] : [];
-  document.querySelector("#productImagePreview").innerHTML =
-    images.map((image) => `<img src="${escapeHtml(image)}" alt="${escapeHtml(product?.name || "Article")}" />`).join("") ||
-    `<span>Aucune photo ajoutée.</span>`;
+  existingProductImages = product?.images?.length ? product.images.map((image) => image.url) : product?.image ? [product.image] : [];
+  renderSelectedProductFiles();
 }
 
 function openProductDialog(productId = null) {
@@ -702,7 +791,6 @@ productForm?.addEventListener("submit", async (event) => {
   event.preventDefault();
   const productId = document.querySelector("#productId").value;
   const selectedStoreId = productStore.value;
-  const selectedFiles = document.querySelector("#productImage").files;
   const categoryName = productCategoryInput.value.trim();
   const existingCategory = findCategoryByNameOrSlug(categoryName);
   const category = existingCategory?.slug || slugify(categoryName);
@@ -713,7 +801,7 @@ productForm?.addEventListener("submit", async (event) => {
       if (!existingCategory && isAdmin()) {
         await supabaseClient.from("categories").insert({ name: categoryName, slug: category, status: "active" });
       }
-      const uploadedImages = await uploadProductImages(selectedFiles, selectedStoreId);
+      const uploadedImages = await uploadProductImages(selectedProductFiles, selectedStoreId);
       const status = isAdmin() ? document.querySelector("#productStatus").value : "pending";
       const payload = {
         store_id: selectedStoreId,
@@ -761,7 +849,7 @@ productForm?.addEventListener("submit", async (event) => {
     return;
   }
 
-  const uploadedImages = await uploadProductImages(selectedFiles, selectedStoreId);
+  const uploadedImages = await uploadProductImages(selectedProductFiles, selectedStoreId);
   if (!existingCategory) {
     state.categories.push({ id: `cat-${Date.now()}`, name: categoryName, slug: category, status: "active" });
   }

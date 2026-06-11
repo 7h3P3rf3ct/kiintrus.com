@@ -203,11 +203,12 @@
               Description
               <textarea id="productDescription" rows="3" required></textarea>
             </label>
-            <label class="wide upload-zone">
-              Photos
-              <input id="productImage" type="file" accept="image/*" multiple />
+            <div class="wide upload-zone" id="productDropZone" tabindex="0">
+              <strong>Photos</strong>
+              <span>Déposez des images ici, cliquez pour choisir, ou collez une photo avec Ctrl/⌘+V.</span>
               <small>La première photo devient l’image principale visible sur le site.</small>
-            </label>
+              <input id="productImage" type="file" accept="image/*" multiple />
+            </div>
             <div class="wide image-preview-grid" id="productImagePreview"></div>
           </div>
           <button class="primary-action" type="submit">Enregistrer</button>
