@@ -98,6 +98,8 @@ const translations = {
     fastDelivery: "Livraison rapide",
     emptyCart: "Votre panier est vide pour le moment.",
     addToCart: "Ajouter",
+    addToCartFull: "Ajouter au panier",
+    orderNow: "Commander maintenant",
     title: "Kiintrus - Le sourire en un clic",
   },
   en: {
@@ -191,6 +193,8 @@ const translations = {
     fastDelivery: "Fast delivery",
     emptyCart: "Your cart is empty for now.",
     addToCart: "Add",
+    addToCartFull: "Add to cart",
+    orderNow: "Order now",
     title: "Kiintrus - The smile in one click",
   },
 };
@@ -1194,11 +1198,13 @@ function renderProductDetail(product) {
           <p>${escapeHtml(product.description || "")}</p>
         </section>
         <div class="detail-actions">
-          <a href="${orderUrl(product)}" target="_blank" rel="noreferrer" aria-label="${t("order")}">
+          <a href="${orderUrl(product)}" target="_blank" rel="noreferrer" aria-label="${t("orderNow")}">
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.5a8.4 8.4 0 0 0-7.2 12.7L4 20.5l4.4-1.1A8.5 8.5 0 1 0 12 3.5Z"/><path d="M9.1 8.6c.2-.4.4-.5.7-.5h.5c.2 0 .4.1.5.4l.7 1.6c.1.3 0 .5-.1.7l-.4.5c.5.9 1.2 1.6 2.2 2.1l.6-.5c.2-.2.5-.2.7-.1l1.5.7c.3.1.4.3.4.6v.5c0 .3-.1.5-.4.7-.6.4-1.4.5-2.2.2-2.6-.9-4.6-2.8-5.5-5.3-.2-.7-.1-1.3.3-1.8Z"/></svg>
+            <span>${t("orderNow")}</span>
           </a>
-          <button type="button" data-add="${escapeHtml(product.id)}" aria-label="${t("addToCart")}">
+          <button type="button" data-add="${escapeHtml(product.id)}" aria-label="${t("addToCartFull")}">
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h2l2.2 10.5a2 2 0 0 0 2 1.5h6.7a2 2 0 0 0 1.9-1.4L21 8H7"/><path d="M10 21h.01M18 21h.01"/></svg>
+            <span>${t("addToCartFull")}</span>
           </button>
         </div>
       </div>
