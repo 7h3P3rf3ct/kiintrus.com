@@ -25,7 +25,7 @@ body {
   overflow-x: hidden;
   background: var(--background);
   color: var(--ink);
-  font-family: Manrope, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-family: Montserrat, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 }
 
 a {
@@ -156,7 +156,7 @@ svg {
   border-radius: 8px;
   color: #fff;
   font-size: 0.9rem;
-  font-weight: 700;
+  font-weight: 600;
 }
 
 .language-picker select {
@@ -181,7 +181,7 @@ svg {
   gap: 8px;
   min-height: 36px;
   border-radius: 8px;
-  font-weight: 700;
+  font-weight: 600;
 }
 
 .catalog-link {
@@ -247,7 +247,7 @@ svg {
   border-radius: 8px;
   background: transparent;
   font-size: 0.9rem;
-  font-weight: 700;
+  font-weight: 600;
   color: #fff;
 }
 
@@ -351,7 +351,7 @@ svg {
 .hero-card span {
   color: var(--orange-deep);
   font-size: 0.68rem;
-  font-weight: 800;
+  font-weight: 700;
   text-transform: uppercase;
 }
 
@@ -398,7 +398,7 @@ svg {
   min-height: 50px;
   padding: 0 20px;
   border-radius: 8px;
-  font-weight: 800;
+  font-weight: 700;
 }
 
 .primary-action {
@@ -486,7 +486,7 @@ svg {
 .result-count {
   margin: 0;
   color: var(--blue);
-  font-weight: 700;
+  font-weight: 600;
 }
 
 .category-grid {
@@ -510,7 +510,7 @@ svg {
   display: block;
   color: var(--orange-deep);
   font-size: 0.78rem;
-  font-weight: 800;
+  font-weight: 700;
   text-transform: uppercase;
 }
 
@@ -566,7 +566,7 @@ svg {
   background: #fff;
   color: var(--blue-deep);
   font-size: 0.86rem;
-  font-weight: 700;
+  font-weight: 600;
   scroll-snap-align: start;
 }
 
@@ -715,7 +715,7 @@ svg {
   background: var(--orange);
   color: #fff;
   font-size: 0.72rem;
-  font-weight: 800;
+  font-weight: 700;
 }
 
 .product-body {
@@ -727,7 +727,7 @@ svg {
 .store {
   color: var(--muted);
   font-size: 0.7rem;
-  font-weight: 700;
+  font-weight: 600;
   text-transform: uppercase;
 }
 
@@ -755,13 +755,13 @@ svg {
 .price {
   color: var(--ink);
   font-size: 0.94rem;
-  font-weight: 800;
+  font-weight: 700;
 }
 
 .old-price {
   color: var(--orange-deep);
   font-size: 0.82rem;
-  font-weight: 700;
+  font-weight: 600;
   text-decoration: line-through;
 }
 
@@ -775,7 +775,7 @@ svg {
 .product-actions button {
   min-height: 28px;
   border-radius: 8px;
-  font-weight: 800;
+  font-weight: 700;
   font-size: 0.76rem;
 }
 
@@ -845,7 +845,7 @@ svg {
   border-radius: 999px;
   background: var(--orange);
   color: #fff;
-  font-weight: 800;
+  font-weight: 700;
 }
 
 .steps h3,
@@ -1003,7 +1003,7 @@ svg {
   background: #f6f9fd;
   color: var(--ink);
   text-align: left;
-  font-weight: 700;
+  font-weight: 600;
 }
 
 .filter-option:hover,
@@ -1132,7 +1132,7 @@ svg {
   border-radius: 8px;
   background: #fff;
   color: var(--blue-deep);
-  font-weight: 700;
+  font-weight: 600;
 }
 
 .detail-block p {
@@ -1152,7 +1152,7 @@ svg {
   min-height: 44px;
   border: 0;
   border-radius: 8px;
-  font-weight: 800;
+  font-weight: 700;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -1209,7 +1209,7 @@ svg {
 
 .similar-card span {
   color: var(--blue-deep);
-  font-weight: 700;
+  font-weight: 600;
 }
 
 .similar-card strong {
