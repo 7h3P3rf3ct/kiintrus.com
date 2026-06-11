@@ -711,7 +711,10 @@ function mapProductFromDb(product) {
 }
 
 async function loadPublishedProducts() {
-  if (!publicSupabaseClient) return;
+  if (!publicSupabaseClient) {
+    products = fallbackProducts.map((product) => ({ ...product }));
+    return;
+  }
 
   const { data, error } = await publicSupabaseClient
     .from("products")
@@ -719,12 +722,13 @@ async function loadPublishedProducts() {
     .eq("status", "published")
     .order("created_at", { ascending: false });
 
-  if (error || !data?.length) {
-    products = fallbackProducts.map((product) => ({ ...product }));
+  if (error) {
+    console.warn("Impossible de charger le catalogue publié.", error);
+    products = [];
     return;
   }
 
-  products = [...data.map(mapProductFromDb), ...fallbackProducts.map((product) => ({ ...product }))];
+  products = (data || []).map(mapProductFromDb);
   if (!products.some((product) => productMatchesCategoryFilter(product, currentCategory))) currentCategory = "all";
   if (!products.some((product) => product.store === currentStore) || isPlaceholderStore(currentStore)) currentStore = "all";
 }
@@ -1499,6 +1503,7 @@ window.addEventListener("keydown", (event) => {
 });
 
 async function initPublicSite() {
+  if (publicSupabaseClient) products = [];
   applyLanguage("fr");
   await loadPublishedProducts();
   renderDynamicFilters();
