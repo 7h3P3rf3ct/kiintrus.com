@@ -19,6 +19,7 @@ Le script cree :
 - `stores` : boutiques marchandes.
 - `categories` : categories actives visibles dans le dashboard et les filtres.
 - `products` : articles, prix, stock, statut et image.
+- `product_images` : galerie de photos supplementaires par article.
 - `product-images` : bucket Storage public pour les photos produits.
 - Les politiques RLS pour separer admin, marchands et catalogue public.
 
@@ -83,6 +84,7 @@ Le dashboard utilise deja :
 - `supabase.from('stores')`
 - `supabase.from('categories')`
 - `supabase.from('products')`
+- `supabase.from('product_images')`
 - `supabase.storage.from('product-images').upload`
 
 La vitrine publique lit les articles `published` depuis Supabase. Les articles `draft`, `pending`, `rejected` ou `archived` ne sont pas affiches sur le site.

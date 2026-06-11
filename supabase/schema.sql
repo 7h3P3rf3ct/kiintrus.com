@@ -84,6 +84,15 @@ create table if not exists public.products (
   updated_at timestamptz not null default now()
 );
 
+create table if not exists public.product_images (
+  id uuid primary key default gen_random_uuid(),
+  product_id uuid not null references public.products(id) on delete cascade,
+  image_url text not null,
+  image_path text,
+  sort_order integer not null default 0,
+  created_at timestamptz not null default now()
+);
+
 create index if not exists stores_owner_id_idx on public.stores(owner_id);
 create index if not exists stores_status_idx on public.stores(status);
 create index if not exists store_requests_user_id_idx on public.store_requests(user_id);
@@ -92,6 +101,7 @@ create index if not exists categories_status_idx on public.categories(status);
 create index if not exists products_store_id_idx on public.products(store_id);
 create index if not exists products_status_idx on public.products(status);
 create index if not exists products_created_at_idx on public.products(created_at desc);
+create index if not exists product_images_product_id_idx on public.product_images(product_id);
 
 create or replace function public.set_updated_at()
 returns trigger
@@ -188,6 +198,7 @@ alter table public.stores enable row level security;
 alter table public.store_requests enable row level security;
 alter table public.categories enable row level security;
 alter table public.products enable row level security;
+alter table public.product_images enable row level security;
 
 drop policy if exists "profiles_select_own_or_admin" on public.profiles;
 create policy "profiles_select_own_or_admin"
@@ -312,6 +323,62 @@ for update
 to authenticated
 using (public.owns_store(store_id) or public.is_admin())
 with check (public.owns_store(store_id) or public.is_admin());
+
+drop policy if exists "product_images_public_published_select" on public.product_images;
+create policy "product_images_public_published_select"
+on public.product_images
+for select
+to anon, authenticated
+using (
+  exists (
+    select 1
+    from public.products
+    where products.id = product_images.product_id
+      and products.status = 'published'
+  )
+);
+
+drop policy if exists "product_images_owner_or_admin_select" on public.product_images;
+create policy "product_images_owner_or_admin_select"
+on public.product_images
+for select
+to authenticated
+using (
+  exists (
+    select 1
+    from public.products
+    where products.id = product_images.product_id
+      and (public.owns_store(products.store_id) or public.is_admin())
+  )
+);
+
+drop policy if exists "product_images_owner_or_admin_insert" on public.product_images;
+create policy "product_images_owner_or_admin_insert"
+on public.product_images
+for insert
+to authenticated
+with check (
+  exists (
+    select 1
+    from public.products
+    where products.id = product_images.product_id
+      and (public.owns_store(products.store_id) or public.is_admin())
+  )
+);
+
+drop policy if exists "product_images_owner_or_admin_delete" on public.product_images;
+create policy "product_images_owner_or_admin_delete"
+on public.product_images
+for delete
+to authenticated
+using (
+  exists (
+    select 1
+    from public.products
+    where products.id = product_images.product_id
+      and (public.owns_store(products.store_id) or public.is_admin())
+  )
+);
 
 insert into storage.buckets (id, name, public)
 values ('product-images', 'product-images', true)
