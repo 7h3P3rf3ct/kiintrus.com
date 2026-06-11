@@ -83,7 +83,7 @@ svg {
 .brand {
   display: inline-flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   min-width: 0;
   height: 42px;
   padding: 2px 7px;
@@ -150,16 +150,17 @@ svg {
   display: inline-flex;
   align-items: center;
   min-height: 36px;
+  min-width: 62px;
   padding: 0 12px;
   border: 1px solid rgba(255, 255, 255, 0.58);
   border-radius: 8px;
   color: #fff;
   font-size: 0.9rem;
-  font-weight: 900;
+  font-weight: 700;
 }
 
 .language-picker select {
-  width: 42px;
+  width: 48px;
   border: 0;
   outline: 0;
   background: transparent;
@@ -180,7 +181,7 @@ svg {
   gap: 8px;
   min-height: 36px;
   border-radius: 8px;
-  font-weight: 800;
+  font-weight: 700;
 }
 
 .catalog-link {
@@ -246,7 +247,7 @@ svg {
   border-radius: 8px;
   background: transparent;
   font-size: 0.9rem;
-  font-weight: 800;
+  font-weight: 700;
   color: #fff;
 }
 
@@ -350,7 +351,7 @@ svg {
 .hero-card span {
   color: var(--orange-deep);
   font-size: 0.68rem;
-  font-weight: 900;
+  font-weight: 800;
   text-transform: uppercase;
 }
 
@@ -397,7 +398,7 @@ svg {
   min-height: 50px;
   padding: 0 20px;
   border-radius: 8px;
-  font-weight: 900;
+  font-weight: 800;
 }
 
 .primary-action {
@@ -485,7 +486,7 @@ svg {
 .result-count {
   margin: 0;
   color: var(--blue);
-  font-weight: 900;
+  font-weight: 700;
 }
 
 .category-grid {
@@ -509,7 +510,7 @@ svg {
   display: block;
   color: var(--orange-deep);
   font-size: 0.78rem;
-  font-weight: 900;
+  font-weight: 800;
   text-transform: uppercase;
 }
 
@@ -565,7 +566,7 @@ svg {
   background: #fff;
   color: var(--blue-deep);
   font-size: 0.86rem;
-  font-weight: 900;
+  font-weight: 700;
   scroll-snap-align: start;
 }
 
@@ -655,7 +656,7 @@ svg {
   box-shadow: none;
   color: #fff;
   cursor: pointer;
-  opacity: 0.86;
+  opacity: 0;
   transform: translateY(-50%);
   transition: opacity 150ms ease, transform 150ms ease;
 }
@@ -695,6 +696,11 @@ svg {
   outline: 0;
 }
 
+.product-card:hover .product-image-arrow,
+.product-card:focus-within .product-image-arrow {
+  opacity: 0.9;
+}
+
 .product-image-arrow:hover {
   transform: translateY(-50%) scale(1.08);
 }
@@ -709,7 +715,7 @@ svg {
   background: var(--orange);
   color: #fff;
   font-size: 0.72rem;
-  font-weight: 900;
+  font-weight: 800;
 }
 
 .product-body {
@@ -721,7 +727,7 @@ svg {
 .store {
   color: var(--muted);
   font-size: 0.7rem;
-  font-weight: 900;
+  font-weight: 700;
   text-transform: uppercase;
 }
 
@@ -749,13 +755,13 @@ svg {
 .price {
   color: var(--ink);
   font-size: 0.94rem;
-  font-weight: 900;
+  font-weight: 800;
 }
 
 .old-price {
   color: var(--orange-deep);
   font-size: 0.82rem;
-  font-weight: 800;
+  font-weight: 700;
   text-decoration: line-through;
 }
 
@@ -769,7 +775,7 @@ svg {
 .product-actions button {
   min-height: 28px;
   border-radius: 8px;
-  font-weight: 900;
+  font-weight: 800;
   font-size: 0.76rem;
 }
 
@@ -839,7 +845,7 @@ svg {
   border-radius: 999px;
   background: var(--orange);
   color: #fff;
-  font-weight: 900;
+  font-weight: 800;
 }
 
 .steps h3,
@@ -997,7 +1003,7 @@ svg {
   background: #f6f9fd;
   color: var(--ink);
   text-align: left;
-  font-weight: 800;
+  font-weight: 700;
 }
 
 .filter-option:hover,
@@ -1126,7 +1132,7 @@ svg {
   border-radius: 8px;
   background: #fff;
   color: var(--blue-deep);
-  font-weight: 900;
+  font-weight: 700;
 }
 
 .detail-block p {
@@ -1146,7 +1152,7 @@ svg {
   min-height: 44px;
   border: 0;
   border-radius: 8px;
-  font-weight: 900;
+  font-weight: 800;
 }
 
 .detail-actions a {
@@ -1196,7 +1202,7 @@ svg {
 
 .similar-card span {
   color: var(--blue-deep);
-  font-weight: 900;
+  font-weight: 700;
 }
 
 .similar-card strong {
@@ -1331,7 +1337,7 @@ svg {
 
 @media (max-width: 760px) {
   .mainbar {
-    grid-template-columns: 1fr auto auto auto;
+    grid-template-columns: minmax(0, 1fr) auto auto auto;
     gap: 8px;
   }
 
@@ -1349,12 +1355,13 @@ svg {
   }
 
   .language-picker {
+    min-width: 64px;
     min-height: 36px;
-    padding: 0 10px;
+    padding: 0 8px;
   }
 
   .language-picker select {
-    width: 42px;
+    width: 50px;
   }
 
   .hero {
@@ -1450,7 +1457,7 @@ svg {
   }
 
   .brand-logo {
-    width: 150px;
+    width: clamp(132px, 38vw, 150px);
   }
 
   .catalog-link,
@@ -1460,11 +1467,12 @@ svg {
   }
 
   .language-picker {
-    min-width: 52px;
+    min-width: 62px;
+    padding: 0 7px;
   }
 
   .language-picker select {
-    width: 42px;
+    width: 48px;
   }
 
   .product-grid {
